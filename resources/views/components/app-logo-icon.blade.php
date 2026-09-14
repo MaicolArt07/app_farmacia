@@ -1,0 +1,1 @@
+<img src="{{ asset('img/logo_farmafamilia.svg') }}" alt="Logo FarmaFamilia" {{ $attributes }}>
