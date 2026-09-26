@@ -54,7 +54,11 @@
                                 </a>
 
                                 <button
-                                    wire:click="delete({{ $item->id }})"
+                                    type="button"
+                                    x-on:click.prevent="confirmAction({
+                                        text: '¿Deseas {{ $item->state ? 'desactivar' : 'activar' }} este registro?',
+                                        confirmText: 'Sí, {{ $item->state ? 'desactivar' : 'activar' }}',
+                                    }).then((ok) => { if (ok) $wire.delete({{ $item->id }}) })"
                                     class="{{ $item->state ? 'text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300' : 'text-gray-400 dark:text-zinc-500' }} cursor-pointer">
                                     <i class="bi {{ $item->state ? 'bi-trash' : 'bi-arrow-clockwise' }} text-lg"></i>
                                 </button>

@@ -64,7 +64,11 @@
                                     <i class="bi bi-pencil-square text-lg"></i>
                                 </a>
 
-                                <button wire:click="delete({{ $item->id }})"
+                                <button type="button"
+                                    x-on:click.prevent="confirmAction({
+                                        text: '¿Deseas {{ $item->state ? 'desactivar' : 'activar' }} este registro?',
+                                        confirmText: 'Sí, {{ $item->state ? 'desactivar' : 'activar' }}',
+                                    }).then((ok) => { if (ok) $wire.delete({{ $item->id }}) })"
                                     class="{{ $item->state ? 'text-red-600 hover:text-red-800 dark:text-red-400' : 'text-gray-400 dark:text-zinc-500' }} cursor-pointer">
                                     <i class="bi {{ $item->state ? 'bi-trash' : 'bi-arrow-clockwise' }} text-lg"></i>
                                 </button>
@@ -72,8 +76,12 @@
                                 @can('Cambiar Estado Compras')
                                     @if($item->status !== 'CANCELLED')
                                         <button
-                                            wire:click="cancelPurchase({{ $item->id }})"
-                                            wire:confirm="¿Está segura de anular esta compra? Se revertirá el stock ingresado."
+                                            type="button"
+                                            x-on:click.prevent="confirmAction({
+                                                title: '¿Anular esta compra?',
+                                                text: 'Se revertirá el stock ingresado.',
+                                                confirmText: 'Sí, anular',
+                                            }).then((ok) => { if (ok) $wire.cancelPurchase({{ $item->id }}) })"
                                             class="cursor-pointer text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
                                             title="Anular compra">
                                             <i class="bi bi-arrow-counterclockwise text-lg"></i>

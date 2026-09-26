@@ -30,11 +30,15 @@ class LivewireSaleForm extends Component
 
     public $details = [];
 
+    public $openCash = null;
+    public $cashExpired = false;
+
     public function mount($sale = null)
     {
         $this->form->resetForm();
         $this->details = [];
         $this->viewMode = request()->routeIs('sales.view');
+        $this->refreshCashStatus();
 
         if ($sale) {
             $sale = Sale::with(['client.person', 'details.product', 'details.lot'])->findOrFail($sale);
@@ -122,6 +126,7 @@ class LivewireSaleForm extends Component
         }
 
         $this->productResults = Product::query()
+            ->with(['laboratory', 'presentation'])
             ->where('state', 1)
             ->where(function ($q) {
                 $q->where('code', 'like', "%{$this->productSearch}%")
@@ -143,6 +148,10 @@ class LivewireSaleForm extends Component
 
                 return [
                     'id' => $product->id,
+                    'code' => $product->code,
+                    'name' => $product->name . ($product->concentration ? ' | ' . $product->concentration : ''),
+                    'laboratory' => $product->laboratory?->name,
+                    'presentation' => $product->presentation?->name,
                     'label' => $product->code . ' - ' . $product->name .
                         ($product->concentration ? ' | ' . $product->concentration : '') .
                         ' | Stock: ' . $stock,
@@ -201,10 +210,26 @@ class LivewireSaleForm extends Component
 
     public function updatedDetails()
     {
+        foreach ($this->details as $i => $detail) {
+            $available = (int) ($detail['available'] ?? 0);
+            $quantity = (int) ($detail['quantity'] ?? 0);
+
+            if ($quantity < 1) {
+                $this->details[$i]['quantity'] = 1;
+            } elseif ($quantity > $available) {
+                $this->details[$i]['quantity'] = $available;
+            }
+        }
+
         $this->calculateTotals();
     }
 
     public function updatedFormDiscount()
+    {
+        $this->calculateTotals();
+    }
+
+    public function updatedFormAmountPaid()
     {
         $this->calculateTotals();
     }
@@ -232,6 +257,9 @@ class LivewireSaleForm extends Component
 
         $this->form->subtotal = $subtotal;
         $this->form->total = $subtotal - $discount;
+
+        $amountPaid = (float) ($this->form->amount_paid ?? 0);
+        $this->form->change_amount = $amountPaid > $this->form->total ? $amountPaid - $this->form->total : 0;
     }
 
     public function save()
@@ -243,13 +271,16 @@ class LivewireSaleForm extends Component
             return;
         }
 
-        $cash = CashRegister::where('id_user', Auth::id())
-            ->where('status', 'OPEN')
-            ->where('state', 1)
-            ->first();
+        $this->refreshCashStatus();
+        $cash = $this->openCash;
 
         if (!$cash) {
             $this->dispatch('toast', type: 'warning', message: 'Debe abrir caja antes de registrar ventas.');
+            return;
+        }
+
+        if ($cash->isExpired()) {
+            $this->dispatch('toast', type: 'warning', message: 'Su caja está vencida. Ciérrela o amplíe su vigencia antes de continuar.');
             return;
         }
 
@@ -261,6 +292,17 @@ class LivewireSaleForm extends Component
                 (float) $detail['sale_price'] < 0
             ) {
                 $this->dispatch('toast', type: 'warning', message: 'Revise el detalle de venta. Hay filas incompletas.');
+                return;
+            }
+        }
+
+        $this->calculateTotals();
+
+        $amountPaid = $this->form->amount_paid === '' ? null : (float) $this->form->amount_paid;
+
+        if (strtoupper($this->form->payment_method) === 'EFECTIVO') {
+            if ($amountPaid === null || $amountPaid < $this->form->total) {
+                $this->dispatch('toast', type: 'warning', message: 'El monto recibido debe ser mayor o igual al total de la venta.');
                 return;
             }
         }
@@ -278,11 +320,14 @@ class LivewireSaleForm extends Component
             $sale = Sale::create([
                 'id_client' => $this->form->id_client ?: null,
                 'id_user' => Auth::id(),
+                'id_cash_register' => $cash->id,
                 'sale_date' => $this->form->sale_date,
                 'payment_method' => $this->form->payment_method,
                 'subtotal' => $this->form->subtotal,
                 'discount' => $this->form->discount ?: 0,
                 'total' => $this->form->total,
+                'amount_paid' => $amountPaid,
+                'change_amount' => $amountPaid !== null ? round($amountPaid - $this->form->total, 2) : null,
                 'observation' => $this->form->observation ?: null,
                 'state' => 1,
                 'status' => 'ACTIVE',
@@ -337,6 +382,8 @@ class LivewireSaleForm extends Component
                 'type' => 'INCOME',
                 'concept' => 'Venta #' . $sale->id,
                 'amount' => $sale->total,
+                'reference_type' => 'SALE',
+                'reference_id' => $sale->id,
                 'observation' => 'Ingreso automático por venta.',
             ]);
 
@@ -357,6 +404,28 @@ class LivewireSaleForm extends Component
     public function cancel()
     {
         return redirect()->route('sales');
+    }
+
+    public function refreshCashStatus()
+    {
+        $this->openCash = CashRegister::where('id_user', Auth::id())
+            ->where('status', 'OPEN')
+            ->where('state', 1)
+            ->first();
+
+        $this->cashExpired = $this->openCash ? $this->openCash->isExpired() : false;
+    }
+
+    public function extendCash()
+    {
+        if (!$this->openCash) {
+            return;
+        }
+
+        $this->openCash->extend();
+        $this->refreshCashStatus();
+
+        $this->dispatch('toast', type: 'success', message: 'Vigencia de la caja ampliada correctamente.');
     }
 
     public function render()

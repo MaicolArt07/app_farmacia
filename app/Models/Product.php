@@ -15,7 +15,6 @@ class Product extends Model
         'id_category',
         'id_laboratory',
         'id_presentation',
-        'id_brand',
         'code',
         'barcode',
         'name',
@@ -48,11 +47,6 @@ class Product extends Model
     public function presentation()
     {
         return $this->belongsTo(Presentation::class, 'id_presentation');
-    }
-
-    public function brand()
-    {
-        return $this->belongsTo(Brand::class, 'id_brand');
     }
 
     public function lots()

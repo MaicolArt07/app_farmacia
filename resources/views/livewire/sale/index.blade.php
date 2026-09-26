@@ -1,4 +1,32 @@
 <div class="p-6">
+    @if (!$openCash)
+        <div class="mb-4 flex flex-col gap-2 rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300 md:flex-row md:items-center md:justify-between">
+            <span><i class="bi bi-exclamation-triangle-fill mr-1"></i> Debes abrir tu caja primero para llevar el control de tus ventas.</span>
+            <a href="{{ route('cash-registers') }}" wire:navigate
+                class="shrink-0 rounded-lg bg-red-600 px-3 py-1.5 text-center text-xs font-semibold text-white hover:bg-red-700">
+                Abrir caja
+            </a>
+        </div>
+    @elseif ($cashExpired)
+        <div class="mb-4 flex flex-col gap-2 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-300 md:flex-row md:items-center md:justify-between">
+            <span>
+                <i class="bi bi-exclamation-triangle-fill mr-1"></i>
+                Tienes una caja abierta desde el {{ $openCash->opening_date?->format('d/m/Y') }} que ya venció su vigencia.
+                Ciérrala o amplía su tiempo de vida para poder seguir vendiendo.
+            </span>
+            <div class="flex shrink-0 gap-2">
+                <button type="button" wire:click="extendCash"
+                    class="rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-700">
+                    Ampliar vigencia
+                </button>
+                <a href="{{ route('cash-registers') }}" wire:navigate
+                    class="rounded-lg border border-amber-400 px-3 py-1.5 text-xs font-semibold text-amber-800 hover:bg-amber-100 dark:text-amber-300 dark:hover:bg-amber-900/40">
+                    Cerrar caja
+                </a>
+            </div>
+        </div>
+    @endif
+
     <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         @can('Crear Ventas')
         <a href="{{ route('sales.create') }}" wire:navigate
@@ -24,7 +52,6 @@
                     <th class="px-4 py-3 text-left text-zinc-700 dark:text-zinc-200">PAGO</th>
                     <th class="px-4 py-3 text-right text-zinc-700 dark:text-zinc-200">TOTAL</th>
                     <th class="px-4 py-3 text-center text-zinc-700 dark:text-zinc-200">ESTADO</th>
-                    <th class="px-4 py-3 text-center text-zinc-700 dark:text-zinc-200">FACTURA</th>
                     <th class="px-4 py-3 text-center text-zinc-700 dark:text-zinc-200">OPCIONES</th>
                 </tr>
             </thead>
@@ -67,28 +94,6 @@
                             @endif
                         </td>
 
-                        <td class="px-4 py-3 text-center">
-                            @if ($item->invoice)
-                                @php
-                                    $invoiceBadgeClasses = match ($item->invoice->estado) {
-                                        'ENVIADA' => 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300',
-                                        'OBSERVADA' => 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
-                                        'ERROR' => 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
-                                        'ANULADA' => 'bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300',
-                                        default => 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
-                                    };
-                                @endphp
-                                <span class="rounded-full px-3 py-1 text-xs font-medium {{ $invoiceBadgeClasses }}">
-                                    {{ $item->invoice->estado_label }}
-                                </span>
-                                @if ($item->invoice->isSimulado())
-                                    <div class="mt-1 text-[10px] uppercase text-amber-600 dark:text-amber-400">Simulada</div>
-                                @endif
-                            @else
-                                <span class="text-xs text-gray-400 dark:text-zinc-500">Sin facturar</span>
-                            @endif
-                        </td>
-
                         <td class="px-4 py-3">
                             <div class="flex justify-center gap-3">
                                 <a href="{{ route('sales.view', $item->id) }}" wire:navigate
@@ -96,22 +101,15 @@
                                     <i class="bi bi-eye text-lg"></i>
                                 </a>
 
-                                @can('Crear Facturas')
-                                    @if($item->status !== 'CANCELLED' && (!$item->invoice || $item->invoice->estado !== 'ENVIADA'))
-                                        <button
-                                            wire:click="generarFactura({{ $item->id }})"
-                                            class="cursor-pointer text-indigo-600 transition hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
-                                            title="Generar factura">
-                                            <i class="bi bi-receipt text-lg"></i>
-                                        </button>
-                                    @endif
-                                @endcan
-
                                 @can('Cambiar Estado Ventas')
                                     @if($item->status !== 'CANCELLED')
                                         <button
-                                            wire:click="cancelSale({{ $item->id }})"
-                                            wire:confirm="¿Está segura de anular esta venta? Se devolverá el stock y se ajustará caja."
+                                            type="button"
+                                            x-on:click.prevent="confirmAction({
+                                                title: '¿Anular esta venta?',
+                                                text: 'Se devolverá el stock y se ajustará la caja.',
+                                                confirmText: 'Sí, anular',
+                                            }).then((ok) => { if (ok) $wire.cancelSale({{ $item->id }}) })"
                                             class="cursor-pointer text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
                                             title="Anular venta">
                                             <i class="bi bi-arrow-counterclockwise text-lg"></i>
@@ -127,7 +125,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-4 py-4 text-center text-gray-500 dark:text-zinc-400">
+                        <td colspan="6" class="px-4 py-4 text-center text-gray-500 dark:text-zinc-400">
                             No hay ventas registradas.
                         </td>
                     </tr>

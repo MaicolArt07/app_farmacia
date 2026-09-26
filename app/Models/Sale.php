@@ -14,11 +14,14 @@ class Sale extends Model
     protected $fillable = [
         'id_client',
         'id_user',
+        'id_cash_register',
         'sale_date',
         'payment_method',
         'subtotal',
         'discount',
         'total',
+        'amount_paid',
+        'change_amount',
         'observation',
         'state',
 
@@ -34,6 +37,8 @@ class Sale extends Model
         'subtotal' => 'decimal:2',
         'discount' => 'decimal:2',
         'total' => 'decimal:2',
+        'amount_paid' => 'decimal:2',
+        'change_amount' => 'decimal:2',
         'state' => 'integer',
 
         // 🔹 nuevos casts
@@ -54,6 +59,11 @@ class Sale extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user');
+    }
+
+    public function cashRegister()
+    {
+        return $this->belongsTo(CashRegister::class, 'id_cash_register');
     }
 
     public function cancelledBy()

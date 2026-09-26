@@ -12,7 +12,7 @@ class StockExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
 {
     public function collection()
     {
-        return Product::with(['category', 'brand', 'lots' => function ($q) {
+        return Product::with(['category', 'laboratory', 'lots' => function ($q) {
             $q->where('state', 1);
         }])
             ->where('state', 1)
@@ -22,7 +22,7 @@ class StockExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
 
     public function headings(): array
     {
-        return ['Código', 'Producto', 'Categoría', 'Marca', 'Stock actual', 'Stock mínimo', 'Precio de venta', 'Costo promedio', 'Utilidad estimada'];
+        return ['Código', 'Producto', 'Categoría', 'Laboratorio', 'Stock actual', 'Stock mínimo', 'Precio de venta', 'Costo promedio', 'Utilidad estimada'];
     }
 
     public function map($product): array
@@ -40,7 +40,7 @@ class StockExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
             $product->code,
             $product->name,
             $product->category?->name,
-            $product->brand?->name,
+            $product->laboratory?->name,
             (string) $stock,
             (string) $product->minimum_stock,
             (string) $product->sale_price,

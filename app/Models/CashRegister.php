@@ -11,13 +11,21 @@ class CashRegister extends Model
 
     protected $table = 'cash_registers';
 
+    public const VALIDITY_PERIODS = [
+        'DAILY' => 'Diario',
+        'WEEKLY' => 'Semanal',
+        'MONTHLY' => 'Mensual',
+    ];
+
     protected $fillable = [
         'id_user',
         'opening_date',
-        'closing_date',
         'opening_amount',
+        'validity_period',
+        'expires_at',
+        'last_extended_at',
+        'closing_amount',
         'expected_amount',
-        'counted_amount',
         'difference',
         'status',
         'observation',
@@ -26,10 +34,11 @@ class CashRegister extends Model
 
     protected $casts = [
         'opening_date' => 'datetime',
-        'closing_date' => 'datetime',
+        'expires_at' => 'datetime',
+        'last_extended_at' => 'datetime',
         'opening_amount' => 'decimal:2',
         'expected_amount' => 'decimal:2',
-        'counted_amount' => 'decimal:2',
+        'closing_amount' => 'decimal:2',
         'difference' => 'decimal:2',
         'state' => 'integer',
     ];
@@ -42,6 +51,11 @@ class CashRegister extends Model
     public function movements()
     {
         return $this->hasMany(CashMovement::class, 'id_cash_register');
+    }
+
+    public function sales()
+    {
+        return $this->hasMany(Sale::class, 'id_cash_register');
     }
 
     public function incomes()
@@ -74,5 +88,40 @@ class CashRegister extends Model
     public function isClosed()
     {
         return $this->status === 'CLOSED';
+    }
+
+    public function isExpired()
+    {
+        return $this->expires_at !== null && now()->greaterThan($this->expires_at);
+    }
+
+    public function extend(?string $period = null)
+    {
+        $this->validity_period = $period ?: ($this->validity_period ?: 'DAILY');
+        $this->expires_at = self::calculateExpiration($this->validity_period);
+        $this->last_extended_at = now();
+        $this->save();
+
+        return $this;
+    }
+
+    public function extendUntil($datetime)
+    {
+        $this->expires_at = \Illuminate\Support\Carbon::parse($datetime);
+        $this->last_extended_at = now();
+        $this->save();
+
+        return $this;
+    }
+
+    public static function calculateExpiration(string $period, $from = null)
+    {
+        $from = $from ? \Illuminate\Support\Carbon::parse($from) : now();
+
+        return match ($period) {
+            'WEEKLY' => $from->copy()->addWeek(),
+            'MONTHLY' => $from->copy()->addMonth(),
+            default => $from->copy()->addDay(),
+        };
     }
 }

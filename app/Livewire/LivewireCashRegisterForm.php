@@ -32,8 +32,10 @@ class LivewireCashRegisterForm extends Component
         try {
             CashRegister::create([
                 'id_user' => Auth::id(),
-                'opening_date' => $this->form->opening_date,
+                'opening_date' => now()->toDateString(),
                 'opening_amount' => $this->form->opening_amount,
+                'validity_period' => $this->form->validity_period,
+                'expires_at' => CashRegister::calculateExpiration($this->form->validity_period),
                 'closing_amount' => null,
                 'expected_amount' => $this->form->opening_amount,
                 'difference' => null,

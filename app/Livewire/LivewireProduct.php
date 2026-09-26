@@ -21,7 +21,7 @@ class LivewireProduct extends Component
 
     public function render()
     {
-        $query = Product::with(['category', 'laboratory', 'presentation', 'brand']);
+        $query = Product::with(['category', 'laboratory', 'presentation']);
 
         if (!empty($this->search)) {
             $query->where(function ($q) {
@@ -37,9 +37,6 @@ class LivewireProduct extends Component
                       $sub->where('name', 'like', "%{$this->search}%");
                   })
                   ->orWhereHas('laboratory', function ($sub) {
-                      $sub->where('name', 'like', "%{$this->search}%");
-                  })
-                  ->orWhereHas('brand', function ($sub) {
                       $sub->where('name', 'like', "%{$this->search}%");
                   });
             });

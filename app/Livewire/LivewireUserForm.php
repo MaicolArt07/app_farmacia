@@ -101,6 +101,22 @@ class LivewireUserForm extends Component
         $this->personResults = [];
     }
 
+    public function toggleGroup($group)
+    {
+        $names = collect($this->permissionGroups[$group] ?? [])->pluck('name')->all();
+
+        if (empty($names)) {
+            return;
+        }
+
+        $current = $this->form->selectedPermissions;
+        $allSelected = empty(array_diff($names, $current));
+
+        $this->form->selectedPermissions = $allSelected
+            ? array_values(array_diff($current, $names))
+            : array_values(array_unique(array_merge($current, $names)));
+    }
+
     public function save()
     {
         $this->validate($this->form->rules(), $this->form->messages());

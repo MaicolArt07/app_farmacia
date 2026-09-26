@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Brand;
 use App\Models\Category;
 use App\Models\InventoryMovement;
+use App\Models\Laboratory;
 use App\Models\Lot;
 use App\Models\Presentation;
 use App\Models\Product;
@@ -53,7 +53,7 @@ class ImportInventoryCommand extends Command
             'products_created' => 0,
             'lots_created' => 0,
             'categories_created' => [],
-            'brands_created' => [],
+            'laboratories_created' => [],
             'presentations_created' => [],
             'fallback_category_rows' => 0,
             'negative_quantity_rows' => [],
@@ -147,7 +147,7 @@ class ImportInventoryCommand extends Command
             'inventory_movements', 'inventory_adjustments',
             'lots', 'products',
             'clients', 'suppliers',
-            'categories', 'brands', 'presentations', 'laboratories',
+            'categories', 'presentations', 'laboratories',
         ] as $table) {
             DB::table($table)->truncate();
         }
@@ -165,7 +165,7 @@ class ImportInventoryCommand extends Command
         $name = trim($row['Nombre del producto'] ?? '');
         $unidad = trim($row['Unidad'] ?? '');
         $categoriaNombre = trim($row['Categoría'] ?? '');
-        $marcaNombre = trim($row['Información Adicional'] ?? '');
+        $laboratorioNombre = trim($row['Información Adicional'] ?? '');
         $cantidad = (int) ($row['Cantidad'] ?? 0);
         $precioCompra = (float) ($row['Precio de Compra'] ?? 0);
         $precioVenta = (float) ($row['Precio de Venta'] ?? 0);
@@ -192,9 +192,9 @@ class ImportInventoryCommand extends Command
 
         $presentation = $this->firstOrCreateCached(Presentation::class, $unidad, $summary['presentations_created']);
 
-        $brand = null;
-        if ($marcaNombre !== '') {
-            $brand = $this->firstOrCreateCached(Brand::class, $marcaNombre, $summary['brands_created']);
+        $laboratory = null;
+        if ($laboratorioNombre !== '') {
+            $laboratory = $this->firstOrCreateCached(Laboratory::class, $laboratorioNombre, $summary['laboratories_created']);
         }
 
         $quantity = max($cantidad, 0);
@@ -211,9 +211,8 @@ class ImportInventoryCommand extends Command
 
         $product = Product::create([
             'id_category' => $category->id,
-            'id_laboratory' => null,
+            'id_laboratory' => $laboratory?->id,
             'id_presentation' => $presentation->id,
-            'id_brand' => $brand?->id,
             'code' => $clave,
             'barcode' => $clave,
             'name' => $name,
@@ -295,7 +294,7 @@ class ImportInventoryCommand extends Command
             ['Productos creados', $summary['products_created']],
             ['Lotes creados', $summary['lots_created']],
             ['Categorías nuevas', count($summary['categories_created'])],
-            ['Marcas nuevas', count($summary['brands_created'])],
+            ['Laboratorios nuevos', count($summary['laboratories_created'])],
             ['Presentaciones nuevas', count($summary['presentations_created'])],
             ['Filas sin categoría (asignadas a "' . self::FALLBACK_CATEGORY . '")', $summary['fallback_category_rows']],
             ['Filas con cantidad negativa (corregida a 0)', count($summary['negative_quantity_rows'])],

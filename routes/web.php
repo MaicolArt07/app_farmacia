@@ -17,8 +17,6 @@ use App\Livewire\LivewireCategory;
 use App\Livewire\LivewireCategoryForm;
 use App\Livewire\LivewirePresentation;
 use App\Livewire\LivewirePresentationForm;
-use App\Livewire\LivewireBrand;
-use App\Livewire\LivewireBrandForm;
 use App\Livewire\LivewireProduct;
 use App\Livewire\LivewireProductForm;
 use App\Livewire\LivewireLot;
@@ -121,18 +119,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/presentations/{presentation}/edit', LivewirePresentationForm::class)
     ->middleware('can:Ver Presentaciones')
     ->name('presentations.edit');
-
-    Route::get('/brands', LivewireBrand::class)
-    ->middleware('can:Ver Marcas')
-    ->name('brands');
-
-    Route::get('/brands/create', LivewireBrandForm::class)
-    ->middleware('can:Ver Marcas')
-    ->name('brands.create');
-
-    Route::get('/brands/{brand}/edit', LivewireBrandForm::class)
-    ->middleware('can:Ver Marcas')
-    ->name('brands.edit');
 
     Route::get('/products', LivewireProduct::class)
     ->middleware('can:Ver Productos')

@@ -20,13 +20,14 @@
         <table class="min-w-full text-sm">
             <thead class="bg-gray-100 dark:bg-zinc-800">
                 <tr>
-                    <th class="px-4 py-3 text-left text-zinc-700 dark:text-zinc-200">FECHA</th>
+                    <th class="px-4 py-3 text-left text-zinc-700 dark:text-zinc-200">INICIO</th>
                     <th class="px-4 py-3 text-left text-zinc-700 dark:text-zinc-200">USUARIO</th>
                     <th class="px-4 py-3 text-right text-zinc-700 dark:text-zinc-200">INICIAL</th>
                     <th class="px-4 py-3 text-right text-zinc-700 dark:text-zinc-200">ESPERADO</th>
                     <th class="px-4 py-3 text-right text-zinc-700 dark:text-zinc-200">CONTADO</th>
                     <th class="px-4 py-3 text-right text-zinc-700 dark:text-zinc-200">DIF.</th>
                     <th class="px-4 py-3 text-center text-zinc-700 dark:text-zinc-200">ESTADO</th>
+                    <th class="px-4 py-3 text-center text-zinc-700 dark:text-zinc-200">FIN</th>
                     <th class="px-4 py-3 text-center text-zinc-700 dark:text-zinc-200">OPCIONES</th>
                 </tr>
             </thead>
@@ -76,8 +77,37 @@
                             @endif
                         </td>
 
+                        <td class="px-4 py-3 text-center">
+                            @if($item->status === 'OPEN')
+                                @if($item->expires_at)
+                                    <div class="text-xs text-zinc-600 dark:text-zinc-300">
+                                        {{ $item->expires_at->format('d/m/Y H:i') }}
+                                    </div>
+                                    @if($item->isExpired())
+                                        <span class="mt-1 inline-block rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-300">
+                                            Vencida
+                                        </span>
+                                    @else
+                                        <span class="mt-1 inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
+                                            Vigente
+                                        </span>
+                                    @endif
+                                @else
+                                    <span class="text-zinc-500 dark:text-zinc-400">-</span>
+                                @endif
+                            @else
+                                <span class="text-zinc-500 dark:text-zinc-400">-</span>
+                            @endif
+                        </td>
+
                         <td class="px-4 py-3">
                             <div class="flex justify-center gap-3">
+
+                                <button wire:click="openDetailModal({{ $item->id }})"
+                                    class="cursor-pointer text-sky-600 hover:text-sky-800 dark:text-sky-400"
+                                    title="Ver detalle">
+                                    <i class="bi bi-eye text-lg"></i>
+                                </button>
 
                                 @if($item->status === 'OPEN')
                                     @can('Crear Movimientos Caja')
@@ -89,6 +119,12 @@
                                     @endcan
 
                                     @can('Editar Caja')
+                                        <button wire:click="openExtendModal({{ $item->id }})"
+                                            class="cursor-pointer text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
+                                            title="Ampliar vigencia">
+                                            <i class="bi bi-hourglass-split text-lg"></i>
+                                        </button>
+
                                         <button wire:click="openCloseCashModal({{ $item->id }})"
                                             class="cursor-pointer text-amber-600 hover:text-amber-800 dark:text-amber-400"
                                             title="Cerrar caja">
@@ -98,7 +134,11 @@
                                 @endif
 
                                 @can('Cambiar Estado Caja')
-                                    <button wire:click="delete({{ $item->id }})"
+                                    <button type="button"
+                                        x-on:click.prevent="confirmAction({
+                                            text: '¿Deseas {{ $item->state ? 'desactivar' : 'activar' }} este registro?',
+                                            confirmText: 'Sí, {{ $item->state ? 'desactivar' : 'activar' }}',
+                                        }).then((ok) => { if (ok) $wire.delete({{ $item->id }}) })"
                                         class="{{ $item->state ? 'text-red-600 hover:text-red-800 dark:text-red-400' : 'text-gray-400 dark:text-zinc-500' }} cursor-pointer"
                                         title="Activar / Desactivar">
                                         <i class="bi {{ $item->state ? 'bi-trash' : 'bi-arrow-clockwise' }} text-lg"></i>
@@ -110,7 +150,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="px-4 py-4 text-center text-gray-500 dark:text-zinc-400">
+                        <td colspan="9" class="px-4 py-4 text-center text-gray-500 dark:text-zinc-400">
                             No hay cajas registradas.
                         </td>
                     </tr>
@@ -129,6 +169,14 @@
 
     @if($closeModalVisible)
         @include('livewire.cash-register.modal.close')
+    @endif
+
+    @if($extendModalVisible)
+        @include('livewire.cash-register.modal.extend')
+    @endif
+
+    @if($detailModalVisible)
+        @include('livewire.cash-register.modal.detail')
     @endif
 
 </div>

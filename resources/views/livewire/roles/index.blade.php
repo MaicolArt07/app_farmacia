@@ -65,8 +65,11 @@
                             </button>
 
                             <button
-                                wire:click="delete({{ $role->id }})"
-                                onclick="return confirm('¿Eliminar este rol?')"
+                                type="button"
+                                x-on:click.prevent="confirmAction({
+                                    title: '¿Eliminar este rol?',
+                                    confirmText: 'Sí, eliminar',
+                                }).then((ok) => { if (ok) $wire.delete({{ $role->id }}) })"
                                 class="ml-2 cursor-pointer text-red-500 transition hover:text-red-600 dark:text-red-400 dark:hover:text-red-300"
                                 title="Eliminar">
                                 <i class="bi bi-trash text-lg"></i>

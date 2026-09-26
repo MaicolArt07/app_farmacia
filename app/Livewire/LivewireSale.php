@@ -42,9 +42,32 @@ class LivewireSale extends Component
             });
         }
 
+        $openCash = CashRegister::where('id_user', Auth::id())
+            ->where('status', 'OPEN')
+            ->where('state', 1)
+            ->first();
+
         return view('livewire.sale.index', [
             'sales' => $query->orderBy('id', 'desc')->paginate(10),
+            'openCash' => $openCash,
+            'cashExpired' => $openCash ? $openCash->isExpired() : false,
         ]);
+    }
+
+    public function extendCash()
+    {
+        $openCash = CashRegister::where('id_user', Auth::id())
+            ->where('status', 'OPEN')
+            ->where('state', 1)
+            ->first();
+
+        if (!$openCash) {
+            return;
+        }
+
+        $openCash->extend();
+
+        $this->dispatch('toast', type: 'success', message: 'Vigencia de la caja ampliada correctamente.');
     }
 
     public function generarFactura($id)

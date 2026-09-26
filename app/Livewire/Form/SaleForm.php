@@ -13,6 +13,8 @@ class SaleForm extends Form
     public $subtotal = 0;
     public $discount = 0;
     public $total = 0;
+    public $amount_paid = '';
+    public $change_amount = 0;
     public $observation = '';
     public $state = 1;
 
@@ -23,6 +25,7 @@ class SaleForm extends Form
             'form.sale_date' => 'required|date',
             'form.payment_method' => 'required|string|max:50',
             'form.discount' => 'nullable|numeric|min:0',
+            'form.amount_paid' => 'nullable|numeric|min:0',
             'form.observation' => 'nullable|string',
         ];
     }
@@ -33,6 +36,7 @@ class SaleForm extends Form
             'form.sale_date.required' => 'La fecha de venta es obligatoria.',
             'form.payment_method.required' => 'Debe seleccionar el método de pago.',
             'form.discount.numeric' => 'El descuento debe ser numérico.',
+            'form.amount_paid.numeric' => 'El monto recibido debe ser numérico.',
         ];
     }
 
@@ -40,11 +44,13 @@ class SaleForm extends Form
     {
         $this->id = null;
         $this->id_client = null;
-        $this->sale_date = now()->format('Y-m-d\TH:i');
+        $this->sale_date = now()->format('Y-m-d');
         $this->payment_method = 'efectivo';
         $this->subtotal = 0;
         $this->discount = 0;
         $this->total = 0;
+        $this->amount_paid = '';
+        $this->change_amount = 0;
         $this->observation = '';
         $this->state = 1;
     }
@@ -53,11 +59,13 @@ class SaleForm extends Form
     {
         $this->id = $sale->id;
         $this->id_client = $sale->id_client;
-        $this->sale_date = optional($sale->sale_date)->format('Y-m-d\TH:i');
+        $this->sale_date = optional($sale->sale_date)->format('Y-m-d');
         $this->payment_method = $sale->payment_method;
         $this->subtotal = $sale->subtotal;
         $this->discount = $sale->discount;
         $this->total = $sale->total;
+        $this->amount_paid = $sale->amount_paid;
+        $this->change_amount = $sale->change_amount;
         $this->observation = $sale->observation;
         $this->state = $sale->state;
     }
