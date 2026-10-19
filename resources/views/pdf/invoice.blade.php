@@ -23,9 +23,11 @@
         <div class="banner">DOCUMENTO SIMULADO — SIN VALIDEZ FISCAL</div>
     @endif
 
+    @php($company = \App\Models\Company::current())
+
     <div class="header">
-        <h2>{{ config('facturacion.emisor.razon_social') ?: 'Farmacia' }}</h2>
-        <p>NIT: {{ config('facturacion.emisor.nit') ?: '-' }}</p>
+        <h2>{{ $company->razon_social ?? config('facturacion.emisor.razon_social') ?: 'Farmacia' }}</h2>
+        <p>NIT: {{ $company->nit ?? config('facturacion.emisor.nit') ?: '-' }}</p>
         <p>Factura N°: {{ $invoice->numero_factura ?? '-' }} &nbsp;|&nbsp; Ambiente: {{ $invoice->ambiente }}</p>
     </div>
 

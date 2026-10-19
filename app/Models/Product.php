@@ -15,6 +15,7 @@ class Product extends Model
         'id_category',
         'id_laboratory',
         'id_presentation',
+        'id_sin_product_code',
         'code',
         'barcode',
         'name',
@@ -47,6 +48,11 @@ class Product extends Model
     public function presentation()
     {
         return $this->belongsTo(Presentation::class, 'id_presentation');
+    }
+
+    public function sinProductCode()
+    {
+        return $this->belongsTo(SinProductCode::class, 'id_sin_product_code');
     }
 
     public function lots()

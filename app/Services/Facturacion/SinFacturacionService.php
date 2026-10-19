@@ -2,6 +2,8 @@
 
 namespace App\Services\Facturacion;
 
+use App\Models\Branch;
+use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\Sale;
 
@@ -16,9 +18,15 @@ use App\Models\Sale;
  * PHP, sin necesidad de una librería adicional) antes de activar
  * FACTURACION_MODO=real en el .env.
  *
+ * Datos del emisor: obtenga el NIT, razón social, código de sistema, CUIS y
+ * ambiente desde Company::current() (módulo "Empresa"), y el número de
+ * sucursal/punto de venta desde Company::current()->mainBranch() (módulo
+ * "Sucursales") — ya no desde el .env, que queda solo como respaldo.
+ *
  * Flujo general esperado (a confirmar contra la documentación oficial):
  *   1. Obtener CUIS (una vez, por sistema/punto de venta).
- *   2. Obtener CUFD (vigencia diaria).
+ *   2. Obtener CUFD (vigencia diaria) — guardar en Company::cuis/cufd o en
+ *      una tabla aparte si necesita historial de renovaciones diarias.
  *   3. Armar y enviar el paquete de la factura.
  *   4. Recibir CUF y código de control.
  *   5. Generar la representación gráfica (rollo/carta) con esos datos.

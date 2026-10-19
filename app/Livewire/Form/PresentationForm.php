@@ -9,6 +9,7 @@ class PresentationForm extends Form
     public $id = null;
     public $name = '';
     public $description = '';
+    public $codigo_sin = '';
     public $state = 1;
 
     public function rules()
@@ -16,6 +17,7 @@ class PresentationForm extends Form
         return [
             'form.name' => 'required|string|max:150',
             'form.description' => 'nullable|string|max:255',
+            'form.codigo_sin' => 'nullable|integer',
         ];
     }
 
@@ -31,6 +33,7 @@ class PresentationForm extends Form
         $this->id = null;
         $this->name = '';
         $this->description = '';
+        $this->codigo_sin = '';
         $this->state = 1;
     }
 
@@ -39,6 +42,7 @@ class PresentationForm extends Form
         $this->id = $presentation->id;
         $this->name = $presentation->name;
         $this->description = $presentation->description;
+        $this->codigo_sin = $presentation->codigo_sin;
         $this->state = $presentation->state;
     }
 }

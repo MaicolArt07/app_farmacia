@@ -33,6 +33,19 @@
                     <span class="text-sm text-red-500">{{ $message }}</span>
                 @enderror
             </div>
+
+            <div>
+                <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Código Unidad de Medida (SIN) <span class="text-xs font-normal text-gray-400 dark:text-zinc-500">(Opcional)</span></label>
+                <input
+                    type="number"
+                    wire:model="form.codigo_sin"
+                    class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
+                >
+                <p class="mt-1 text-xs text-gray-400 dark:text-zinc-500">Código oficial de unidad de medida del catálogo del SIN, para la facturación.</p>
+                @error('form.codigo_sin')
+                    <span class="text-sm text-red-500">{{ $message }}</span>
+                @enderror
+            </div>
         </div>
 
         <div class="flex justify-end gap-2 border-t border-gray-200 px-6 py-4 dark:border-zinc-800">

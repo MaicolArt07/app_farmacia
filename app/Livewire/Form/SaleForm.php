@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Form;
 
+use App\Models\PaymentMethod;
 use Livewire\Form;
 
 class SaleForm extends Form
@@ -9,7 +10,7 @@ class SaleForm extends Form
     public $id = null;
     public $id_client = null;
     public $sale_date = '';
-    public $payment_method = 'efectivo';
+    public $id_payment_method = null;
     public $subtotal = 0;
     public $discount = 0;
     public $total = 0;
@@ -23,7 +24,7 @@ class SaleForm extends Form
         return [
             'form.id_client' => 'nullable|exists:clients,id',
             'form.sale_date' => 'required|date',
-            'form.payment_method' => 'required|string|max:50',
+            'form.id_payment_method' => 'required|exists:payment_methods,id',
             'form.discount' => 'nullable|numeric|min:0',
             'form.amount_paid' => 'nullable|numeric|min:0',
             'form.observation' => 'nullable|string',
@@ -34,7 +35,8 @@ class SaleForm extends Form
     {
         return [
             'form.sale_date.required' => 'La fecha de venta es obligatoria.',
-            'form.payment_method.required' => 'Debe seleccionar el método de pago.',
+            'form.id_payment_method.required' => 'Debe seleccionar el método de pago.',
+            'form.id_payment_method.exists' => 'El método de pago seleccionado no es válido.',
             'form.discount.numeric' => 'El descuento debe ser numérico.',
             'form.amount_paid.numeric' => 'El monto recibido debe ser numérico.',
         ];
@@ -45,7 +47,7 @@ class SaleForm extends Form
         $this->id = null;
         $this->id_client = null;
         $this->sale_date = now()->format('Y-m-d');
-        $this->payment_method = 'efectivo';
+        $this->id_payment_method = PaymentMethod::where('name', 'Efectivo')->value('id');
         $this->subtotal = 0;
         $this->discount = 0;
         $this->total = 0;
@@ -60,7 +62,7 @@ class SaleForm extends Form
         $this->id = $sale->id;
         $this->id_client = $sale->id_client;
         $this->sale_date = optional($sale->sale_date)->format('Y-m-d');
-        $this->payment_method = $sale->payment_method;
+        $this->id_payment_method = $sale->id_payment_method;
         $this->subtotal = $sale->subtotal;
         $this->discount = $sale->discount;
         $this->total = $sale->total;

@@ -2,6 +2,7 @@
 
 namespace App\Services\Facturacion;
 
+use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\Sale;
 use Illuminate\Support\Facades\Auth;
@@ -27,10 +28,12 @@ class SimulatedFacturacionService implements FacturacionServiceInterface
 
         $invoice = $existing ?: new Invoice(['id_sale' => $sale->id]);
 
+        $company = Company::current();
+
         $invoice->fill([
             'id_user' => Auth::id(),
             'modo' => 'SIMULADO',
-            'ambiente' => config('facturacion.ambiente', 'PRUEBA'),
+            'ambiente' => $company->ambiente ?? config('facturacion.ambiente', 'PRUEBA'),
             'tipo_documento_identidad' => $cliente['tipo_documento_identidad'],
             'nit_cliente' => $cliente['nit'],
             'razon_social' => $cliente['razon_social'],
@@ -41,7 +44,7 @@ class SimulatedFacturacionService implements FacturacionServiceInterface
         ]);
 
         $invoice->cuf = $invoice->cuf ?: $this->fakeCuf($sale);
-        $invoice->cuis = config('facturacion.emisor.cuis') ?: 'SIMULADO';
+        $invoice->cuis = ($company->cuis ?? config('facturacion.emisor.cuis')) ?: 'SIMULADO';
         $invoice->cufd = config('facturacion.emisor.cufd') ?: 'SIMULADO';
         $invoice->codigo_control = $invoice->codigo_control ?: strtoupper(substr(md5($invoice->cuf), 0, 8));
 

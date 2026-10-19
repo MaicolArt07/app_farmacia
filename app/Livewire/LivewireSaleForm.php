@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\Product;
 use App\Models\CashRegister;
 use App\Models\CashMovement;
+use App\Models\PaymentMethod;
 use App\Models\InventoryMovement;
 use Livewire\Component;
 use App\Models\SaleDetail;
@@ -300,7 +301,9 @@ class LivewireSaleForm extends Component
 
         $amountPaid = $this->form->amount_paid === '' ? null : (float) $this->form->amount_paid;
 
-        if (strtoupper($this->form->payment_method) === 'EFECTIVO') {
+        $paymentMethod = PaymentMethod::findOrFail($this->form->id_payment_method);
+
+        if (strtoupper($paymentMethod->name) === 'EFECTIVO') {
             if ($amountPaid === null || $amountPaid < $this->form->total) {
                 $this->dispatch('toast', type: 'warning', message: 'El monto recibido debe ser mayor o igual al total de la venta.');
                 return;
@@ -322,7 +325,8 @@ class LivewireSaleForm extends Component
                 'id_user' => Auth::id(),
                 'id_cash_register' => $cash->id,
                 'sale_date' => $this->form->sale_date,
-                'payment_method' => $this->form->payment_method,
+                'id_payment_method' => $paymentMethod->id,
+                'payment_method' => $paymentMethod->name,
                 'subtotal' => $this->form->subtotal,
                 'discount' => $this->form->discount ?: 0,
                 'total' => $this->form->total,
@@ -430,6 +434,8 @@ class LivewireSaleForm extends Component
 
     public function render()
     {
-        return view('livewire.sale.form');
+        return view('livewire.sale.form', [
+            'paymentMethods' => PaymentMethod::where('state', 1)->orderBy('name')->get(),
+        ]);
     }
 }

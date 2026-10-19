@@ -15,6 +15,7 @@ class Sale extends Model
         'id_client',
         'id_user',
         'id_cash_register',
+        'id_payment_method',
         'sale_date',
         'payment_method',
         'subtotal',
@@ -64,6 +65,11 @@ class Sale extends Model
     public function cashRegister()
     {
         return $this->belongsTo(CashRegister::class, 'id_cash_register');
+    }
+
+    public function paymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::class, 'id_payment_method');
     }
 
     public function cancelledBy()

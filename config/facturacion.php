@@ -31,6 +31,20 @@ return [
         'cufd' => env('FACTURACION_CUFD'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Token Delegado (SIAT)
+    |--------------------------------------------------------------------------
+    |
+    | Requerido por los servicios SOAP de facturación (CUIS, CUFD, etc.) para
+    | validar la autenticidad del contribuyente. Se genera manualmente en el
+    | portal SIAT en Línea ("Gestor Token Delegado Piloto" / "en Producción")
+    | y se envía en cada llamada SOAP como header HTTP:
+    |   apikey: TokenApi <token>
+    |
+    */
+    'token_delegado' => env('FACTURACION_TOKEN_DELEGADO'),
+
     'consumidor_final' => [
         'nit' => '0',
         'razon_social' => env('FACTURACION_CF_RAZON_SOCIAL', 'SIN NOMBRE'),

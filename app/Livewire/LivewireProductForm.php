@@ -9,6 +9,7 @@ use App\Models\InventoryMovement;
 use Livewire\Component;
 use App\Models\Laboratory;
 use App\Models\Presentation;
+use App\Models\SinProductCode;
 use App\Livewire\Form\ProductForm;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -103,6 +104,7 @@ class LivewireProductForm extends Component
                 'id_category' => $this->form->id_category,
                 'id_laboratory' => $this->form->id_laboratory ?: null,
                 'id_presentation' => $this->form->id_presentation,
+                'id_sin_product_code' => $this->form->id_sin_product_code ?: null,
                 'code' => $this->form->code,
                 'barcode' => $this->form->barcode ?: null,
                 'name' => $this->form->name,
@@ -174,6 +176,7 @@ class LivewireProductForm extends Component
             'categories' => Category::where('state', 1)->orderBy('name')->get(),
             'laboratories' => Laboratory::where('state', 1)->orderBy('name')->get(),
             'presentations' => Presentation::where('state', 1)->orderBy('name')->get(),
+            'sinProductCodes' => SinProductCode::orderBy('descripcion')->get(),
         ]);
     }
 }

@@ -108,6 +108,18 @@
             </div>
 
             <div class="md:col-span-2 xl:col-span-4">
+                <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Código de Producto SIN <span class="text-xs font-normal text-gray-400 dark:text-zinc-500">(Opcional, necesario para facturación)</span></label>
+                <x-search-select
+                    model="form.id_sin_product_code"
+                    :value="$form->id_sin_product_code"
+                    :options="$sinProductCodes->map(fn ($p) => ['value' => $p->id, 'label' => $p->codigo_producto . ' - ' . $p->descripcion])->values()"
+                    placeholder="Buscar producto homologado por el SIN..."
+                />
+                <p class="mt-1 text-xs text-gray-400 dark:text-zinc-500">Catálogo oficial del SIN para tu actividad económica (farmacia). Obligatorio antes de poder facturar este producto.</p>
+                @error('form.id_sin_product_code') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+            </div>
+
+            <div class="md:col-span-2 xl:col-span-4">
                 <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Descripción <span class="text-xs font-normal text-gray-400 dark:text-zinc-500">(Opcional)</span></label>
                 <textarea wire:model="form.description" rows="3"
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"></textarea>

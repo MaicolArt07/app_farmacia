@@ -12,6 +12,7 @@ class ProductForm extends Form
     public $id_category = null;
     public $id_laboratory = null;
     public $id_presentation = null;
+    public $id_sin_product_code = null;
 
     public $code = '';
     public $barcode = '';
@@ -31,6 +32,7 @@ class ProductForm extends Form
             'form.id_category' => 'required|exists:categories,id',
             'form.id_laboratory' => 'nullable|exists:laboratories,id',
             'form.id_presentation' => 'required|exists:presentations,id',
+            'form.id_sin_product_code' => 'nullable|exists:sin_product_codes,id',
 
             'form.code' => [
                 'required',
@@ -60,6 +62,7 @@ class ProductForm extends Form
             'form.id_laboratory.exists' => 'El laboratorio seleccionado no es válido.',
             'form.id_presentation.required' => 'Debe seleccionar una presentación.',
             'form.id_presentation.exists' => 'La presentación seleccionada no es válida.',
+            'form.id_sin_product_code.exists' => 'El código de producto SIN seleccionado no es válido.',
 
             'form.code.required' => 'El código es obligatorio.',
             'form.code.unique' => 'El código ya está registrado.',
@@ -79,6 +82,7 @@ class ProductForm extends Form
         $this->id_category = null;
         $this->id_laboratory = null;
         $this->id_presentation = null;
+        $this->id_sin_product_code = null;
 
         $this->code = '';
         $this->barcode = '';
@@ -100,6 +104,7 @@ class ProductForm extends Form
         $this->id_category = $product->id_category;
         $this->id_laboratory = $product->id_laboratory;
         $this->id_presentation = $product->id_presentation;
+        $this->id_sin_product_code = $product->id_sin_product_code;
 
         $this->code = $product->code;
         $this->barcode = $product->barcode;

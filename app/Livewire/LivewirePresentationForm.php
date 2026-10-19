@@ -30,6 +30,7 @@ class LivewirePresentationForm extends Component
                 $presentation->update([
                     'name' => $this->form->name,
                     'description' => $this->form->description,
+                    'codigo_sin' => $this->form->codigo_sin ?: null,
                     'state' => $this->form->state,
                 ]);
 
@@ -38,6 +39,7 @@ class LivewirePresentationForm extends Component
                 Presentation::create([
                     'name' => $this->form->name,
                     'description' => $this->form->description,
+                    'codigo_sin' => $this->form->codigo_sin ?: null,
                     'state' => $this->form->state,
                 ]);
 

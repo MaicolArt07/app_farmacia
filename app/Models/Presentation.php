@@ -14,6 +14,7 @@ class Presentation extends Model
     protected $fillable = [
         'name',
         'description',
+        'codigo_sin',
         'state',
     ];
 

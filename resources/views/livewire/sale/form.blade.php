@@ -101,15 +101,13 @@
 
             <div>
                 <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Método de pago <span class="text-red-600">*</span></label>
-                <select wire:model="form.payment_method" @disabled($viewMode)
+                <select wire:model="form.id_payment_method" @disabled($viewMode)
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 disabled:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:disabled:bg-zinc-700">
-                    <option value="EFECTIVO">Efectivo</option>
-                    <option value="QR">QR</option>
-                    <option value="TARJETA">Tarjeta</option>
-                    <option value="TRANSFERENCIA">Transferencia</option>
-                    <option value="MIXTO">Mixto</option>
+                    @foreach($paymentMethods as $method)
+                        <option value="{{ $method->id }}">{{ $method->name }}</option>
+                    @endforeach
                 </select>
-                @error('form.payment_method') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                @error('form.id_payment_method') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
             </div>
 
             @unless($viewMode)
@@ -241,7 +239,7 @@
                     <div class="mt-4 border-t border-gray-200 pt-3 dark:border-zinc-700">
                         <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">
                             Monto recibido
-                            @if(strtoupper($form->payment_method) === 'EFECTIVO')
+                            @if(strtoupper(optional($paymentMethods->firstWhere('id', $form->id_payment_method))->name) === 'EFECTIVO')
                                 <span class="text-red-600">*</span>
                             @else
                                 <span class="text-xs font-normal text-gray-400 dark:text-zinc-500">(Opcional)</span>
