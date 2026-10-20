@@ -77,7 +77,7 @@ class LivewireUsers extends Component
             return view('livewire.usuarios.form');
         }
 
-        $query = User::with(['permissions', 'person']);
+        $query = User::with(['permissions', 'roles.permissions', 'person']);
 
         if (!empty($this->search)) {
             $query->where(function ($q) {

@@ -46,7 +46,7 @@
                         </td>
                         <td class="border border-gray-200 px-4 py-2 text-sm text-gray-800 dark:border-zinc-700 dark:text-zinc-100">
                             <span class="rounded bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
-                                {{ $user->permissions->count() }} permiso(s)
+                                {{ $user->getAllPermissions()->count() }} permiso(s)
                             </span>
                         </td>
                         <td class="border border-gray-200 px-4 py-2 text-center dark:border-zinc-700">
