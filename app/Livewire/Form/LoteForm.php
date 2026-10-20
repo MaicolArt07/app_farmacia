@@ -22,7 +22,7 @@ class LoteForm extends Form
     public function rules()
     {
         return [
-            'form.id_product' => 'required|exists:products,id',
+            'form.id_product' => 'required|exists:productos,id',
             'form.codigo_lote' => [
                 'required',
                 'string',
