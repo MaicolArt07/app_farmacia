@@ -16,7 +16,6 @@ use App\Livewire\LivewirePresentacion;
 use App\Livewire\LivewireProducto;
 use App\Livewire\LivewireLote;
 use App\Livewire\LivewireCompra;
-use App\Livewire\LivewireCompraForm;
 use App\Livewire\LivewireVenta;
 use App\Livewire\LivewireVentaForm;
 use App\Livewire\LivewireAjusteInventario;
@@ -104,15 +103,15 @@ Route::middleware(['auth'])->group(function () {
     ->middleware('can:Ver Compras')
     ->name('compras');
 
-    Route::get('/compras/create', LivewireCompraForm::class)
+    Route::get('/compras/create', LivewireCompra::class)
     ->middleware('can:Ver Compras')
     ->name('compras.create');
 
-    Route::get('/compras/{purchase}/edit', LivewireCompraForm::class)
+    Route::get('/compras/{purchase}/edit', LivewireCompra::class)
     ->middleware('can:Ver Compras')
     ->name('compras.edit');
 
-    Route::get('/compras/{purchase}/view', LivewireCompraForm::class)
+    Route::get('/compras/{purchase}/view', LivewireCompra::class)
     ->middleware('can:Ver Compras')
     ->name('compras.view');
 

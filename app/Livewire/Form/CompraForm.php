@@ -8,20 +8,20 @@ class CompraForm extends Form
 {
     public $id = null;
     public $id_supplier = null;
-    public $invoice_number = '';
-    public $purchase_date = '';
+    public $numero_factura = '';
+    public $fecha_compra = '';
     public $subtotal = 0;
     public $total = 0;
-    public $observation = '';
-    public $state = 1;
+    public $observacion = '';
+    public $estado = 1;
 
     public function rules()
     {
         return [
             'form.id_supplier' => 'required|exists:proveedores,id',
-            'form.invoice_number' => 'nullable|string|max:50',
-            'form.purchase_date' => 'required|date',
-            'form.observation' => 'nullable|string',
+            'form.numero_factura' => 'nullable|string|max:50',
+            'form.fecha_compra' => 'required|date',
+            'form.observacion' => 'nullable|string',
         ];
     }
 
@@ -30,7 +30,7 @@ class CompraForm extends Form
         return [
             'form.id_supplier.required' => 'Debe seleccionar un proveedor.',
             'form.id_supplier.exists' => 'El proveedor seleccionado no es válido.',
-            'form.purchase_date.required' => 'La fecha de compra es obligatoria.',
+            'form.fecha_compra.required' => 'La fecha de compra es obligatoria.',
         ];
     }
 
@@ -38,23 +38,23 @@ class CompraForm extends Form
     {
         $this->id = null;
         $this->id_supplier = null;
-        $this->invoice_number = '';
-        $this->purchase_date = now()->format('Y-m-d');
+        $this->numero_factura = '';
+        $this->fecha_compra = now()->format('Y-m-d');
         $this->subtotal = 0;
         $this->total = 0;
-        $this->observation = '';
-        $this->state = 1;
+        $this->observacion = '';
+        $this->estado = 1;
     }
 
     public function fillForm($purchase)
     {
         $this->id = $purchase->id;
         $this->id_supplier = $purchase->id_supplier;
-        $this->invoice_number = $purchase->numero_factura;
-        $this->purchase_date = optional($purchase->fecha_compra)->format('Y-m-d');
+        $this->numero_factura = $purchase->numero_factura;
+        $this->fecha_compra = optional($purchase->fecha_compra)->format('Y-m-d');
         $this->subtotal = $purchase->subtotal;
         $this->total = $purchase->total;
-        $this->observation = $purchase->observacion;
-        $this->state = $purchase->estado;
+        $this->observacion = $purchase->observacion;
+        $this->estado = $purchase->estado;
     }
 }

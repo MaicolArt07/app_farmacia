@@ -57,23 +57,23 @@
 
             <div>
                 <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Fecha compra <span class="text-red-600">*</span></label>
-                <input type="date" wire:model="form.purchase_date" @disabled($viewMode)
+                <input type="date" wire:model="form.fecha_compra" @disabled($viewMode)
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 disabled:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:disabled:bg-zinc-700">
-                @error('form.purchase_date') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                @error('form.fecha_compra') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
             </div>
 
             <div>
                 <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Factura <span class="text-xs font-normal text-gray-400 dark:text-zinc-500">(Opcional)</span></label>
-                <input type="text" wire:model="form.invoice_number" @disabled($viewMode)
+                <input type="text" wire:model="form.numero_factura" @disabled($viewMode)
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 disabled:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:disabled:bg-zinc-700">
-                @error('form.invoice_number') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                @error('form.numero_factura') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
             </div>
 
             <div class="md:col-span-2 xl:col-span-4">
                 <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Observación <span class="text-xs font-normal text-gray-400 dark:text-zinc-500">(Opcional)</span></label>
-                <textarea wire:model="form.observation" rows="2" @disabled($viewMode)
+                <textarea wire:model="form.observacion" rows="2" @disabled($viewMode)
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 disabled:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:disabled:bg-zinc-700"></textarea>
-                @error('form.observation') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                @error('form.observacion') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
             </div>
 
             @unless($viewMode)
