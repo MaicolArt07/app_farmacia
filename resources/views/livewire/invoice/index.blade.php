@@ -111,9 +111,9 @@
                 <div class="space-y-4 px-6 py-5">
                     <div>
                         <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Motivo de anulación</label>
-                        <textarea wire:model="anular_reason" rows="3"
+                        <textarea wire:model="anularForm.anular_reason" rows="3"
                             class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"></textarea>
-                        @error('anular_reason')
+                        @error('anularForm.anular_reason')
                             <span class="text-sm text-red-500">{{ $message }}</span>
                         @enderror
                     </div>

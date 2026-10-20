@@ -6,6 +6,7 @@ use App\Models\Factura;
 use App\Services\Facturacion\FacturacionServiceInterface;
 use Livewire\Component;
 use Livewire\WithPagination;
+use App\Livewire\Form\AnularFacturaForm;
 
 class LivewireFactura extends Component
 {
@@ -15,7 +16,8 @@ class LivewireFactura extends Component
 
     public $anularModalVisible = false;
     public $selectedInvoiceId = null;
-    public $anular_reason = '';
+
+    public AnularFacturaForm $anularForm;
 
     protected $paginationTheme = 'tailwind';
 
@@ -45,24 +47,20 @@ class LivewireFactura extends Component
     public function openAnularModal($id)
     {
         $this->selectedInvoiceId = $id;
-        $this->anular_reason = '';
+        $this->anularForm->resetForm();
         $this->anularModalVisible = true;
     }
 
     public function closeAnularModal()
     {
         $this->selectedInvoiceId = null;
-        $this->anular_reason = '';
+        $this->anularForm->resetForm();
         $this->anularModalVisible = false;
     }
 
     public function anular()
     {
-        $this->validate([
-            'anular_reason' => 'required|string|max:255',
-        ], [
-            'anular_reason.required' => 'Debe indicar el motivo de anulación.',
-        ]);
+        $this->validate($this->anularForm->rules(), $this->anularForm->messages());
 
         try {
             $invoice = Factura::findOrFail($this->selectedInvoiceId);
@@ -73,7 +71,7 @@ class LivewireFactura extends Component
                 return;
             }
 
-            app(FacturacionServiceInterface::class)->anular($invoice, $this->anular_reason);
+            app(FacturacionServiceInterface::class)->anular($invoice, $this->anularForm->anular_reason);
 
             $this->dispatch('toast', type: 'success', message: 'Factura anulada correctamente.');
             $this->closeAnularModal();

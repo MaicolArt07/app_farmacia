@@ -18,9 +18,9 @@
 
             <div class="border-t border-gray-200 pt-4 dark:border-zinc-700">
                 <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Monto contado <span class="text-red-600">*</span></label>
-                <input type="number" step="0.01" wire:model.live="closing_amount"
+                <input type="number" step="0.01" wire:model.live="closeForm.closing_amount"
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-right dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
-                @error('closing_amount')
+                @error('closeForm.closing_amount')
                     <span class="text-sm text-red-500">{{ $message }}</span>
                 @enderror
             </div>

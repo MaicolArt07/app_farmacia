@@ -8,6 +8,9 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Livewire\Form\MovimientoCajaForm;
+use App\Livewire\Form\CierreCajaForm;
+use App\Livewire\Form\ExtenderCajaForm;
 
 class LivewireCaja extends Component
 {
@@ -22,16 +25,13 @@ class LivewireCaja extends Component
     public $selectedCashRegisterId = null;
     public $extendingCashRegisterId = null;
     public $extendingCash = null;
-    public $extendUntil = '';
     public $detailCash = null;
     public $closingCash = null;
 
-    public $movement_type = 'INCOME';
-    public $movement_concept = '';
-    public $movement_amount = '';
-    public $movement_observation = '';
+    public MovimientoCajaForm $movementForm;
+    public CierreCajaForm $closeForm;
+    public ExtenderCajaForm $extendForm;
 
-    public $closing_amount = '';
     public $projectedDifference = 0;
 
     protected $paginationTheme = 'tailwind';
@@ -70,28 +70,14 @@ class LivewireCaja extends Component
         }
 
         $this->selectedCashRegisterId = $id;
-        $this->movement_type = 'INCOME';
-        $this->movement_concept = '';
-        $this->movement_amount = '';
-        $this->movement_observation = '';
+        $this->movementForm->resetForm();
 
         $this->movementModalVisible = true;
     }
 
     public function saveMovement()
     {
-        $this->validate([
-            'movement_type' => 'required|in:INCOME,EXPENSE',
-            'movement_concept' => 'required|string|max:150',
-            'movement_amount' => 'required|numeric|min:0.01',
-            'movement_observation' => 'nullable|string',
-        ], [
-            'movement_type.required' => 'Debe seleccionar el tipo de movimiento.',
-            'movement_concept.required' => 'El concepto es obligatorio.',
-            'movement_amount.required' => 'El monto es obligatorio.',
-            'movement_amount.numeric' => 'El monto debe ser numérico.',
-            'movement_amount.min' => 'El monto debe ser mayor a cero.',
-        ]);
+        $this->validate($this->movementForm->rules(), $this->movementForm->messages());
 
         DB::beginTransaction();
 
@@ -104,16 +90,16 @@ class LivewireCaja extends Component
             MovimientoCaja::create([
                 'id_cash_register' => $cash->id,
                 'id_user' => Auth::id(),
-                'type' => $this->movement_type,
-                'concepto' => $this->movement_concept,
-                'monto' => $this->movement_amount,
-                'observacion' => $this->movement_observation ?: null,
+                'type' => $this->movementForm->type,
+                'concepto' => $this->movementForm->concepto,
+                'monto' => $this->movementForm->monto,
+                'observacion' => $this->movementForm->observacion ?: null,
             ]);
 
-            if ($this->movement_type === 'INCOME') {
-                $cash->monto_esperado += $this->movement_amount;
+            if ($this->movementForm->type === 'INCOME') {
+                $cash->monto_esperado += $this->movementForm->monto;
             } else {
-                $cash->monto_esperado -= $this->movement_amount;
+                $cash->monto_esperado -= $this->movementForm->monto;
             }
 
             $cash->save();
@@ -135,10 +121,7 @@ class LivewireCaja extends Component
         $this->resetErrorBag();
 
         $this->selectedCashRegisterId = null;
-        $this->movement_type = 'INCOME';
-        $this->movement_concept = '';
-        $this->movement_amount = '';
-        $this->movement_observation = '';
+        $this->movementForm->resetForm();
 
         $this->movementModalVisible = false;
     }
@@ -174,14 +157,14 @@ class LivewireCaja extends Component
         }
 
         $this->selectedCashRegisterId = $id;
-        $this->closing_amount = '';
+        $this->closeForm->resetForm();
         $this->projectedDifference = 0 - (float) $cash->monto_esperado;
         $this->closingCash = $this->loadCashWithDetails($id);
 
         $this->closeModalVisible = true;
     }
 
-    public function updatedClosingAmount($value)
+    public function updatedCloseFormClosingAmount($value)
     {
         $expected = (float) ($this->closingCash?->monto_esperado ?? 0);
         $this->projectedDifference = ($value === '' ? 0 : (float) $value) - $expected;
@@ -189,12 +172,7 @@ class LivewireCaja extends Component
 
     public function closeCashRegister()
     {
-        $this->validate([
-            'closing_amount' => 'required|numeric|min:0',
-        ], [
-            'closing_amount.required' => 'Debe ingresar el monto contado.',
-            'closing_amount.numeric' => 'El monto contado debe ser numérico.',
-        ]);
+        $this->validate($this->closeForm->rules(), $this->closeForm->messages());
 
         DB::beginTransaction();
 
@@ -204,8 +182,8 @@ class LivewireCaja extends Component
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            $cash->monto_cierre = $this->closing_amount;
-            $cash->diferencia = $this->closing_amount - $cash->monto_esperado;
+            $cash->monto_cierre = $this->closeForm->closing_amount;
+            $cash->diferencia = $this->closeForm->closing_amount - $cash->monto_esperado;
             $cash->status = 'CLOSED';
             $cash->save();
 
@@ -226,7 +204,7 @@ class LivewireCaja extends Component
         $this->resetErrorBag();
 
         $this->selectedCashRegisterId = null;
-        $this->closing_amount = '';
+        $this->closeForm->resetForm();
         $this->projectedDifference = 0;
         $this->closingCash = null;
 
@@ -244,7 +222,7 @@ class LivewireCaja extends Component
 
         $this->extendingCashRegisterId = $id;
         $this->extendingCash = $cash;
-        $this->extendUntil = optional($cash->expires_at)->format('Y-m-d\TH:i')
+        $this->extendForm->extendUntil = optional($cash->expires_at)->format('Y-m-d\TH:i')
             ?? Caja::calculateExpiration($cash->periodo_validez ?: 'DAILY')->format('Y-m-d\TH:i');
 
         $this->extendModalVisible = true;
@@ -252,24 +230,19 @@ class LivewireCaja extends Component
 
     public function setExtendPreset($period)
     {
-        $this->extendUntil = Caja::calculateExpiration($period)->format('Y-m-d\TH:i');
+        $this->extendForm->extendUntil = Caja::calculateExpiration($period)->format('Y-m-d\TH:i');
     }
 
     public function confirmExtend()
     {
-        $this->validate([
-            'extendUntil' => 'required|date|after:now',
-        ], [
-            'extendUntil.required' => 'Debe indicar la nueva fecha final.',
-            'extendUntil.after' => 'La fecha final debe ser posterior al momento actual.',
-        ]);
+        $this->validate($this->extendForm->rules(), $this->extendForm->messages());
 
         try {
             $cash = Caja::where('id', $this->extendingCashRegisterId)
                 ->where('status', 'OPEN')
                 ->firstOrFail();
 
-            $cash->extendUntil($this->extendUntil);
+            $cash->extendUntil($this->extendForm->extendUntil);
 
             $this->dispatch('toast', type: 'success', message: 'Vigencia de la caja ampliada correctamente.');
             $this->closeExtendModal();
@@ -285,7 +258,7 @@ class LivewireCaja extends Component
 
         $this->extendingCashRegisterId = null;
         $this->extendingCash = null;
-        $this->extendUntil = '';
+        $this->extendForm->resetForm();
 
         $this->extendModalVisible = false;
     }

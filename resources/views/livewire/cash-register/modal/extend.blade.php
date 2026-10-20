@@ -36,9 +36,9 @@
 
             <div>
                 <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Nueva fecha final <span class="text-red-600">*</span></label>
-                <input type="datetime-local" wire:model="extendUntil"
+                <input type="datetime-local" wire:model="extendForm.extendUntil"
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
-                @error('extendUntil')
+                @error('extendForm.extendUntil')
                     <span class="text-sm text-red-500">{{ $message }}</span>
                 @enderror
 

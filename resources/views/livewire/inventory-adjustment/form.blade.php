@@ -49,7 +49,7 @@
                     </div>
                 @endif
 
-                @error('id_product')
+                @error('form.id_product')
                     <span class="mt-1 block text-sm text-red-500">{{ $message }}</span>
                 @enderror
             </div>
@@ -73,7 +73,7 @@
                             type="text"
                             wire:model.live="lotSearch"
                             placeholder="Buscar lote por código o vencimiento..."
-                            @disabled(!$id_product)
+                            @disabled(!$form->id_product)
                             class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-zinc-800 disabled:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:disabled:bg-zinc-700"
                         >
 
@@ -93,20 +93,20 @@
                     </div>
                 @endif
 
-                @error('id_lot')
+                @error('form.id_lot')
                     <span class="mt-1 block text-sm text-red-500">{{ $message }}</span>
                 @enderror
             </div>
 
             <div>
                 <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Tipo de ajuste <span class="text-red-600">*</span></label>
-                <select wire:model="type"
+                <select wire:model="form.type"
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
                     <option value="INCREASE">Aumentar stock</option>
                     <option value="DECREASE">Disminuir stock</option>
                 </select>
 
-                @error('type')
+                @error('form.type')
                     <span class="text-sm text-red-500">{{ $message }}</span>
                 @enderror
             </div>
@@ -116,11 +116,11 @@
                 <input
                     type="number"
                     min="1"
-                    wire:model="quantity"
+                    wire:model="form.quantity"
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-right dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
                 >
 
-                @error('quantity')
+                @error('form.quantity')
                     <span class="text-sm text-red-500">{{ $message }}</span>
                 @enderror
             </div>
@@ -128,13 +128,13 @@
             <div class="md:col-span-2">
                 <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Motivo <span class="text-red-600">*</span></label>
                 <textarea
-                    wire:model="reason"
+                    wire:model="form.reason"
                     rows="3"
                     placeholder="Ej.: error de conteo físico, producto dañado, ajuste por inventario..."
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
                 ></textarea>
 
-                @error('reason')
+                @error('form.reason')
                     <span class="text-sm text-red-500">{{ $message }}</span>
                 @enderror
             </div>
