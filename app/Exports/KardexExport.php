@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\InventoryMovement;
+use App\Models\MovimientoInventario;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -16,7 +16,7 @@ class KardexExport implements FromCollection, WithHeadings, WithMapping, ShouldA
 
     public function collection()
     {
-        return InventoryMovement::with(['product', 'lot', 'user'])
+        return MovimientoInventario::with(['product', 'lot', 'user'])
             ->whereBetween('created_at', [$this->from . ' 00:00:00', $this->to . ' 23:59:59'])
             ->when($this->productId, fn ($q) => $q->where('id_product', $this->productId))
             ->orderBy('created_at')
@@ -36,13 +36,13 @@ class KardexExport implements FromCollection, WithHeadings, WithMapping, ShouldA
             optional($movement->created_at)->format('d/m/Y H:i'),
             $movement->product?->nombre,
             $movement->lot?->codigo_lote ?? '-',
-            $movement->movement_type,
+            $movement->tipo_movimiento,
             $movement->reference_type . ($movement->reference_id ? ' #' . $movement->reference_id : ''),
             (string) $movement->quantity,
             (string) $movement->stock_before,
             (string) $movement->stock_after,
             $movement->user?->name,
-            $movement->description,
+            $movement->descripcion,
         ];
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Categoria;
-use App\Models\InventoryMovement;
+use App\Models\MovimientoInventario;
 use App\Models\Laboratorio;
 use App\Models\Lote;
 use App\Models\Presentacion;
@@ -144,7 +144,7 @@ class ImportInventoryCommand extends Command
             'detalles_venta', 'ventas',
             'detalles_compra', 'compras',
             'movimientos_caja', 'cajas',
-            'inventory_movements', 'inventory_adjustments',
+            'movimientos_inventario', 'ajustes_inventario',
             'lotes', 'productos',
             'clientes', 'proveedores',
             'categorias', 'presentaciones', 'laboratorios',
@@ -249,17 +249,17 @@ class ImportInventoryCommand extends Command
             $description .= " | Cantidad original en CSV: {$cantidad} (corregida a 0)";
         }
 
-        InventoryMovement::create([
+        MovimientoInventario::create([
             'id_product' => $product->id,
             'id_lot' => $lot->id,
             'id_user' => $userId,
-            'movement_type' => 'IN',
+            'tipo_movimiento' => 'IN',
             'reference_type' => 'INVENTORY_IMPORT',
             'reference_id' => null,
             'quantity' => $quantity,
             'stock_before' => 0,
             'stock_after' => $quantity,
-            'description' => $description,
+            'descripcion' => $description,
         ]);
     }
 

@@ -83,7 +83,7 @@
                         </td>
 
                         <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
-                            {{ $item->reason }}
+                            {{ $item->motivo }}
                         </td>
                     </tr>
                 @empty

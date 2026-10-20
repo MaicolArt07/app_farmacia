@@ -9,7 +9,7 @@ use App\Models\Producto;
 use App\Models\Caja;
 use App\Models\MovimientoCaja;
 use App\Models\PaymentMethod;
-use App\Models\InventoryMovement;
+use App\Models\MovimientoInventario;
 use Livewire\Component;
 use App\Models\DetalleVenta;
 use Illuminate\Support\Facades\DB;
@@ -366,17 +366,17 @@ class LivewireVentaForm extends Component
                 $lot->cantidad_disponible -= (int) $detail['quantity'];
                 $lot->save();
 
-                InventoryMovement::create([
+                MovimientoInventario::create([
                     'id_product' => $detail['id_product'],
                     'id_lot' => $lot->id,
                     'id_user' => Auth::id(),
-                    'movement_type' => 'OUT',
+                    'tipo_movimiento' => 'OUT',
                     'reference_type' => 'SALE',
                     'reference_id' => $sale->id,
                     'quantity' => (int) $detail['quantity'],
                     'stock_before' => $stockBefore,
                     'stock_after' => $lot->cantidad_disponible,
-                    'description' => 'Salida por venta #' . $sale->id,
+                    'descripcion' => 'Salida por venta #' . $sale->id,
                 ]);
             }
 

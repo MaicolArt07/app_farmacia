@@ -5,7 +5,7 @@ namespace App\Livewire;
 use App\Models\Lote;
 use App\Models\Compra;
 use App\Models\DetalleVenta;
-use App\Models\InventoryMovement;
+use App\Models\MovimientoInventario;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\DB;
@@ -103,17 +103,17 @@ class LivewireCompra extends Component
 
                 $lot->save();
 
-                InventoryMovement::create([
+                MovimientoInventario::create([
                     'id_product' => $detail->id_product,
                     'id_lot' => $lot->id,
                     'id_user' => auth()->id(),
-                    'movement_type' => 'CANCEL',
+                    'tipo_movimiento' => 'CANCEL',
                     'reference_type' => 'PURCHASE_CANCEL',
                     'reference_id' => $purchase->id,
                     'quantity' => (int) $detail->quantity,
                     'stock_before' => $stockBefore,
                     'stock_after' => $lot->cantidad_disponible,
-                    'description' => 'Reversión de stock por anulación de compra #' . $purchase->id,
+                    'descripcion' => 'Reversión de stock por anulación de compra #' . $purchase->id,
                 ]);
             }
 

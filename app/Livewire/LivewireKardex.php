@@ -4,7 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Models\InventoryMovement;
+use App\Models\MovimientoInventario;
 
 class LivewireKardex extends Component
 {
@@ -16,11 +16,11 @@ class LivewireKardex extends Component
 
     public function render()
     {
-        $query = InventoryMovement::with(['product', 'lot', 'user']);
+        $query = MovimientoInventario::with(['product', 'lot', 'user']);
 
         if ($this->search) {
             $query->whereHas('product', function ($q) {
-                $q->where('name', 'like', "%{$this->search}%")
+                $q->where('nombre', 'like', "%{$this->search}%")
                   ->orWhere('code', 'like', "%{$this->search}%");
             })->orWhereHas('lot', function ($q) {
                 $q->where('codigo_lote', 'like', "%{$this->search}%");

@@ -69,6 +69,6 @@ class Producto extends Model
     }
     public function inventoryMovements()
     {
-        return $this->hasMany(InventoryMovement::class, 'id_product');
+        return $this->hasMany(MovimientoInventario::class, 'id_product');
     }
 }

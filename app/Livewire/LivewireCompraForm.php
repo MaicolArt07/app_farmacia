@@ -6,7 +6,7 @@ use App\Models\Lote;
 use App\Models\Producto;
 use App\Models\Compra;
 use App\Models\Proveedor;
-use App\Models\InventoryMovement;
+use App\Models\MovimientoInventario;
 use App\Models\DetalleVenta;
 use Livewire\Component;
 use App\Models\DetalleCompra;
@@ -280,17 +280,17 @@ class LivewireCompraForm extends Component
 
                     $existingLot->save();
 
-                    InventoryMovement::create([
+                    MovimientoInventario::create([
                         'id_product' => $existingDetail->id_product,
                         'id_lot' => $existingLot->id,
                         'id_user' => Auth::id(),
-                        'movement_type' => 'CANCEL',
+                        'tipo_movimiento' => 'CANCEL',
                         'reference_type' => 'PURCHASE_EDIT',
                         'reference_id' => $purchase->id,
                         'quantity' => (int) $existingDetail->quantity,
                         'stock_before' => $revertStockBefore,
                         'stock_after' => $existingLot->cantidad_disponible,
-                        'description' => 'Reversión de stock por edición de compra #' . $purchase->id,
+                        'descripcion' => 'Reversión de stock por edición de compra #' . $purchase->id,
                     ]);
                 }
 
@@ -355,17 +355,17 @@ class LivewireCompraForm extends Component
                     $stockAfter = $lot->cantidad_disponible;
                 }
 
-                InventoryMovement::create([
+                MovimientoInventario::create([
                     'id_product' => $detail['id_product'],
                     'id_lot' => $lot->id,
                     'id_user' => Auth::id(),
-                    'movement_type' => 'IN',
+                    'tipo_movimiento' => 'IN',
                     'reference_type' => 'PURCHASE',
                     'reference_id' => $purchase->id,
                     'quantity' => (int) $detail['quantity'],
                     'stock_before' => $stockBefore,
                     'stock_after' => $stockAfter,
-                    'description' => 'Ingreso por compra #' . $purchase->id,
+                    'descripcion' => 'Ingreso por compra #' . $purchase->id,
                 ]);
             }
 

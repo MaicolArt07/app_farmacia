@@ -6,7 +6,7 @@ use App\Models\Venta;
 use App\Models\Lote;
 use App\Models\Caja;
 use App\Models\MovimientoCaja;
-use App\Models\InventoryMovement;
+use App\Models\MovimientoInventario;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\DB;
@@ -129,17 +129,17 @@ class LivewireVenta extends Component
                 $lot->cantidad_disponible += $detail->quantity;
                 $lot->save();
 
-                InventoryMovement::create([
+                MovimientoInventario::create([
                     'id_product' => $detail->id_product,
                     'id_lot' => $lot->id,
                     'id_user' => Auth::id(),
-                    'movement_type' => 'RETURN',
+                    'tipo_movimiento' => 'RETURN',
                     'reference_type' => 'SALE_CANCEL',
                     'reference_id' => $sale->id,
                     'quantity' => $detail->quantity,
                     'stock_before' => $stockBefore,
                     'stock_after' => $lot->cantidad_disponible,
-                    'description' => 'Devolución de stock por anulación de venta #' . $sale->id,
+                    'descripcion' => 'Devolución de stock por anulación de venta #' . $sale->id,
                 ]);
             }
 

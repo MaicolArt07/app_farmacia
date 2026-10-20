@@ -5,7 +5,7 @@ namespace App\Livewire;
 use App\Models\Producto;
 use App\Models\Categoria;
 use App\Models\Lote;
-use App\Models\InventoryMovement;
+use App\Models\MovimientoInventario;
 use Livewire\Component;
 use App\Models\Laboratorio;
 use App\Models\Presentacion;
@@ -137,17 +137,17 @@ class LivewireProductoForm extends Component
                         'estado' => 1,
                     ]);
 
-                    InventoryMovement::create([
+                    MovimientoInventario::create([
                         'id_product' => $product->id,
                         'id_lot' => $lot->id,
                         'id_user' => Auth::id(),
-                        'movement_type' => 'IN',
+                        'tipo_movimiento' => 'IN',
                         'reference_type' => 'INITIAL_STOCK',
                         'reference_id' => null,
                         'quantity' => $this->initial_quantity,
                         'stock_before' => 0,
                         'stock_after' => $this->initial_quantity,
-                        'description' => 'Stock inicial registrado junto con el producto.',
+                        'descripcion' => 'Stock inicial registrado junto con el producto.',
                     ]);
 
                     $message = 'Producto y stock inicial registrados correctamente.';

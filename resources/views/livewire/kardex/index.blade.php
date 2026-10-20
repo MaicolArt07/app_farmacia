@@ -40,7 +40,7 @@
                             {{ $item->lot?->codigo_lote ?? '-' }}
                         </td>
                         <td class="px-4 py-3">
-                            {{ $item->movement_type }}
+                            {{ $item->tipo_movimiento }}
                         </td>
                         <td class="px-4 py-3 text-center">
                             {{ $item->quantity }}

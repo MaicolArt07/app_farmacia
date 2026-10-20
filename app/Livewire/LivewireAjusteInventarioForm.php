@@ -5,11 +5,11 @@ namespace App\Livewire;
 use App\Models\Lote;
 use Livewire\Component;
 use App\Models\Producto;
-use App\Models\InventoryMovement;
+use App\Models\MovimientoInventario;
 use Illuminate\Support\Facades\DB;
-use App\Models\InventoryAdjustment;
+use App\Models\AjusteInventario;
 
-class LivewireInventoryAdjustmentForm extends Component
+class LivewireAjusteInventarioForm extends Component
 {
     public $productSearch = '';
     public $productResults = [];
@@ -113,7 +113,7 @@ class LivewireInventoryAdjustmentForm extends Component
     public function save()
     {
         $this->validate([
-            'id_product' => 'required|exists:products,id',
+            'id_product' => 'required|exists:productos,id',
             'id_lot' => 'required|exists:lotes,id',
             'type' => 'required|in:INCREASE,DECREASE',
             'quantity' => 'required|integer|min:1',
@@ -154,29 +154,29 @@ class LivewireInventoryAdjustmentForm extends Component
 
             $lot->save();
 
-            $adjustment = InventoryAdjustment::create([
+            $adjustment = AjusteInventario::create([
                 'id_product' => $this->id_product,
                 'id_lot' => $this->id_lot,
                 'id_user' => auth()->id(),
                 'type' => $this->type,
                 'quantity' => $this->quantity,
-                'reason' => $this->reason,
+                'motivo' => $this->reason,
                 'stock_before' => $stockBefore,
                 'stock_after' => $lot->cantidad_disponible,
-                'state' => 1,
+                'estado' => 1,
             ]);
 
-            InventoryMovement::create([
+            MovimientoInventario::create([
                 'id_product' => $this->id_product,
                 'id_lot' => $this->id_lot,
                 'id_user' => auth()->id(),
-                'movement_type' => $movementType,
+                'tipo_movimiento' => $movementType,
                 'reference_type' => 'INVENTORY_ADJUSTMENT',
                 'reference_id' => $adjustment->id,
                 'quantity' => (int) $this->quantity,
                 'stock_before' => $stockBefore,
                 'stock_after' => $lot->cantidad_disponible,
-                'description' => $description . ' Motivo: ' . $this->reason,
+                'descripcion' => $description . ' Motivo: ' . $this->reason,
             ]);
 
             DB::commit();

@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class InventoryAdjustment extends Model
+class AjusteInventario extends Model
 {
     use HasFactory;
 
-    protected $table = 'inventory_adjustments';
+    protected $table = 'ajustes_inventario';
 
     protected $fillable = [
         'id_product',
@@ -17,10 +17,10 @@ class InventoryAdjustment extends Model
         'id_user',
         'type',
         'quantity',
-        'reason',
+        'motivo',
         'stock_before',
         'stock_after',
-        'state',
+        'estado',
     ];
 
     public function product()
