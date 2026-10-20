@@ -1,9 +1,9 @@
 <div class="p-6">
     <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <a href="{{ route('proveedores.create') }}" wire:navigate
+        <button type="button" wire:click="create"
             class="cursor-pointer rounded-lg bg-emerald-600 px-4 py-2 text-center text-white transition hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600">
             <i class="bi bi-truck mr-1"></i> Nuevo proveedor
-        </a>
+        </button>
 
         <input
             type="text"
@@ -47,11 +47,10 @@
                         </td>
                         <td class="px-4 py-3">
                             <div class="flex justify-center gap-3">
-                                <a
-                                    href="{{ route('proveedores.edit', $item->id) }}" wire:navigate
+                                <button type="button" wire:click="edit({{ $item->id }})"
                                     class="cursor-pointer text-yellow-500 transition hover:text-yellow-600 dark:text-yellow-400 dark:hover:text-yellow-300">
                                     <i class="bi bi-pencil-square text-lg"></i>
-                                </a>
+                                </button>
 
                                 <button
                                     type="button"
@@ -79,5 +78,101 @@
     <div class="mt-4 dark:text-zinc-200">
         {{ $suppliers->links() }}
     </div>
+
+    <flux:modal wire:model="modalVisible" class="max-w-2xl">
+        <div class="space-y-6">
+            <flux:heading size="lg">
+                {{ $form->id ? 'Editar proveedor' : 'Nuevo proveedor' }}
+            </flux:heading>
+
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+
+                <div class="md:col-span-2">
+                    <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Buscar persona <span class="text-red-600">*</span></label>
+
+                    @if ($selectedPersonLabel)
+                        <div class="flex items-center justify-between rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2 dark:border-emerald-800 dark:bg-emerald-900/20">
+                            <span class="text-sm text-emerald-700 dark:text-emerald-300">
+                                {{ $selectedPersonLabel }}
+                            </span>
+                            <button wire:click="clearPerson" type="button" class="text-red-500 hover:text-red-700">
+                                <i class="bi bi-x-circle"></i>
+                            </button>
+                        </div>
+                    @else
+                        <div class="relative">
+                            <input
+                                type="text"
+                                wire:model.live="personSearch"
+                                placeholder="Buscar por nombre, apellido o CI..."
+                                class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-zinc-800 focus:border-blue-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
+                            >
+
+                            @if (!empty($personResults))
+                                <div class="absolute z-10 mt-1 max-h-56 w-full overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
+                                    @foreach ($personResults as $person)
+                                        <button
+                                            type="button"
+                                            wire:click="selectPerson({{ $person['id'] }})"
+                                            class="block w-full border-b border-gray-100 px-3 py-2 text-left text-sm hover:bg-gray-100 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-700"
+                                        >
+                                            {{ $person['label'] }}
+                                        </button>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+
+                    @error('form.id_person')
+                        <span class="mt-1 block text-sm text-red-500">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <flux:input
+                    label="Razón social"
+                    wire:model="form.razon_social"
+                />
+                @error('form.razon_social')
+                    <span class="text-sm text-red-500">{{ $message }}</span>
+                @enderror
+
+                <flux:input
+                    label="Cargo de contacto (Opcional)"
+                    wire:model="form.cargo_contacto"
+                />
+                @error('form.cargo_contacto')
+                    <span class="text-sm text-red-500">{{ $message }}</span>
+                @enderror
+
+                <flux:input
+                    label="NIT (Opcional)"
+                    wire:model="form.nit"
+                />
+                @error('form.nit')
+                    <span class="text-sm text-red-500">{{ $message }}</span>
+                @enderror
+
+                <flux:input
+                    type="email"
+                    label="Email (Opcional)"
+                    wire:model="form.email"
+                />
+                @error('form.email')
+                    <span class="text-sm text-red-500">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <flux:button variant="danger" wire:click="cancel">
+                    Cancelar
+                </flux:button>
+
+                <flux:button variant="primary" wire:click="save">
+                    Guardar
+                </flux:button>
+            </div>
+        </div>
+    </flux:modal>
 
 </div>
