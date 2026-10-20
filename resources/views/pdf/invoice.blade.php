@@ -37,7 +37,7 @@
             <td><strong>NIT/CI:</strong> {{ $invoice->nit_cliente }}</td>
         </tr>
         <tr>
-            <td><strong>Fecha:</strong> {{ $invoice->sale->sale_date->format('d/m/Y') }}</td>
+            <td><strong>Fecha:</strong> {{ $invoice->sale->fecha_venta->format('d/m/Y') }}</td>
             <td><strong>Estado:</strong> {{ $invoice->estado_label }}</td>
         </tr>
         <tr>

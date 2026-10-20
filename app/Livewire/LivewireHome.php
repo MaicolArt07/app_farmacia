@@ -138,9 +138,9 @@ class LivewireHome extends Component
         $salesByDayData = collect($days)->map(fn ($d) => (float) ($salesByDayRaw[$d] ?? 0))->values();
 
         $salesByPaymentMethod = (clone $salesQuery)
-            ->selectRaw('payment_method, COUNT(*) as total')
-            ->groupBy('payment_method')
-            ->pluck('total', 'payment_method');
+            ->selectRaw('metodo_pago, COUNT(*) as total')
+            ->groupBy('metodo_pago')
+            ->pluck('total', 'metodo_pago');
 
         return view('livewire.inicio.index', [
             'totalProducts' => $totalProducts,

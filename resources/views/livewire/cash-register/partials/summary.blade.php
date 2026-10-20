@@ -1,9 +1,9 @@
 @php
     $activeSales = $cash->sales->where('status', 'ACTIVE');
-    $byMethod = $activeSales->groupBy('payment_method')->map(fn ($group) => $group->sum('total'));
+    $byMethod = $activeSales->groupBy('metodo_pago')->map(fn ($group) => $group->sum('total'));
     $totalSales = $activeSales->sum('total');
-    $totalIncomes = $cash->movements->where('type', 'INCOME')->sum('amount');
-    $totalExpenses = $cash->movements->where('type', 'EXPENSE')->sum('amount');
+    $totalIncomes = $cash->movements->where('type', 'INCOME')->sum('monto');
+    $totalExpenses = $cash->movements->where('type', 'EXPENSE')->sum('monto');
 @endphp
 
 <div class="space-y-4">
@@ -92,8 +92,8 @@
                     <tbody class="divide-y divide-gray-200 dark:divide-zinc-700">
                         @foreach($activeSales as $sale)
                             <tr class="bg-white dark:bg-zinc-900">
-                                <td class="px-3 py-1.5 text-zinc-700 dark:text-zinc-300">{{ \Carbon\Carbon::parse($sale->sale_date)->format('d/m/Y') }}</td>
-                                <td class="px-3 py-1.5 text-zinc-700 dark:text-zinc-300">{{ $sale->payment_method }}</td>
+                                <td class="px-3 py-1.5 text-zinc-700 dark:text-zinc-300">{{ \Carbon\Carbon::parse($sale->fecha_venta)->format('d/m/Y') }}</td>
+                                <td class="px-3 py-1.5 text-zinc-700 dark:text-zinc-300">{{ $sale->metodo_pago }}</td>
                                 <td class="px-3 py-1.5 text-right font-medium text-zinc-800 dark:text-zinc-100">{{ number_format($sale->total, 2) }}</td>
                             </tr>
                         @endforeach
