@@ -18,7 +18,7 @@ class PersonaForm extends Form
     public function rules()
     {
         return [
-            'form.id_country' => 'required|exists:country,id',
+            'form.id_country' => 'required|exists:paises,id',
             'form.nombre' => 'required|string|max:50',
             'form.apellido' => 'required|string|max:50',
             'form.ci' => 'required|string|max:20',

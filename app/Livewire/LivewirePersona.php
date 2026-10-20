@@ -5,12 +5,18 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Persona;
+use App\Models\Pais;
+use App\Livewire\Form\PersonaForm;
 
 class LivewirePersona extends Component
 {
     use WithPagination;
 
     public $search = '';
+
+    public PersonaForm $form;
+
+    public $modalVisible = false;
 
     protected $paginationTheme = 'tailwind';
 
@@ -28,7 +34,53 @@ class LivewirePersona extends Component
 
         return view('livewire.persona.index', [
             'persons' => $query->paginate(10),
+            'countries' => Pais::where('estado', 1)->get(),
         ]);
+    }
+
+    public function create()
+    {
+        $this->form->resetForm();
+        $this->modalVisible = true;
+    }
+
+    public function edit($id)
+    {
+        $person = Persona::findOrFail($id);
+        $this->form->fillForm($person);
+        $this->modalVisible = true;
+    }
+
+    public function save()
+    {
+        $this->validate($this->form->rules(), $this->form->messages());
+
+        try {
+            if ($this->form->id) {
+                $person = Persona::findOrFail($this->form->id);
+                $person->update($this->form->toArray());
+                $message = 'Persona actualizada correctamente.';
+            } else {
+                Persona::create($this->form->toArray());
+                $message = 'Persona registrada correctamente.';
+            }
+
+            $this->dispatch('toast', type: 'success', message: $message);
+            $this->modalVisible = false;
+            $this->form->resetForm();
+        } catch (\Throwable $e) {
+            $this->dispatch(
+                'toast',
+                type: 'error',
+                message: 'No se pudo guardar la persona. Inténtalo nuevamente.'
+            );
+        }
+    }
+
+    public function cancel()
+    {
+        $this->modalVisible = false;
+        $this->form->resetForm();
     }
 
     public function delete($id)

@@ -4,7 +4,6 @@ use App\Livewire\LivewireHome;
 use App\Livewire\LivewirePermissions;
 use App\Livewire\LivewirePermissionForm;
 use App\Livewire\LivewirePersona;
-use App\Livewire\LivewirePersonaForm;
 use App\Livewire\LivewireUsers;
 use App\Livewire\LivewireUserForm;
 use App\Livewire\LivewireCliente;
@@ -262,8 +261,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/permissions/{permission}/edit', LivewirePermissionForm::class)->middleware('can:Ver Permisos')->name('permissions.edit');
 
     Route::get('/personas', LivewirePersona::class)->middleware('can:Ver Persona')->name('personas');
-    Route::get('/personas/create', LivewirePersonaForm::class)->middleware('can:Ver Persona')->name('personas.create');
-    Route::get('/personas/{person}/edit', LivewirePersonaForm::class)->middleware('can:Ver Persona')->name('personas.edit');
 
     Route::get('settings/profile', Profile::class)->name('settings.profile');
     Route::get('settings/password', Password::class)->name('settings.password');
