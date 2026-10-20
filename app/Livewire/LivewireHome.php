@@ -2,7 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Models\Client;
+use App\Models\Cliente;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\SaleDetail;
@@ -74,7 +74,7 @@ class LivewireHome extends Component
         $salesTotal = (float) (clone $salesQuery)->sum('total');
 
         $totalProducts = Product::where('state', 1)->count();
-        $totalClients = Client::where('state', 1)->count();
+        $totalClients = Cliente::where('estado', 1)->count();
 
         $lowStockCount = DB::table('products')
             ->where('products.state', 1)

@@ -2,11 +2,11 @@
 
 namespace App\Livewire;
 
-use App\Models\Client;
+use App\Models\Cliente;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class LivewireClient extends Component
+class LivewireCliente extends Component
 {
     use WithPagination;
 
@@ -21,7 +21,7 @@ class LivewireClient extends Component
 
     public function render()
     {
-        $query = Client::with('person');
+        $query = Cliente::with('person');
 
         if (!empty($this->search)) {
             $query->where(function ($q) {
@@ -36,7 +36,7 @@ class LivewireClient extends Component
             });
         }
 
-        return view('livewire.client.index', [
+        return view('livewire.cliente.index', [
             'clients' => $query->orderBy('id', 'desc')->paginate(10),
         ]);
     }
@@ -44,14 +44,14 @@ class LivewireClient extends Component
     public function delete($id)
     {
         try {
-            $client = Client::findOrFail($id);
-            $client->state = $client->state ? 0 : 1;
+            $client = Cliente::findOrFail($id);
+            $client->estado = $client->estado ? 0 : 1;
             $client->save();
 
             $this->dispatch(
                 'toast',
-                type: $client->state ? 'success' : 'warning',
-                message: $client->state
+                type: $client->estado ? 'success' : 'warning',
+                message: $client->estado
                     ? 'Cliente activado correctamente.'
                     : 'Cliente desactivado correctamente.'
             );

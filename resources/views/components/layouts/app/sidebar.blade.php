@@ -114,8 +114,8 @@
                         @endcan
 
                         @can('Ver Clientes')
-                        <a href="{{ route('clients') }}" wire:navigate title="{{ __('Clientes') }}"
-                            class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('clients*') ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-white font-semibold' : 'text-zinc-700 dark:text-zinc-300' }}"
+                        <a href="{{ route('clientes') }}" wire:navigate title="{{ __('Clientes') }}"
+                            class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('clientes*') ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-white font-semibold' : 'text-zinc-700 dark:text-zinc-300' }}"
                             :class="sidebarCollapsed ? 'justify-center' : 'gap-2'">
                             <i class="bi bi-people-fill shrink-0 text-base"></i>
                             <span class="overflow-hidden whitespace-nowrap transition-all duration-200" :class="sidebarCollapsed ? 'w-0 opacity-0' : 'opacity-100'">{{ __('Clientes') }}</span>
@@ -546,7 +546,7 @@
                             </flux:navlist.item>
                             @endcan
                             @can('Ver Clientes')
-                            <flux:navlist.item :href="route('clients')" :current="request()->routeIs('clients*')" wire:navigate class="rounded-xl px-3 py-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                            <flux:navlist.item :href="route('clientes')" :current="request()->routeIs('clientes*')" wire:navigate class="rounded-xl px-3 py-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800">
                                 <i class="bi bi-people-fill me-2"></i> {{ __('Clientes') }}
                             </flux:navlist.item>
                             @endcan

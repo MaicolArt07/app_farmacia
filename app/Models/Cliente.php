@@ -5,19 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Client extends Model
+class Cliente extends Model
 {
     use HasFactory;
 
-    protected $table = 'clients';
+    protected $table = 'clientes';
 
     protected $fillable = [
         'id_person',
         'code',
-        'type',
+        'tipo',
         'nit',
         'email',
-        'state',
+        'estado',
     ];
 
     public function person()

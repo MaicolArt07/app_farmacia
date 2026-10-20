@@ -22,7 +22,7 @@ class SaleForm extends Form
     public function rules()
     {
         return [
-            'form.id_client' => 'nullable|exists:clients,id',
+            'form.id_client' => 'nullable|exists:clientes,id',
             'form.sale_date' => 'required|date',
             'form.id_payment_method' => 'required|exists:payment_methods,id',
             'form.discount' => 'nullable|numeric|min:0',

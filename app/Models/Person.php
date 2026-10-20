@@ -23,7 +23,7 @@ class Person extends Model
     }
     public function client()
     {
-        return $this->hasOne(Client::class, 'id_person');
+        return $this->hasOne(Cliente::class, 'id_person');
     }
     public function supplier()
     {

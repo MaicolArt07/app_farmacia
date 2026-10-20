@@ -4,7 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Lot;
 use App\Models\Sale;
-use App\Models\Client;
+use App\Models\Cliente;
 use App\Models\Product;
 use App\Models\CashRegister;
 use App\Models\CashMovement;
@@ -73,7 +73,7 @@ class LivewireSaleForm extends Component
             return;
         }
 
-        $this->clientResults = Client::with('person')
+        $this->clientResults = Cliente::with('person')
             ->where('state', 1)
             ->where(function ($q) {
                 $q->where('code', 'like', "%{$this->clientSearch}%")
@@ -100,7 +100,7 @@ class LivewireSaleForm extends Component
 
     public function selectClient($id)
     {
-        $client = Client::with('person')->findOrFail($id);
+        $client = Cliente::with('person')->findOrFail($id);
 
         $this->form->id_client = $client->id;
         $this->selectedClientLabel = trim(($client->person?->name ?? '') . ' ' . ($client->person?->lastname ?? '')) .

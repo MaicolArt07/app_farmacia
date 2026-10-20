@@ -2,7 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Models\Client;
+use App\Models\Cliente;
 use App\Models\Product;
 use Livewire\Component;
 
@@ -27,7 +27,7 @@ class LivewireGlobalSearch extends Component
         $this->open = true;
 
         $this->clients = auth()->user()->can('Ver Clientes')
-            ? Client::with('person')
+            ? Cliente::with('person')
                 ->whereHas('person', function ($q) use ($term) {
                     $q->where('name', 'like', "%{$term}%")
                         ->orWhere('lastname', 'like', "%{$term}%")

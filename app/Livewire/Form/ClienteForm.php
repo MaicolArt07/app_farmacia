@@ -4,22 +4,22 @@ namespace App\Livewire\Form;
 
 use Livewire\Form;
 
-class ClientForm extends Form
+class ClienteForm extends Form
 {
     public $id = null;
     public $id_person = null;
     public $code = '';
-    public $type = 'natural';
+    public $tipo = 'natural';
     public $nit = '';
     public $email = '';
-    public $state = 1;
+    public $estado = 1;
 
     public function rules()
     {
         return [
             'form.id_person' => 'required|exists:person,id',
             'form.code' => 'required|string|max:30',
-            'form.type' => 'required|in:natural,company',
+            'form.tipo' => 'required|in:natural,company',
             'form.nit' => 'nullable|string|max:30',
             'form.email' => 'nullable|email|max:100',
         ];
@@ -31,8 +31,8 @@ class ClientForm extends Form
             'form.id_person.required' => 'Debe seleccionar una persona.',
             'form.id_person.exists' => 'La persona seleccionada no es válida.',
             'form.code.required' => 'El código es obligatorio.',
-            'form.type.required' => 'Debe seleccionar el tipo de cliente.',
-            'form.type.in' => 'El tipo seleccionado no es válido.',
+            'form.tipo.required' => 'Debe seleccionar el tipo de cliente.',
+            'form.tipo.in' => 'El tipo seleccionado no es válido.',
             'form.email.email' => 'El correo electrónico no es válido.',
         ];
     }
@@ -42,10 +42,10 @@ class ClientForm extends Form
         $this->id = null;
         $this->id_person = null;
         $this->code = '';
-        $this->type = 'natural';
+        $this->tipo = 'natural';
         $this->nit = '';
         $this->email = '';
-        $this->state = 1;
+        $this->estado = 1;
     }
 
     public function fillForm($client)
@@ -53,9 +53,9 @@ class ClientForm extends Form
         $this->id = $client->id;
         $this->id_person = $client->id_person;
         $this->code = $client->code;
-        $this->type = $client->type;
+        $this->tipo = $client->tipo;
         $this->nit = $client->nit;
         $this->email = $client->email;
-        $this->state = $client->state;
+        $this->estado = $client->estado;
     }
 }

@@ -54,7 +54,7 @@ class Sale extends Model
 
     public function client()
     {
-        return $this->belongsTo(Client::class, 'id_client');
+        return $this->belongsTo(Cliente::class, 'id_client');
     }
 
     public function user()

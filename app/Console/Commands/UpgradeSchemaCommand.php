@@ -227,7 +227,7 @@ class UpgradeSchemaCommand extends Command
 
         $definitions = [
             ['person', 'id_country', 'country', 'id', 'RESTRICT'],
-            ['clients', 'id_person', 'person', 'id', 'RESTRICT'],
+            ['clientes', 'id_person', 'person', 'id', 'RESTRICT'],
             ['proveedores', 'id_person', 'person', 'id', 'RESTRICT'],
             ['users', 'id_person', 'person', 'id', 'SET NULL'],
             ['products', 'id_category', 'categorias', 'id', 'RESTRICT'],
@@ -239,7 +239,7 @@ class UpgradeSchemaCommand extends Command
             ['purchases', 'cancelled_by', 'users', 'id', 'SET NULL'],
             ['purchase_details', 'id_purchase', 'purchases', 'id', 'CASCADE'],
             ['purchase_details', 'id_product', 'products', 'id', 'RESTRICT'],
-            ['sales', 'id_client', 'clients', 'id', 'RESTRICT'],
+            ['sales', 'id_client', 'clientes', 'id', 'RESTRICT'],
             ['sales', 'id_user', 'users', 'id', 'RESTRICT'],
             ['sales', 'cancelled_by', 'users', 'id', 'SET NULL'],
             ['sale_details', 'id_sale', 'sales', 'id', 'CASCADE'],

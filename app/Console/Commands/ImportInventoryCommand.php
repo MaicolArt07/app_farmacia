@@ -146,7 +146,7 @@ class ImportInventoryCommand extends Command
             'cash_movements', 'cash_registers',
             'inventory_movements', 'inventory_adjustments',
             'lots', 'products',
-            'clients', 'proveedores',
+            'clientes', 'proveedores',
             'categorias', 'presentaciones', 'laboratorios',
         ] as $table) {
             DB::table($table)->truncate();

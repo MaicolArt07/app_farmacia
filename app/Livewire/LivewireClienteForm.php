@@ -2,14 +2,14 @@
 
 namespace App\Livewire;
 
-use App\Models\Client;
+use App\Models\Cliente;
 use App\Models\Person;
 use Livewire\Component;
-use App\Livewire\Form\ClientForm;
+use App\Livewire\Form\ClienteForm;
 
-class LivewireClientForm extends Component
+class LivewireClienteForm extends Component
 {
-    public ClientForm $form;
+    public ClienteForm $form;
 
     public $personSearch = '';
     public $personResults = [];
@@ -20,7 +20,7 @@ class LivewireClientForm extends Component
         $this->form->resetForm();
 
         if ($client) {
-            $client = Client::with('person')->findOrFail($client);
+            $client = Cliente::with('person')->findOrFail($client);
             $this->form->fillForm($client);
 
             if ($client->person) {
@@ -84,25 +84,25 @@ class LivewireClientForm extends Component
 
         try {
             if ($this->form->id) {
-                $client = Client::findOrFail($this->form->id);
+                $client = Cliente::findOrFail($this->form->id);
                 $client->update([
                     'id_person' => $this->form->id_person,
                     'code' => $this->form->code,
-                    'type' => $this->form->type,
+                    'tipo' => $this->form->tipo,
                     'nit' => $this->form->nit,
                     'email' => $this->form->email,
-                    'state' => $this->form->state,
+                    'estado' => $this->form->estado,
                 ]);
 
                 $message = 'Cliente actualizado correctamente.';
             } else {
-                Client::create([
+                Cliente::create([
                     'id_person' => $this->form->id_person,
                     'code' => $this->form->code,
-                    'type' => $this->form->type,
+                    'tipo' => $this->form->tipo,
                     'nit' => $this->form->nit,
                     'email' => $this->form->email,
-                    'state' => $this->form->state,
+                    'estado' => $this->form->estado,
                 ]);
 
                 $message = 'Cliente registrado correctamente.';
@@ -110,7 +110,7 @@ class LivewireClientForm extends Component
 
             $this->dispatch('toast', type: 'success', message: $message);
 
-            return redirect()->route('clients');
+            return redirect()->route('clientes');
         } catch (\Throwable $e) {
             $this->dispatch('toast', type: 'error', message: 'No se pudo guardar el cliente.');
         }
@@ -118,11 +118,11 @@ class LivewireClientForm extends Component
 
     public function cancel()
     {
-        return redirect()->route('clients');
+        return redirect()->route('clientes');
     }
 
     public function render()
     {
-        return view('livewire.client.form');
+        return view('livewire.cliente.form');
     }
 }
