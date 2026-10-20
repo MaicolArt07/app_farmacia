@@ -2,11 +2,11 @@
 
 namespace App\Livewire;
 
-use App\Models\Supplier;
+use App\Models\Proveedor;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class LivewireSupplier extends Component
+class LivewireProveedor extends Component
 {
     use WithPagination;
 
@@ -21,12 +21,12 @@ class LivewireSupplier extends Component
 
     public function render()
     {
-        $query = Supplier::with('person');
+        $query = Proveedor::with('person');
 
         if (!empty($this->search)) {
             $query->where(function ($q) {
-                $q->where('company_name', 'like', "%{$this->search}%")
-                  ->orWhere('contact_position', 'like', "%{$this->search}%")
+                $q->where('razon_social', 'like', "%{$this->search}%")
+                  ->orWhere('cargo_contacto', 'like', "%{$this->search}%")
                   ->orWhere('nit', 'like', "%{$this->search}%")
                   ->orWhere('email', 'like', "%{$this->search}%")
                   ->orWhereHas('person', function ($personQuery) {
@@ -37,7 +37,7 @@ class LivewireSupplier extends Component
             });
         }
 
-        return view('livewire.supplier.index', [
+        return view('livewire.proveedor.index', [
             'suppliers' => $query->orderBy('id', 'desc')->paginate(10),
         ]);
     }
@@ -45,14 +45,14 @@ class LivewireSupplier extends Component
     public function delete($id)
     {
         try {
-            $supplier = Supplier::findOrFail($id);
-            $supplier->state = $supplier->state ? 0 : 1;
+            $supplier = Proveedor::findOrFail($id);
+            $supplier->estado = $supplier->estado ? 0 : 1;
             $supplier->save();
 
             $this->dispatch(
                 'toast',
-                type: $supplier->state ? 'success' : 'warning',
-                message: $supplier->state
+                type: $supplier->estado ? 'success' : 'warning',
+                message: $supplier->estado
                     ? 'Proveedor activado correctamente.'
                     : 'Proveedor desactivado correctamente.'
             );

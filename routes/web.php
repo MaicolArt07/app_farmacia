@@ -9,8 +9,8 @@ use App\Livewire\LivewireUsers;
 use App\Livewire\LivewireUserForm;
 use App\Livewire\LivewireClient;
 use App\Livewire\LivewireClientForm;
-use App\Livewire\LivewireSupplier;
-use App\Livewire\LivewireSupplierForm;
+use App\Livewire\LivewireProveedor;
+use App\Livewire\LivewireProveedorForm;
 use App\Livewire\LivewireLaboratorio;
 use App\Livewire\LivewireLaboratorioForm;
 use App\Livewire\LivewireCompanyForm;
@@ -77,17 +77,17 @@ Route::middleware(['auth'])->group(function () {
     ->middleware('can:Ver Clientes')
     ->name('clients.edit');
 
-    Route::get('/suppliers', LivewireSupplier::class)
+    Route::get('/proveedores', LivewireProveedor::class)
     ->middleware('can:Ver Proveedores')
-    ->name('suppliers');
+    ->name('proveedores');
 
-    Route::get('/suppliers/create', LivewireSupplierForm::class)
+    Route::get('/proveedores/create', LivewireProveedorForm::class)
     ->middleware('can:Ver Proveedores')
-    ->name('suppliers.create');
+    ->name('proveedores.create');
 
-    Route::get('/suppliers/{supplier}/edit', LivewireSupplierForm::class)
+    Route::get('/proveedores/{supplier}/edit', LivewireProveedorForm::class)
     ->middleware('can:Ver Proveedores')
-    ->name('suppliers.edit');
+    ->name('proveedores.edit');
 
     Route::get('/laboratorios', LivewireLaboratorio::class)
     ->middleware('can:Ver Laboratorios')

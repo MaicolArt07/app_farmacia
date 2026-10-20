@@ -1,6 +1,6 @@
 <div class="mx-auto max-w-2xl p-6">
     <div class="mb-6">
-        <a href="{{ route('suppliers') }}" wire:navigate class="mb-2 inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
+        <a href="{{ route('proveedores') }}" wire:navigate class="mb-2 inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
             <i class="bi bi-arrow-left"></i> Volver a proveedores
         </a>
         <h1 class="text-xl font-semibold text-zinc-800 dark:text-zinc-100">
@@ -57,10 +57,10 @@
                 <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Razón social <span class="text-red-600">*</span></label>
                 <input
                     type="text"
-                    wire:model="form.company_name"
+                    wire:model="form.razon_social"
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
                 >
-                @error('form.company_name')
+                @error('form.razon_social')
                     <span class="text-sm text-red-500">{{ $message }}</span>
                 @enderror
             </div>
@@ -69,10 +69,10 @@
                 <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Cargo de contacto <span class="text-xs font-normal text-gray-400 dark:text-zinc-500">(Opcional)</span></label>
                 <input
                     type="text"
-                    wire:model="form.contact_position"
+                    wire:model="form.cargo_contacto"
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
                 >
-                @error('form.contact_position')
+                @error('form.cargo_contacto')
                     <span class="text-sm text-red-500">{{ $message }}</span>
                 @enderror
             </div>

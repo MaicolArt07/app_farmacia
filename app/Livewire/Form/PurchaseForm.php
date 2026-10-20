@@ -18,7 +18,7 @@ class PurchaseForm extends Form
     public function rules()
     {
         return [
-            'form.id_supplier' => 'required|exists:suppliers,id',
+            'form.id_supplier' => 'required|exists:proveedores,id',
             'form.invoice_number' => 'nullable|string|max:50',
             'form.purchase_date' => 'required|date',
             'form.observation' => 'nullable|string',

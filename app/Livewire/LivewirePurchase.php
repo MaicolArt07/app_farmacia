@@ -32,7 +32,7 @@ class LivewirePurchase extends Component
                 $q->where('invoice_number', 'like', "%{$this->search}%")
                   ->orWhere('purchase_date', 'like', "%{$this->search}%")
                   ->orWhereHas('supplier', function ($sub) {
-                      $sub->where('company_name', 'like', "%{$this->search}%")
+                      $sub->where('razon_social', 'like', "%{$this->search}%")
                           ->orWhere('nit', 'like', "%{$this->search}%");
                   });
             });

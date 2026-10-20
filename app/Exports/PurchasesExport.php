@@ -33,7 +33,7 @@ class PurchasesExport implements FromCollection, WithHeadings, WithMapping, Shou
         // null y deje la celda vacía.
         return [
             optional($purchase->purchase_date)->format('d/m/Y'),
-            $purchase->supplier?->company_name,
+            $purchase->supplier?->razon_social,
             $purchase->invoice_number,
             $purchase->user?->name,
             (string) $purchase->subtotal,

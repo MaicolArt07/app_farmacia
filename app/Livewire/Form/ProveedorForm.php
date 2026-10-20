@@ -4,22 +4,22 @@ namespace App\Livewire\Form;
 
 use Livewire\Form;
 
-class SupplierForm extends Form
+class ProveedorForm extends Form
 {
     public $id = null;
     public $id_person = null;
-    public $company_name = '';
-    public $contact_position = '';
+    public $razon_social = '';
+    public $cargo_contacto = '';
     public $nit = '';
     public $email = '';
-    public $state = 1;
+    public $estado = 1;
 
     public function rules()
     {
         return [
             'form.id_person' => 'required|exists:person,id',
-            'form.company_name' => 'required|string|max:150',
-            'form.contact_position' => 'nullable|string|max:100',
+            'form.razon_social' => 'required|string|max:150',
+            'form.cargo_contacto' => 'nullable|string|max:100',
             'form.nit' => 'nullable|string|max:30',
             'form.email' => 'nullable|email|max:100',
         ];
@@ -30,7 +30,7 @@ class SupplierForm extends Form
         return [
             'form.id_person.required' => 'Debe seleccionar una persona.',
             'form.id_person.exists' => 'La persona seleccionada no es válida.',
-            'form.company_name.required' => 'La razón social es obligatoria.',
+            'form.razon_social.required' => 'La razón social es obligatoria.',
             'form.email.email' => 'El correo electrónico no es válido.',
         ];
     }
@@ -39,21 +39,21 @@ class SupplierForm extends Form
     {
         $this->id = null;
         $this->id_person = null;
-        $this->company_name = '';
-        $this->contact_position = '';
+        $this->razon_social = '';
+        $this->cargo_contacto = '';
         $this->nit = '';
         $this->email = '';
-        $this->state = 1;
+        $this->estado = 1;
     }
 
     public function fillForm($supplier)
     {
         $this->id = $supplier->id;
         $this->id_person = $supplier->id_person;
-        $this->company_name = $supplier->company_name;
-        $this->contact_position = $supplier->contact_position;
+        $this->razon_social = $supplier->razon_social;
+        $this->cargo_contacto = $supplier->cargo_contacto;
         $this->nit = $supplier->nit;
         $this->email = $supplier->email;
-        $this->state = $supplier->state;
+        $this->estado = $supplier->estado;
     }
 }

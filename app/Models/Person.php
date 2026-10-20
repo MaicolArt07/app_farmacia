@@ -27,7 +27,7 @@ class Person extends Model
     }
     public function supplier()
     {
-        return $this->hasOne(Supplier::class, 'id_person');
+        return $this->hasOne(Proveedor::class, 'id_person');
     }
 
     public function user()

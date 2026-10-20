@@ -5,7 +5,7 @@ namespace App\Livewire;
 use App\Models\Lot;
 use App\Models\Product;
 use App\Models\Purchase;
-use App\Models\Supplier;
+use App\Models\Proveedor;
 use App\Models\InventoryMovement;
 use App\Models\SaleDetail;
 use Livewire\Component;
@@ -40,7 +40,7 @@ class LivewirePurchaseForm extends Component
             $this->form->fillForm($purchase);
 
             if ($purchase->supplier) {
-                $this->selectedSupplierLabel = $purchase->supplier->company_name . ' - ' .
+                $this->selectedSupplierLabel = $purchase->supplier->razon_social . ' - ' .
                     trim(($purchase->supplier->person?->name ?? '') . ' ' . ($purchase->supplier->person?->lastname ?? ''));
             }
 
@@ -66,10 +66,10 @@ class LivewirePurchaseForm extends Component
             return;
         }
 
-        $this->supplierResults = Supplier::with('person')
-            ->where('state', 1)
+        $this->supplierResults = Proveedor::with('person')
+            ->where('estado', 1)
             ->where(function ($q) {
-                $q->where('company_name', 'like', "%{$this->supplierSearch}%")
+                $q->where('razon_social', 'like', "%{$this->supplierSearch}%")
                   ->orWhere('nit', 'like', "%{$this->supplierSearch}%")
                   ->orWhereHas('person', function ($sub) {
                       $sub->where('name', 'like', "%{$this->supplierSearch}%")
@@ -82,7 +82,7 @@ class LivewirePurchaseForm extends Component
             ->map(function ($supplier) {
                 return [
                     'id' => $supplier->id,
-                    'label' => $supplier->company_name . ' - ' .
+                    'label' => $supplier->razon_social . ' - ' .
                         trim(($supplier->person?->name ?? '') . ' ' . ($supplier->person?->lastname ?? '')),
                 ];
             })
@@ -91,10 +91,10 @@ class LivewirePurchaseForm extends Component
 
     public function selectSupplier($id)
     {
-        $supplier = Supplier::with('person')->findOrFail($id);
+        $supplier = Proveedor::with('person')->findOrFail($id);
 
         $this->form->id_supplier = $supplier->id;
-        $this->selectedSupplierLabel = $supplier->company_name . ' - ' .
+        $this->selectedSupplierLabel = $supplier->razon_social . ' - ' .
             trim(($supplier->person?->name ?? '') . ' ' . ($supplier->person?->lastname ?? ''));
 
         $this->supplierSearch = '';

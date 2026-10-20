@@ -158,7 +158,7 @@
                         'Ver Facturas', 'Ver Reportes'
                     ])
                     @php
-                        $isFarmaciaSection = request()->routeIs('suppliers*') || request()->routeIs('laboratorios*')
+                        $isFarmaciaSection = request()->routeIs('proveedores*') || request()->routeIs('laboratorios*')
                             || request()->routeIs('categorias*') || request()->routeIs('presentaciones*')
                             || request()->routeIs('lots*')
                             || request()->routeIs('inventory-adjustments*') || request()->routeIs('invoices*')
@@ -174,7 +174,7 @@
                         <!-- Colapsado: solo íconos -->
                         <div x-show="sidebarCollapsed" class="flex flex-col gap-1">
                             @can('Ver Proveedores')
-                            <a href="{{ route('suppliers') }}" wire:navigate title="{{ __('Proveedores') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('suppliers*') ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-white' : 'text-zinc-700 dark:text-zinc-300' }}">
+                            <a href="{{ route('proveedores') }}" wire:navigate title="{{ __('Proveedores') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('proveedores*') ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-white' : 'text-zinc-700 dark:text-zinc-300' }}">
                                 <i class="bi bi-truck text-base"></i>
                             </a>
                             @endcan
@@ -245,7 +245,7 @@
                                 </summary>
                                 <div class="ml-5 mt-1 space-y-1 border-l border-zinc-200 pl-3 dark:border-zinc-700">
                                     @can('Ver Proveedores')
-                                    <a href="{{ route('suppliers') }}" wire:navigate class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition {{ request()->routeIs('suppliers*') ? 'bg-zinc-200 font-semibold text-zinc-900 dark:bg-zinc-800 dark:text-white' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
+                                    <a href="{{ route('proveedores') }}" wire:navigate class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition {{ request()->routeIs('proveedores*') ? 'bg-zinc-200 font-semibold text-zinc-900 dark:bg-zinc-800 dark:text-white' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                         <i class="bi bi-truck text-base"></i> {{ __('Proveedores') }}
                                     </a>
                                     @endcan
@@ -582,7 +582,7 @@
                                 </summary>
                                 <div class="ml-5 mt-2 space-y-1 border-l border-zinc-200 pl-3 dark:border-zinc-700">
                                     @can('Ver Proveedores')
-                                    <flux:navlist.item :href="route('suppliers')" :current="request()->routeIs('suppliers*')" wire:navigate class="rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                                    <flux:navlist.item :href="route('proveedores')" :current="request()->routeIs('proveedores*')" wire:navigate class="rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800">
                                         <i class="bi bi-truck me-2"></i> {{ __('Proveedores') }}
                                     </flux:navlist.item>
                                     @endcan

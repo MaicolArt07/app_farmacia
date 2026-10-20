@@ -36,7 +36,7 @@ class Purchase extends Model
 
     public function supplier()
     {
-        return $this->belongsTo(Supplier::class, 'id_supplier');
+        return $this->belongsTo(Proveedor::class, 'id_supplier');
     }
 
     public function user()

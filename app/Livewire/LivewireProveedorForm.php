@@ -3,13 +3,13 @@
 namespace App\Livewire;
 
 use App\Models\Person;
-use App\Models\Supplier;
+use App\Models\Proveedor;
 use Livewire\Component;
-use App\Livewire\Form\SupplierForm;
+use App\Livewire\Form\ProveedorForm;
 
-class LivewireSupplierForm extends Component
+class LivewireProveedorForm extends Component
 {
-    public SupplierForm $form;
+    public ProveedorForm $form;
 
     public $personSearch = '';
     public $personResults = [];
@@ -20,7 +20,7 @@ class LivewireSupplierForm extends Component
         $this->form->resetForm();
 
         if ($supplier) {
-            $supplier = Supplier::with('person')->findOrFail($supplier);
+            $supplier = Proveedor::with('person')->findOrFail($supplier);
             $this->form->fillForm($supplier);
 
             if ($supplier->person) {
@@ -84,25 +84,25 @@ class LivewireSupplierForm extends Component
 
         try {
             if ($this->form->id) {
-                $supplier = Supplier::findOrFail($this->form->id);
+                $supplier = Proveedor::findOrFail($this->form->id);
                 $supplier->update([
                     'id_person' => $this->form->id_person,
-                    'company_name' => $this->form->company_name,
-                    'contact_position' => $this->form->contact_position,
+                    'razon_social' => $this->form->razon_social,
+                    'cargo_contacto' => $this->form->cargo_contacto,
                     'nit' => $this->form->nit,
                     'email' => $this->form->email,
-                    'state' => $this->form->state,
+                    'estado' => $this->form->estado,
                 ]);
 
                 $message = 'Proveedor actualizado correctamente.';
             } else {
-                Supplier::create([
+                Proveedor::create([
                     'id_person' => $this->form->id_person,
-                    'company_name' => $this->form->company_name,
-                    'contact_position' => $this->form->contact_position,
+                    'razon_social' => $this->form->razon_social,
+                    'cargo_contacto' => $this->form->cargo_contacto,
                     'nit' => $this->form->nit,
                     'email' => $this->form->email,
-                    'state' => $this->form->state,
+                    'estado' => $this->form->estado,
                 ]);
 
                 $message = 'Proveedor registrado correctamente.';
@@ -110,7 +110,7 @@ class LivewireSupplierForm extends Component
 
             $this->dispatch('toast', type: 'success', message: $message);
 
-            return redirect()->route('suppliers');
+            return redirect()->route('proveedores');
         } catch (\Throwable $e) {
             $this->dispatch('toast', type: 'error', message: 'No se pudo guardar el proveedor.');
         }
@@ -118,11 +118,11 @@ class LivewireSupplierForm extends Component
 
     public function cancel()
     {
-        return redirect()->route('suppliers');
+        return redirect()->route('proveedores');
     }
 
     public function render()
     {
-        return view('livewire.supplier.form');
+        return view('livewire.proveedor.form');
     }
 }
