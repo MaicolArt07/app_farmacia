@@ -32,7 +32,7 @@ class ProductoForm extends Form
             'form.id_category' => 'required|exists:categorias,id',
             'form.id_laboratory' => 'nullable|exists:laboratorios,id',
             'form.id_presentation' => 'required|exists:presentaciones,id',
-            'form.id_sin_product_code' => 'nullable|exists:sin_product_codes,id',
+            'form.id_sin_product_code' => 'nullable|exists:codigos_producto_sin,id',
 
             'form.code' => [
                 'required',

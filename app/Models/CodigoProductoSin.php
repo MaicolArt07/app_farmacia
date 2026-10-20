@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SinProductCode extends Model
+class CodigoProductoSin extends Model
 {
-    protected $table = 'sin_product_codes';
+    protected $table = 'codigos_producto_sin';
 
     protected $fillable = [
         'codigo_actividad',

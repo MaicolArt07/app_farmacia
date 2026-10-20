@@ -52,7 +52,7 @@ class Producto extends Model
 
     public function sinProductCode()
     {
-        return $this->belongsTo(SinProductCode::class, 'id_sin_product_code');
+        return $this->belongsTo(CodigoProductoSin::class, 'id_sin_product_code');
     }
 
     public function lots()

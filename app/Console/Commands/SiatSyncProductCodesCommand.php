@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Company;
-use App\Models\SinProductCode;
+use App\Models\CodigoProductoSin;
 use Illuminate\Console\Command;
 
 /**
@@ -85,7 +85,7 @@ class SiatSyncProductCodesCommand extends Command
                     $nandina = [$nandina];
                 }
 
-                SinProductCode::updateOrCreate(
+                CodigoProductoSin::updateOrCreate(
                     [
                         'codigo_actividad' => $item->codigoActividad,
                         'codigo_producto' => $item->codigoProducto,
