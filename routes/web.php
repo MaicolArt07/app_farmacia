@@ -17,7 +17,6 @@ use App\Livewire\LivewireProducto;
 use App\Livewire\LivewireLote;
 use App\Livewire\LivewireCompra;
 use App\Livewire\LivewireVenta;
-use App\Livewire\LivewireVentaForm;
 use App\Livewire\LivewireAjusteInventario;
 use App\Livewire\LivewireCaja;
 use App\Livewire\LivewireInventoryAlerts;
@@ -119,11 +118,11 @@ Route::middleware(['auth'])->group(function () {
     ->middleware('can:Ver Ventas')
     ->name('ventas');
 
-    Route::get('/ventas/create', LivewireVentaForm::class)
+    Route::get('/ventas/create', LivewireVenta::class)
     ->middleware('can:Crear Ventas')
     ->name('ventas.create');
 
-    Route::get('/ventas/{sale}/view', LivewireVentaForm::class)
+    Route::get('/ventas/{sale}/view', LivewireVenta::class)
     ->middleware('can:Ver Ventas')
     ->name('ventas.view');
 

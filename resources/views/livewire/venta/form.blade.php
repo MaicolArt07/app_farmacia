@@ -94,9 +94,9 @@
 
             <div>
                 <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Fecha venta <span class="text-red-600">*</span></label>
-                <input type="date" wire:model="form.sale_date" @disabled($viewMode)
+                <input type="date" wire:model="form.fecha_venta" @disabled($viewMode)
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 disabled:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:disabled:bg-zinc-700">
-                @error('form.sale_date') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                @error('form.fecha_venta') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
             </div>
 
             <div>
@@ -215,7 +215,7 @@
             <div class="md:col-span-2 xl:col-span-4 grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                     <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Observación <span class="text-xs font-normal text-gray-400 dark:text-zinc-500">(Opcional)</span></label>
-                    <textarea wire:model="form.observation" rows="3" @disabled($viewMode)
+                    <textarea wire:model="form.observacion" rows="3" @disabled($viewMode)
                         class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 disabled:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:disabled:bg-zinc-700"></textarea>
                 </div>
 
@@ -227,7 +227,7 @@
 
                     <div class="mt-3">
                         <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Descuento <span class="text-xs font-normal text-gray-400 dark:text-zinc-500">(Opcional)</span></label>
-                        <input type="number" step="0.01" min="0" wire:model.live="form.discount" @disabled($viewMode)
+                        <input type="number" step="0.01" min="0" wire:model.live="form.descuento" @disabled($viewMode)
                             class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-right dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
                     </div>
 
@@ -245,15 +245,15 @@
                                 <span class="text-xs font-normal text-gray-400 dark:text-zinc-500">(Opcional)</span>
                             @endif
                         </label>
-                        <input type="number" step="0.01" min="0" wire:model.live="form.amount_paid" @disabled($viewMode)
+                        <input type="number" step="0.01" min="0" wire:model.live="form.monto_pagado" @disabled($viewMode)
                             placeholder="Ej: 200"
                             class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-right dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
-                        @error('form.amount_paid') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                        @error('form.monto_pagado') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="mt-3 flex justify-between text-base">
                         <span class="font-semibold text-zinc-700 dark:text-zinc-200">Cambio</span>
-                        <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ number_format((float)$form->change_amount, 2) }}</span>
+                        <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ number_format((float)$form->monto_cambio, 2) }}</span>
                     </div>
                 </div>
             </div>
