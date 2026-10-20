@@ -5,31 +5,31 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Branch extends Model
+class Sucursal extends Model
 {
     use HasFactory;
 
-    protected $table = 'branches';
+    protected $table = 'sucursales';
 
     protected $fillable = [
         'id_company',
         'numero_sucursal',
         'punto_venta',
-        'name',
+        'nombre',
         'municipio',
-        'address',
-        'phone',
-        'state',
+        'direccion',
+        'telefono',
+        'estado',
     ];
 
     protected $casts = [
         'numero_sucursal' => 'integer',
         'punto_venta' => 'integer',
-        'state' => 'integer',
+        'estado' => 'integer',
     ];
 
     public function company()
     {
-        return $this->belongsTo(Company::class, 'id_company');
+        return $this->belongsTo(Empresa::class, 'id_company');
     }
 }

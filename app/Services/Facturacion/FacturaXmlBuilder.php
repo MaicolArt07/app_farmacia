@@ -2,7 +2,7 @@
 
 namespace App\Services\Facturacion;
 
-use App\Models\Company;
+use App\Models\Empresa;
 use App\Models\Venta;
 use Illuminate\Support\Carbon;
 
@@ -20,12 +20,12 @@ class FacturaXmlBuilder
     public const CODIGO_DOCUMENTO_SECTOR = 1; // FCV, fijo para nuestra actividad (4772100)
 
     private Venta $sale;
-    private Company $company;
+    private Empresa $company;
     private string $cufd;
     private int $numeroFactura;
     private Carbon $fechaEmision;
 
-    public function __construct(Venta $sale, Company $company, string $cufd, int $numeroFactura, ?Carbon $fechaEmision = null)
+    public function __construct(Venta $sale, Empresa $company, string $cufd, int $numeroFactura, ?Carbon $fechaEmision = null)
     {
         $this->sale = $sale;
         $this->company = $company;
@@ -100,12 +100,12 @@ class FacturaXmlBuilder
         $this->appendText($dom, $cabecera, 'nitEmisor', (string) $this->company->nit);
         $this->appendText($dom, $cabecera, 'razonSocialEmisor', $this->company->razon_social);
         $this->appendText($dom, $cabecera, 'municipio', $branch->municipio ?? throw new \RuntimeException('La sucursal no tiene "municipio" configurado. Complételo en /branches antes de facturar.'));
-        $this->appendNillableText($dom, $cabecera, 'telefono', $this->company->phone);
+        $this->appendNillableText($dom, $cabecera, 'telefono', $this->company->telefono);
         $this->appendText($dom, $cabecera, 'numeroFactura', (string) $this->numeroFactura);
         $this->appendText($dom, $cabecera, 'cuf', $cuf);
         $this->appendText($dom, $cabecera, 'cufd', $this->cufd);
         $this->appendText($dom, $cabecera, 'codigoSucursal', (string) $sucursal);
-        $this->appendText($dom, $cabecera, 'direccion', $branch->address ?? $this->company->address ?? 'N/A');
+        $this->appendText($dom, $cabecera, 'direccion', $branch->direccion ?? $this->company->direccion ?? 'N/A');
         $this->appendNillableInt($dom, $cabecera, 'codigoPuntoVenta', $puntoVenta);
         $this->appendText($dom, $cabecera, 'fechaEmision', $this->fechaEmision->format('Y-m-d\TH:i:s.v'));
         $this->appendNillableText($dom, $cabecera, 'nombreRazonSocial', $nombreRazonSocial);

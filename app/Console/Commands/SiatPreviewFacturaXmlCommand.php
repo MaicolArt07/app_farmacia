@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Company;
+use App\Models\Empresa;
 use App\Models\Invoice;
 use App\Models\Venta;
 use App\Services\Facturacion\FacturaXmlBuilder;
@@ -46,7 +46,7 @@ class SiatPreviewFacturaXmlCommand extends Command
             }
         }
 
-        $company = Company::current();
+        $company = Empresa::current();
 
         if (!$company) {
             $this->error('No hay datos de Empresa registrados.');

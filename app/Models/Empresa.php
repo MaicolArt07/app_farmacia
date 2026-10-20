@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Company extends Model
+class Empresa extends Model
 {
     use HasFactory;
 
-    protected $table = 'companies';
+    protected $table = 'empresas';
 
     protected $fillable = [
         'nit',
@@ -17,8 +17,8 @@ class Company extends Model
         'nombre_comercial',
         'actividad_economica',
         'email',
-        'phone',
-        'address',
+        'telefono',
+        'direccion',
         'logo_path',
         'codigo_sistema',
         'numero_solicitud',
@@ -29,16 +29,16 @@ class Company extends Model
         'wsdl_operaciones',
         'wsdl_codigos',
         'wsdl_factura_compra_venta',
-        'state',
+        'estado',
     ];
 
     protected $casts = [
-        'state' => 'integer',
+        'estado' => 'integer',
     ];
 
     public function branches()
     {
-        return $this->hasMany(Branch::class, 'id_company');
+        return $this->hasMany(Sucursal::class, 'id_company');
     }
 
     /**
@@ -46,17 +46,17 @@ class Company extends Model
      */
     public static function current(): ?self
     {
-        return static::where('state', 1)->first();
+        return static::where('estado', 1)->first();
     }
 
     /**
      * Sucursal "casa matriz" (numero_sucursal = 0) o la primera activa como
      * respaldo, para usar como emisor por defecto en la facturación.
      */
-    public function mainBranch(): ?Branch
+    public function mainBranch(): ?Sucursal
     {
         return $this->branches()
-            ->where('state', 1)
+            ->where('estado', 1)
             ->orderByRaw('numero_sucursal = 0 DESC')
             ->first();
     }

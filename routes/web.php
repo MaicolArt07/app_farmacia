@@ -13,9 +13,9 @@ use App\Livewire\LivewireProveedor;
 use App\Livewire\LivewireProveedorForm;
 use App\Livewire\LivewireLaboratorio;
 use App\Livewire\LivewireLaboratorioForm;
-use App\Livewire\LivewireCompanyForm;
-use App\Livewire\LivewireBranch;
-use App\Livewire\LivewireBranchForm;
+use App\Livewire\LivewireEmpresaForm;
+use App\Livewire\LivewireSucursal;
+use App\Livewire\LivewireSucursalForm;
 use App\Livewire\LivewireMetodoPago;
 use App\Livewire\LivewireMetodoPagoForm;
 use App\Livewire\LivewireCategoria;
@@ -101,19 +101,19 @@ Route::middleware(['auth'])->group(function () {
     ->middleware('can:Ver Laboratorios')
     ->name('laboratorios.edit');
 
-    Route::get('/company', LivewireCompanyForm::class)
+    Route::get('/company', LivewireEmpresaForm::class)
     ->middleware('can:Ver Empresa')
     ->name('company.edit');
 
-    Route::get('/branches', LivewireBranch::class)
+    Route::get('/branches', LivewireSucursal::class)
     ->middleware('can:Ver Sucursales')
     ->name('branches');
 
-    Route::get('/branches/create', LivewireBranchForm::class)
+    Route::get('/branches/create', LivewireSucursalForm::class)
     ->middleware('can:Ver Sucursales')
     ->name('branches.create');
 
-    Route::get('/branches/{branch}/edit', LivewireBranchForm::class)
+    Route::get('/branches/{branch}/edit', LivewireSucursalForm::class)
     ->middleware('can:Ver Sucursales')
     ->name('branches.edit');
 

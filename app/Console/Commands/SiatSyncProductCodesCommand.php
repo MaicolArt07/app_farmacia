@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Company;
+use App\Models\Empresa;
 use App\Models\CodigoProductoSin;
 use Illuminate\Console\Command;
 
@@ -24,7 +24,7 @@ class SiatSyncProductCodesCommand extends Command
 
     public function handle(): int
     {
-        $company = Company::current();
+        $company = Empresa::current();
 
         if (!$company || !$company->codigo_sistema || !$company->cuis || !$company->wsdl_sincronizacion) {
             $this->error('Falta Empresa, "codigo_sistema", "cuis" o "wsdl_sincronizacion". Corra primero: php artisan pharmacy:siat-cuis');

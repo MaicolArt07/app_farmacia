@@ -4,7 +4,7 @@ namespace App\Livewire\Form;
 
 use Livewire\Form;
 
-class BranchForm extends Form
+class SucursalForm extends Form
 {
     public $id = null;
     public $numero_sucursal = 0;
@@ -54,10 +54,10 @@ class BranchForm extends Form
         $this->id = $branch->id;
         $this->numero_sucursal = $branch->numero_sucursal;
         $this->punto_venta = $branch->punto_venta;
-        $this->name = $branch->name;
+        $this->name = $branch->nombre;
         $this->municipio = $branch->municipio;
-        $this->address = $branch->address;
-        $this->phone = $branch->phone;
-        $this->state = $branch->state;
+        $this->address = $branch->direccion;
+        $this->phone = $branch->telefono;
+        $this->state = $branch->estado;
     }
 }

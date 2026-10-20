@@ -2,21 +2,21 @@
 
 namespace App\Livewire;
 
-use App\Models\Branch;
-use App\Models\Company;
+use App\Models\Sucursal;
+use App\Models\Empresa;
 use Livewire\Component;
-use App\Livewire\Form\BranchForm;
+use App\Livewire\Form\SucursalForm;
 
-class LivewireBranchForm extends Component
+class LivewireSucursalForm extends Component
 {
-    public BranchForm $form;
+    public SucursalForm $form;
 
     public function mount($branch = null)
     {
         $this->form->resetForm();
 
         if ($branch) {
-            $branch = Branch::findOrFail($branch);
+            $branch = Sucursal::findOrFail($branch);
             $this->form->fillForm($branch);
         }
     }
@@ -29,19 +29,19 @@ class LivewireBranchForm extends Component
             $data = [
                 'numero_sucursal' => $this->form->numero_sucursal,
                 'punto_venta' => $this->form->punto_venta,
-                'name' => $this->form->name,
+                'nombre' => $this->form->name,
                 'municipio' => $this->form->municipio,
-                'address' => $this->form->address ?: null,
-                'phone' => $this->form->phone ?: null,
-                'state' => $this->form->state,
+                'direccion' => $this->form->address ?: null,
+                'telefono' => $this->form->phone ?: null,
+                'estado' => $this->form->state,
             ];
 
             if ($this->form->id) {
-                $branch = Branch::findOrFail($this->form->id);
+                $branch = Sucursal::findOrFail($this->form->id);
                 $branch->update($data);
                 $message = 'Sucursal actualizada correctamente.';
             } else {
-                $company = Company::first();
+                $company = Empresa::first();
 
                 if (!$company) {
                     $this->dispatch('toast', type: 'warning', message: 'Primero registre los datos de la Empresa antes de crear una sucursal.');
@@ -49,7 +49,7 @@ class LivewireBranchForm extends Component
                 }
 
                 $data['id_company'] = $company->id;
-                Branch::create($data);
+                Sucursal::create($data);
                 $message = 'Sucursal registrada correctamente.';
             }
 

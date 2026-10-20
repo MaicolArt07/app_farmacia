@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Company;
+use App\Models\Empresa;
 use Illuminate\Console\Command;
 
 /**
@@ -23,7 +23,7 @@ class SiatRequestCuisCommand extends Command
 
     public function handle(): int
     {
-        $company = Company::current();
+        $company = Empresa::current();
 
         if (!$company) {
             $this->error('No hay datos de Empresa registrados. Complete el formulario en /company primero.');

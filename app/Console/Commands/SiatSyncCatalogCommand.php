@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Company;
+use App\Models\Empresa;
 use Illuminate\Console\Command;
 
 /**
@@ -30,7 +30,7 @@ class SiatSyncCatalogCommand extends Command
 
     public function handle(): int
     {
-        $company = Company::current();
+        $company = Empresa::current();
 
         if (!$company || !$company->codigo_sistema || !$company->cuis) {
             $this->error('Falta Empresa, "codigo_sistema" o "cuis". Corra primero: php artisan pharmacy:siat-cuis');

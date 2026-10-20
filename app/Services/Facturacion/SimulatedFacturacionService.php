@@ -2,7 +2,7 @@
 
 namespace App\Services\Facturacion;
 
-use App\Models\Company;
+use App\Models\Empresa;
 use App\Models\Invoice;
 use App\Models\Venta;
 use Illuminate\Support\Facades\Auth;
@@ -28,7 +28,7 @@ class SimulatedFacturacionService implements FacturacionServiceInterface
 
         $invoice = $existing ?: new Invoice(['id_sale' => $sale->id]);
 
-        $company = Company::current();
+        $company = Empresa::current();
 
         $invoice->fill([
             'id_user' => Auth::id(),

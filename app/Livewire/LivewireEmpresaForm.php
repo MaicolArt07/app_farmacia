@@ -2,17 +2,17 @@
 
 namespace App\Livewire;
 
-use App\Models\Company;
+use App\Models\Empresa;
 use Livewire\Component;
-use App\Livewire\Form\CompanyForm;
+use App\Livewire\Form\EmpresaForm;
 
-class LivewireCompanyForm extends Component
+class LivewireEmpresaForm extends Component
 {
-    public CompanyForm $form;
+    public EmpresaForm $form;
 
     public function mount()
     {
-        $company = Company::first();
+        $company = Empresa::first();
 
         if ($company) {
             $this->form->fillForm($company);
@@ -30,8 +30,8 @@ class LivewireCompanyForm extends Component
                 'nombre_comercial' => $this->form->nombre_comercial ?: null,
                 'actividad_economica' => $this->form->actividad_economica ?: null,
                 'email' => $this->form->email ?: null,
-                'phone' => $this->form->phone ?: null,
-                'address' => $this->form->address ?: null,
+                'telefono' => $this->form->phone ?: null,
+                'direccion' => $this->form->address ?: null,
                 'codigo_sistema' => $this->form->codigo_sistema ?: null,
                 'numero_solicitud' => $this->form->numero_solicitud ?: null,
                 'cuis' => $this->form->cuis ?: null,
@@ -41,14 +41,14 @@ class LivewireCompanyForm extends Component
                 'wsdl_operaciones' => $this->form->wsdl_operaciones ?: null,
                 'wsdl_codigos' => $this->form->wsdl_codigos ?: null,
                 'wsdl_factura_compra_venta' => $this->form->wsdl_factura_compra_venta ?: null,
-                'state' => 1,
+                'estado' => 1,
             ];
 
             if ($this->form->id) {
-                $company = Company::findOrFail($this->form->id);
+                $company = Empresa::findOrFail($this->form->id);
                 $company->update($data);
             } else {
-                $company = Company::create($data);
+                $company = Empresa::create($data);
                 $this->form->id = $company->id;
             }
 

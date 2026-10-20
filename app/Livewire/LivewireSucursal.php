@@ -2,11 +2,11 @@
 
 namespace App\Livewire;
 
-use App\Models\Branch;
+use App\Models\Sucursal;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class LivewireBranch extends Component
+class LivewireSucursal extends Component
 {
     use WithPagination;
 
@@ -21,12 +21,12 @@ class LivewireBranch extends Component
 
     public function render()
     {
-        $query = Branch::query();
+        $query = Sucursal::query();
 
         if (!empty($this->search)) {
             $query->where(function ($q) {
-                $q->where('name', 'like', "%{$this->search}%")
-                  ->orWhere('address', 'like', "%{$this->search}%");
+                $q->where('nombre', 'like', "%{$this->search}%")
+                  ->orWhere('direccion', 'like', "%{$this->search}%");
             });
         }
 
@@ -38,14 +38,14 @@ class LivewireBranch extends Component
     public function delete($id)
     {
         try {
-            $branch = Branch::findOrFail($id);
-            $branch->state = $branch->state ? 0 : 1;
+            $branch = Sucursal::findOrFail($id);
+            $branch->estado = $branch->estado ? 0 : 1;
             $branch->save();
 
             $this->dispatch(
                 'toast',
-                type: $branch->state ? 'success' : 'warning',
-                message: $branch->state
+                type: $branch->estado ? 'success' : 'warning',
+                message: $branch->estado
                     ? 'Sucursal activada correctamente.'
                     : 'Sucursal desactivada correctamente.'
             );

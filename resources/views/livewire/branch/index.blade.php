@@ -36,14 +36,14 @@
                             {{ $item->punto_venta }}
                         </td>
                         <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
-                            {{ $item->name }}
+                            {{ $item->nombre }}
                         </td>
                         <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
-                            {{ $item->address ?: '-' }}
+                            {{ $item->direccion ?: '-' }}
                         </td>
                         <td class="px-4 py-3 text-center">
-                            <span class="rounded-full px-3 py-1 text-xs font-medium {{ $item->state ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' }}">
-                                {{ $item->state ? 'Activa' : 'Inactiva' }}
+                            <span class="rounded-full px-3 py-1 text-xs font-medium {{ $item->estado ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' }}">
+                                {{ $item->estado ? 'Activa' : 'Inactiva' }}
                             </span>
                         </td>
                         <td class="px-4 py-3">
@@ -57,11 +57,11 @@
                                 <button
                                     type="button"
                                     x-on:click.prevent="confirmAction({
-                                        text: '¿Deseas {{ $item->state ? 'desactivar' : 'activar' }} este registro?',
-                                        confirmText: 'Sí, {{ $item->state ? 'desactivar' : 'activar' }}',
+                                        text: '¿Deseas {{ $item->estado ? 'desactivar' : 'activar' }} este registro?',
+                                        confirmText: 'Sí, {{ $item->estado ? 'desactivar' : 'activar' }}',
                                     }).then((ok) => { if (ok) $wire.delete({{ $item->id }}) })"
-                                    class="{{ $item->state ? 'text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300' : 'text-gray-400 dark:text-zinc-500' }} cursor-pointer">
-                                    <i class="bi {{ $item->state ? 'bi-trash' : 'bi-arrow-clockwise' }} text-lg"></i>
+                                    class="{{ $item->estado ? 'text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300' : 'text-gray-400 dark:text-zinc-500' }} cursor-pointer">
+                                    <i class="bi {{ $item->estado ? 'bi-trash' : 'bi-arrow-clockwise' }} text-lg"></i>
                                 </button>
                             </div>
                         </td>

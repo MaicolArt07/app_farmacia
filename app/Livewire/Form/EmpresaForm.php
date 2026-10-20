@@ -4,7 +4,7 @@ namespace App\Livewire\Form;
 
 use Livewire\Form;
 
-class CompanyForm extends Form
+class EmpresaForm extends Form
 {
     public $id = null;
     public $nit = '';
@@ -65,8 +65,8 @@ class CompanyForm extends Form
         $this->nombre_comercial = $company->nombre_comercial;
         $this->actividad_economica = $company->actividad_economica;
         $this->email = $company->email;
-        $this->phone = $company->phone;
-        $this->address = $company->address;
+        $this->phone = $company->telefono;
+        $this->address = $company->direccion;
         $this->codigo_sistema = $company->codigo_sistema;
         $this->numero_solicitud = $company->numero_solicitud;
         $this->cuis = $company->cuis;
@@ -76,6 +76,6 @@ class CompanyForm extends Form
         $this->wsdl_operaciones = $company->wsdl_operaciones;
         $this->wsdl_codigos = $company->wsdl_codigos;
         $this->wsdl_factura_compra_venta = $company->wsdl_factura_compra_venta;
-        $this->state = $company->state;
+        $this->state = $company->estado;
     }
 }
