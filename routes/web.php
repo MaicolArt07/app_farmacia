@@ -3,8 +3,8 @@
 use App\Livewire\LivewireHome;
 use App\Livewire\LivewirePermissions;
 use App\Livewire\LivewirePermissionForm;
-use App\Livewire\LivewirePerson;
-use App\Livewire\LivewirePersonForm;
+use App\Livewire\LivewirePersona;
+use App\Livewire\LivewirePersonaForm;
 use App\Livewire\LivewireUsers;
 use App\Livewire\LivewireUserForm;
 use App\Livewire\LivewireCliente;
@@ -261,9 +261,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/permissions/create', LivewirePermissionForm::class)->middleware('can:Ver Permisos')->name('permissions.create');
     Route::get('/permissions/{permission}/edit', LivewirePermissionForm::class)->middleware('can:Ver Permisos')->name('permissions.edit');
 
-    Route::get('/person', LivewirePerson::class)->middleware('can:Ver Persona')->name('person');
-    Route::get('/person/create', LivewirePersonForm::class)->middleware('can:Ver Persona')->name('person.create');
-    Route::get('/person/{person}/edit', LivewirePersonForm::class)->middleware('can:Ver Persona')->name('person.edit');
+    Route::get('/personas', LivewirePersona::class)->middleware('can:Ver Persona')->name('personas');
+    Route::get('/personas/create', LivewirePersonaForm::class)->middleware('can:Ver Persona')->name('personas.create');
+    Route::get('/personas/{person}/edit', LivewirePersonaForm::class)->middleware('can:Ver Persona')->name('personas.edit');
 
     Route::get('settings/profile', Profile::class)->name('settings.profile');
     Route::get('settings/password', Password::class)->name('settings.password');

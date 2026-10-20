@@ -65,7 +65,7 @@
 
                         <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
                             @if($item->client)
-                                {{ $item->client?->person?->name }} {{ $item->client?->person?->lastname }}
+                                {{ $item->client?->person?->nombre }} {{ $item->client?->person?->apellido }}
                                 <div class="text-xs text-gray-500 dark:text-zinc-400">
                                     CI: {{ $item->client?->person?->ci ?? '-' }}
                                 </div>

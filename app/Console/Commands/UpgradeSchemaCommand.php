@@ -53,23 +53,23 @@ class UpgradeSchemaCommand extends Command
 
     private function fixOrphanCountry(): void
     {
-        $this->line('Verificando país huérfano en person.id_country...');
+        $this->line('Verificando país huérfano en personas.id_country...');
 
         $bolivia = DB::table('country')->where('name', 'Bolivia')->first();
 
         if (!$bolivia) {
-            $this->warnings[] = 'No existe un país "Bolivia" en la tabla country; no se corrigió person.id_country.';
+            $this->warnings[] = 'No existe un país "Bolivia" en la tabla country; no se corrigió personas.id_country.';
             return;
         }
 
         $validIds = DB::table('country')->pluck('id')->all();
 
-        $affected = DB::table('person')
+        $affected = DB::table('personas')
             ->whereNotIn('id_country', $validIds)
             ->update(['id_country' => $bolivia->id]);
 
         if ($affected > 0) {
-            $this->info("  -> {$affected} fila(s) de person reapuntadas a country '{$bolivia->name}' (id={$bolivia->id}).");
+            $this->info("  -> {$affected} fila(s) de personas reapuntadas a country '{$bolivia->name}' (id={$bolivia->id}).");
         } else {
             $this->line('  -> sin filas huérfanas.');
         }
@@ -113,24 +113,24 @@ class UpgradeSchemaCommand extends Command
 
     private function fixPersonCreatedAtTypo(): void
     {
-        $this->line('Corrigiendo person.createad_at -> created_at...');
+        $this->line('Corrigiendo personas.createad_at -> created_at...');
 
-        if (!Schema::hasColumn('person', 'createad_at')) {
+        if (!Schema::hasColumn('personas', 'createad_at')) {
             $this->line('  -> ya está corregido.');
             return;
         }
 
-        DB::statement('ALTER TABLE `person` CHANGE `createad_at` `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP');
+        DB::statement('ALTER TABLE `personas` CHANGE `createad_at` `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP');
         $this->info('  -> columna renombrada.');
     }
 
     private function fixPersonIdType(): void
     {
-        $this->line('Normalizando tipo de person.id a BIGINT UNSIGNED...');
+        $this->line('Normalizando tipo de personas.id a BIGINT UNSIGNED...');
 
         $column = DB::selectOne(
             "SELECT DATA_TYPE, COLUMN_TYPE FROM information_schema.COLUMNS
-             WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'person' AND COLUMN_NAME = 'id'",
+             WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'personas' AND COLUMN_NAME = 'id'",
             [DB::getDatabaseName()]
         );
 
@@ -139,7 +139,7 @@ class UpgradeSchemaCommand extends Command
             return;
         }
 
-        DB::statement('ALTER TABLE `person` MODIFY `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT');
+        DB::statement('ALTER TABLE `personas` MODIFY `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT');
         $this->info('  -> tipo corregido (era ' . ($column->COLUMN_TYPE ?? 'desconocido') . ').');
     }
 
@@ -226,10 +226,10 @@ class UpgradeSchemaCommand extends Command
         $this->line('Agregando foreign keys reales...');
 
         $definitions = [
-            ['person', 'id_country', 'country', 'id', 'RESTRICT'],
-            ['clientes', 'id_person', 'person', 'id', 'RESTRICT'],
-            ['proveedores', 'id_person', 'person', 'id', 'RESTRICT'],
-            ['users', 'id_person', 'person', 'id', 'SET NULL'],
+            ['personas', 'id_country', 'country', 'id', 'RESTRICT'],
+            ['clientes', 'id_person', 'personas', 'id', 'RESTRICT'],
+            ['proveedores', 'id_person', 'personas', 'id', 'RESTRICT'],
+            ['users', 'id_person', 'personas', 'id', 'SET NULL'],
             ['products', 'id_category', 'categorias', 'id', 'RESTRICT'],
             ['products', 'id_laboratory', 'laboratorios', 'id', 'RESTRICT'],
             ['products', 'id_presentation', 'presentaciones', 'id', 'RESTRICT'],

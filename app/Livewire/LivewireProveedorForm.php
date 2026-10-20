@@ -2,7 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Models\Person;
+use App\Models\Persona;
 use App\Models\Proveedor;
 use Livewire\Component;
 use App\Livewire\Form\ProveedorForm;
@@ -25,7 +25,7 @@ class LivewireProveedorForm extends Component
 
             if ($supplier->person) {
                 $this->selectedPersonLabel =
-                    trim($supplier->person->name . ' ' . $supplier->person->lastname) . ' - CI: ' . $supplier->person->ci;
+                    trim($supplier->person->nombre . ' ' . $supplier->person->apellido) . ' - CI: ' . $supplier->person->ci;
             }
         }
     }
@@ -37,11 +37,11 @@ class LivewireProveedorForm extends Component
             return;
         }
 
-        $this->personResults = Person::query()
-            ->where('state', 1)
+        $this->personResults = Persona::query()
+            ->where('estado', 1)
             ->where(function ($q) {
-                $q->where('name', 'like', "%{$this->personSearch}%")
-                  ->orWhere('lastname', 'like', "%{$this->personSearch}%")
+                $q->where('nombre', 'like', "%{$this->personSearch}%")
+                  ->orWhere('apellido', 'like', "%{$this->personSearch}%")
                   ->orWhere('ci', 'like', "%{$this->personSearch}%");
             })
             ->whereDoesntHave('supplier', function ($q) {
@@ -54,7 +54,7 @@ class LivewireProveedorForm extends Component
             ->map(function ($person) {
                 return [
                     'id' => $person->id,
-                    'label' => trim($person->name . ' ' . $person->lastname) . ' - CI: ' . $person->ci,
+                    'label' => trim($person->nombre . ' ' . $person->apellido) . ' - CI: ' . $person->ci,
                 ];
             })
             ->toArray();
@@ -62,10 +62,10 @@ class LivewireProveedorForm extends Component
 
     public function selectPerson($id)
     {
-        $person = Person::findOrFail($id);
+        $person = Persona::findOrFail($id);
 
         $this->form->id_person = $person->id;
-        $this->selectedPersonLabel = trim($person->name . ' ' . $person->lastname) . ' - CI: ' . $person->ci;
+        $this->selectedPersonLabel = trim($person->nombre . ' ' . $person->apellido) . ' - CI: ' . $person->ci;
         $this->personSearch = '';
         $this->personResults = [];
     }

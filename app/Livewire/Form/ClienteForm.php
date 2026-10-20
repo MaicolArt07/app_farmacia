@@ -17,7 +17,7 @@ class ClienteForm extends Form
     public function rules()
     {
         return [
-            'form.id_person' => 'required|exists:person,id',
+            'form.id_person' => 'required|exists:personas,id',
             'form.code' => 'required|string|max:30',
             'form.tipo' => 'required|in:natural,company',
             'form.nit' => 'nullable|string|max:30',

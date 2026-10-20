@@ -33,7 +33,7 @@ class DailyBookSalesSheet implements FromCollection, WithHeadings, WithMapping, 
         return [
             optional($sale->sale_date)->format('d/m/Y H:i'),
             $sale->client
-                ? trim(($sale->client->person?->name ?? '') . ' ' . ($sale->client->person?->lastname ?? ''))
+                ? trim(($sale->client->person?->nombre ?? '') . ' ' . ($sale->client->person?->apellido ?? ''))
                 : 'Consumidor final',
             $sale->user?->name,
             $sale->payment_method,

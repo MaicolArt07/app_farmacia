@@ -203,7 +203,7 @@
         <div class="signature-block">
             <div class="signature-line"></div>
             <strong>Recibido por (PBT):</strong><br>
-            Nombre: {{ $note->employee->person->name ?? '' }}<br>
+            Nombre: {{ $note->employee->person->nombre ?? '' }}<br>
             CI: {{ $note->employee->person->ci ?? '' }}<br>
             Cargo: {{ $note->employee->employee_position->name ?? '' }}
         </div>

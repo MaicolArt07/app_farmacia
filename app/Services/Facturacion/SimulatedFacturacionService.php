@@ -74,7 +74,7 @@ class SimulatedFacturacionService implements FacturacionServiceInterface
             $person = $client->person;
 
             $nit = $client->nit ?: ($person->ci ?? null);
-            $razonSocial = $person ? trim($person->name . ' ' . $person->lastname) : null;
+            $razonSocial = $person ? trim($person->nombre . ' ' . $person->apellido) : null;
             $tipoDocumento = $tipoDocumento ?? ($client->nit ? 'NIT' : 'CI');
         }
 

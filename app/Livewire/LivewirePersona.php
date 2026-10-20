@@ -4,9 +4,9 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Models\Person;
+use App\Models\Persona;
 
-class LivewirePerson extends Component
+class LivewirePersona extends Component
 {
     use WithPagination;
 
@@ -16,17 +16,17 @@ class LivewirePerson extends Component
 
     public function render()
     {
-        $query = Person::query();
+        $query = Persona::query();
 
         if (!empty($this->search)) {
             $query->where(function ($q) {
-                $q->where('name', 'like', "%{$this->search}%")
-                  ->orWhere('lastname', 'like', "%{$this->search}%")
+                $q->where('nombre', 'like', "%{$this->search}%")
+                  ->orWhere('apellido', 'like', "%{$this->search}%")
                   ->orWhere('ci', 'like', "%{$this->search}%");
             });
         }
 
-        return view('livewire.person.index', [
+        return view('livewire.persona.index', [
             'persons' => $query->paginate(10),
         ]);
     }
@@ -34,17 +34,17 @@ class LivewirePerson extends Component
     public function delete($id)
     {
         try {
-            $person = Person::findOrFail($id);
-            $person->state = $person->state ? 0 : 1;
+            $person = Persona::findOrFail($id);
+            $person->estado = $person->estado ? 0 : 1;
             $person->save();
 
-            $message = $person->state
+            $message = $person->estado
                 ? 'La persona fue activada correctamente.'
                 : 'La persona fue desactivada correctamente.';
 
             $this->dispatch(
                 'toast',
-                type: $person->state ? 'success' : 'warning',
+                type: $person->estado ? 'success' : 'warning',
                 message: $message
             );
         } catch (\Throwable $e) {

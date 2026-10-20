@@ -29,15 +29,15 @@ class LivewireGlobalSearch extends Component
         $this->clients = auth()->user()->can('Ver Clientes')
             ? Cliente::with('person')
                 ->whereHas('person', function ($q) use ($term) {
-                    $q->where('name', 'like', "%{$term}%")
-                        ->orWhere('lastname', 'like', "%{$term}%")
+                    $q->where('nombre', 'like', "%{$term}%")
+                        ->orWhere('apellido', 'like', "%{$term}%")
                         ->orWhere('ci', 'like', "%{$term}%");
                 })
                 ->limit(5)
                 ->get()
                 ->map(fn ($client) => [
                     'id' => $client->id,
-                    'label' => trim($client->person->name . ' ' . $client->person->lastname),
+                    'label' => trim($client->person->nombre . ' ' . $client->person->apellido),
                 ])
                 ->toArray()
             : [];

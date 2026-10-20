@@ -96,8 +96,8 @@
                         @endcan
 
                         @can('Ver Persona')
-                        <a href="{{ route('person') }}" wire:navigate title="{{ __('Personas') }}"
-                            class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('person*') ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-white font-semibold' : 'text-zinc-700 dark:text-zinc-300' }}"
+                        <a href="{{ route('personas') }}" wire:navigate title="{{ __('Personas') }}"
+                            class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('personas*') ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-white font-semibold' : 'text-zinc-700 dark:text-zinc-300' }}"
                             :class="sidebarCollapsed ? 'justify-center' : 'gap-2'">
                             <i class="bi bi-person-badge-fill shrink-0 text-base"></i>
                             <span class="overflow-hidden whitespace-nowrap transition-all duration-200" :class="sidebarCollapsed ? 'w-0 opacity-0' : 'opacity-100'">{{ __('Personas') }}</span>
@@ -536,7 +536,7 @@
                             </flux:navlist.item>
                             @endcan
                             @can('Ver Persona')
-                            <flux:navlist.item :href="route('person')" :current="request()->routeIs('person*')" wire:navigate class="rounded-xl px-3 py-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                            <flux:navlist.item :href="route('personas')" :current="request()->routeIs('personas*')" wire:navigate class="rounded-xl px-3 py-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800">
                                 <i class="bi bi-person-badge-fill me-2"></i> {{ __('Personas') }}
                             </flux:navlist.item>
                             @endcan

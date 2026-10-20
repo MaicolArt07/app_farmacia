@@ -46,7 +46,7 @@ class LivewireSaleForm extends Component
             $this->form->fillForm($sale);
 
             if ($sale->client) {
-                $this->selectedClientLabel = trim(($sale->client->person?->name ?? '') . ' ' . ($sale->client->person?->lastname ?? '')) .
+                $this->selectedClientLabel = trim(($sale->client->person?->nombre ?? '') . ' ' . ($sale->client->person?->apellido ?? '')) .
                     ' - CI: ' . ($sale->client->person?->ci ?? '-') .
                     ' - Cod: ' . $sale->client->code;
             }
@@ -74,14 +74,14 @@ class LivewireSaleForm extends Component
         }
 
         $this->clientResults = Cliente::with('person')
-            ->where('state', 1)
+            ->where('estado', 1)
             ->where(function ($q) {
                 $q->where('code', 'like', "%{$this->clientSearch}%")
                     ->orWhere('nit', 'like', "%{$this->clientSearch}%")
                     ->orWhere('email', 'like', "%{$this->clientSearch}%")
                     ->orWhereHas('person', function ($sub) {
-                        $sub->where('name', 'like', "%{$this->clientSearch}%")
-                            ->orWhere('lastname', 'like', "%{$this->clientSearch}%")
+                        $sub->where('nombre', 'like', "%{$this->clientSearch}%")
+                            ->orWhere('apellido', 'like', "%{$this->clientSearch}%")
                             ->orWhere('ci', 'like', "%{$this->clientSearch}%");
                     });
             })
@@ -90,7 +90,7 @@ class LivewireSaleForm extends Component
             ->map(function ($client) {
                 return [
                     'id' => $client->id,
-                    'label' => trim(($client->person?->name ?? '') . ' ' . ($client->person?->lastname ?? '')) .
+                    'label' => trim(($client->person?->nombre ?? '') . ' ' . ($client->person?->apellido ?? '')) .
                         ' - CI: ' . ($client->person?->ci ?? '-') .
                         ' - Cod: ' . $client->code,
                 ];
@@ -103,7 +103,7 @@ class LivewireSaleForm extends Component
         $client = Cliente::with('person')->findOrFail($id);
 
         $this->form->id_client = $client->id;
-        $this->selectedClientLabel = trim(($client->person?->name ?? '') . ' ' . ($client->person?->lastname ?? '')) .
+        $this->selectedClientLabel = trim(($client->person?->nombre ?? '') . ' ' . ($client->person?->apellido ?? '')) .
             ' - CI: ' . ($client->person?->ci ?? '-') .
             ' - Cod: ' . $client->code;
 

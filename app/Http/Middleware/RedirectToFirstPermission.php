@@ -23,7 +23,7 @@ class RedirectToFirstPermission
             'Ver Permisos' => 'permissions',
             'Ver Equipos' => 'equipment',
             'Ver Notas de Recepción' => 'reception-note',
-            'Ver Personas' => 'person',
+            'Ver Personas' => 'personas',
             'Ver Empleados' => 'employee',
             'Ver Empresas' => 'company',
             'Ver Contacto de Clientes' => 'contact-client',

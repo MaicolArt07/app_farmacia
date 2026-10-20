@@ -17,7 +17,7 @@ class ProveedorForm extends Form
     public function rules()
     {
         return [
-            'form.id_person' => 'required|exists:person,id',
+            'form.id_person' => 'required|exists:personas,id',
             'form.razon_social' => 'required|string|max:150',
             'form.cargo_contacto' => 'nullable|string|max:100',
             'form.nit' => 'nullable|string|max:30',

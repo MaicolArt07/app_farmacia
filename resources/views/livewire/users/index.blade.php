@@ -39,7 +39,7 @@
                         <td class="border border-gray-200 px-4 py-2 text-sm text-gray-800 dark:border-zinc-700 dark:text-zinc-100">{{ $user->email }}</td>
                         <td class="border border-gray-200 px-4 py-2 text-sm text-gray-800 dark:border-zinc-700 dark:text-zinc-100">
                             @if ($user->person)
-                                {{ trim($user->person->name . ' ' . $user->person->lastname) }}
+                                {{ trim($user->person->nombre . ' ' . $user->person->apellido) }}
                             @else
                                 <span class="text-gray-400 dark:text-zinc-500">&mdash;</span>
                             @endif

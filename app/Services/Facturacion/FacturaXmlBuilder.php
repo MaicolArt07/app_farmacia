@@ -88,7 +88,7 @@ class FacturaXmlBuilder
         $person = $client?->person;
 
         $nombreRazonSocial = $person
-            ? trim($person->name . ' ' . $person->lastname)
+            ? trim($person->nombre . ' ' . $person->apellido)
             : config('facturacion.consumidor_final.razon_social', 'SIN NOMBRE');
 
         $codigoTipoDocumentoIdentidad = $client?->nit ? 5 : 1; // 5=NIT, 1=CI (ver catálogo sincronizado)

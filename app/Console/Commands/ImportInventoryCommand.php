@@ -152,7 +152,7 @@ class ImportInventoryCommand extends Command
             DB::table($table)->truncate();
         }
 
-        DB::table('person')
+        DB::table('personas')
             ->whereNotIn('id', DB::table('users')->whereNotNull('id_person')->pluck('id_person'))
             ->delete();
 

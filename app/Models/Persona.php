@@ -4,17 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Person extends Model
+class Persona extends Model
 {
-    protected $table = 'person';
+    protected $table = 'personas';
     protected $fillable = [
         'id_country',
-        'name',
-        'lastname',
+        'nombre',
+        'apellido',
         'ci',
-        'phone',
-        'address',
-        'state'
+        'telefono',
+        'direccion',
+        'estado'
     ];
 
     public function country()

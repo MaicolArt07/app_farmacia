@@ -41,7 +41,7 @@ class LivewirePurchaseForm extends Component
 
             if ($purchase->supplier) {
                 $this->selectedSupplierLabel = $purchase->supplier->razon_social . ' - ' .
-                    trim(($purchase->supplier->person?->name ?? '') . ' ' . ($purchase->supplier->person?->lastname ?? ''));
+                    trim(($purchase->supplier->person?->nombre ?? '') . ' ' . ($purchase->supplier->person?->apellido ?? ''));
             }
 
             foreach ($purchase->details as $detail) {
@@ -72,8 +72,8 @@ class LivewirePurchaseForm extends Component
                 $q->where('razon_social', 'like', "%{$this->supplierSearch}%")
                   ->orWhere('nit', 'like', "%{$this->supplierSearch}%")
                   ->orWhereHas('person', function ($sub) {
-                      $sub->where('name', 'like', "%{$this->supplierSearch}%")
-                          ->orWhere('lastname', 'like', "%{$this->supplierSearch}%")
+                      $sub->where('nombre', 'like', "%{$this->supplierSearch}%")
+                          ->orWhere('apellido', 'like', "%{$this->supplierSearch}%")
                           ->orWhere('ci', 'like', "%{$this->supplierSearch}%");
                   });
             })
@@ -83,7 +83,7 @@ class LivewirePurchaseForm extends Component
                 return [
                     'id' => $supplier->id,
                     'label' => $supplier->razon_social . ' - ' .
-                        trim(($supplier->person?->name ?? '') . ' ' . ($supplier->person?->lastname ?? '')),
+                        trim(($supplier->person?->nombre ?? '') . ' ' . ($supplier->person?->apellido ?? '')),
                 ];
             })
             ->toArray();
@@ -95,7 +95,7 @@ class LivewirePurchaseForm extends Component
 
         $this->form->id_supplier = $supplier->id;
         $this->selectedSupplierLabel = $supplier->razon_social . ' - ' .
-            trim(($supplier->person?->name ?? '') . ' ' . ($supplier->person?->lastname ?? ''));
+            trim(($supplier->person?->nombre ?? '') . ' ' . ($supplier->person?->apellido ?? ''));
 
         $this->supplierSearch = '';
         $this->supplierResults = [];

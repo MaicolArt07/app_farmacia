@@ -3,20 +3,20 @@
 namespace App\Livewire;
 
 use Livewire\Component;
-use App\Models\Person;
-use App\Livewire\Form\PersonForm;
+use App\Models\Persona;
+use App\Livewire\Form\PersonaForm;
 use App\Models\Country;
 
-class LivewirePersonForm extends Component
+class LivewirePersonaForm extends Component
 {
-    public PersonForm $form;
+    public PersonaForm $form;
 
     public function mount($person = null)
     {
         $this->form->resetForm();
 
         if ($person) {
-            $person = Person::findOrFail($person);
+            $person = Persona::findOrFail($person);
             $this->form->fillForm($person);
         }
     }
@@ -27,17 +27,17 @@ class LivewirePersonForm extends Component
 
         try {
             if ($this->form->id) {
-                $person = Person::findOrFail($this->form->id);
+                $person = Persona::findOrFail($this->form->id);
                 $person->update($this->form->toArray());
                 $message = 'Persona actualizada correctamente.';
             } else {
-                Person::create($this->form->toArray());
+                Persona::create($this->form->toArray());
                 $message = 'Persona registrada correctamente.';
             }
 
             $this->dispatch('toast', type: 'success', message: $message);
 
-            return redirect()->route('person');
+            return redirect()->route('personas');
         } catch (\Throwable $e) {
             $this->dispatch(
                 'toast',
@@ -49,12 +49,12 @@ class LivewirePersonForm extends Component
 
     public function cancel()
     {
-        return redirect()->route('person');
+        return redirect()->route('personas');
     }
 
     public function render()
     {
-        return view('livewire.person.form', [
+        return view('livewire.persona.form', [
             'countries' => Country::where('state', 1)->get(),
         ]);
     }

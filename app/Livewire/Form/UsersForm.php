@@ -18,7 +18,7 @@ class UsersForm extends Form
     public function rules()
     {
         $rules = [
-            'form.id_person' => 'nullable|exists:person,id',
+            'form.id_person' => 'nullable|exists:personas,id',
             'form.name' => 'required|string|max:255',
             'form.email' => $this->updateMode
                 ? 'required|email|max:255|unique:users,email,' . $this->id

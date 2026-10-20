@@ -1,6 +1,6 @@
 <div class="mx-auto max-w-4xl p-6">
     <div class="mb-6">
-        <a href="{{ route('person') }}" wire:navigate class="mb-2 inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
+        <a href="{{ route('personas') }}" wire:navigate class="mb-2 inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
             <i class="bi bi-arrow-left"></i> Volver a personas
         </a>
         <h1 class="text-xl font-semibold text-zinc-800 dark:text-zinc-100">
@@ -15,11 +15,11 @@
             <div class="space-y-1">
                 <label class="font-semibold text-zinc-700 dark:text-zinc-200">Nombre <span class="text-red-600">*</span></label>
 
-                <input type="text" wire:model="form.name"
+                <input type="text" wire:model="form.nombre"
                        class="w-full rounded border border-gray-300 bg-white px-3 py-2 text-zinc-800 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-400"
                        placeholder="Nombre">
 
-                @error('form.name')
+                @error('form.nombre')
                     <span class="text-sm text-red-600">{{ $message }}</span>
                 @enderror
             </div>
@@ -28,11 +28,11 @@
             <div class="space-y-1">
                 <label class="font-semibold text-zinc-700 dark:text-zinc-200">Apellido <span class="text-red-600">*</span></label>
 
-                <input type="text" wire:model="form.lastname"
+                <input type="text" wire:model="form.apellido"
                        class="w-full rounded border border-gray-300 bg-white px-3 py-2 text-zinc-800 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-400"
                        placeholder="Apellido">
 
-                @error('form.lastname')
+                @error('form.apellido')
                     <span class="text-sm text-red-600">{{ $message }}</span>
                 @enderror
             </div>
@@ -54,11 +54,11 @@
             <div class="space-y-1">
                 <label class="font-semibold text-zinc-700 dark:text-zinc-200">Telefono <span class="text-red-600">*</span></label>
 
-                <input type="text" wire:model="form.phone"
+                <input type="text" wire:model="form.telefono"
                        class="w-full rounded border border-gray-300 bg-white px-3 py-2 text-zinc-800 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-400"
                        placeholder="Telefono">
 
-                @error('form.phone')
+                @error('form.telefono')
                     <span class="text-sm text-red-600">{{ $message }}</span>
                 @enderror
             </div>
@@ -83,11 +83,11 @@
             <div class="space-y-1 md:col-span-2 xl:col-span-1">
                 <label class="font-semibold text-zinc-700 dark:text-zinc-200">Direccion <span class="text-red-600">*</span></label>
 
-                <textarea wire:model="form.address" rows="1"
+                <textarea wire:model="form.direccion" rows="1"
                           class="w-full rounded border border-gray-300 bg-white px-3 py-2 text-zinc-800 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-400"
                           placeholder="Direccion"></textarea>
 
-                @error('form.address')
+                @error('form.direccion')
                     <span class="text-sm text-red-600">{{ $message }}</span>
                 @enderror
             </div>

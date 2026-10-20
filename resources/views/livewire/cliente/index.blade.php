@@ -31,7 +31,7 @@
                 @forelse ($clients as $item)
                     <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/70">
                         <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
-                            {{ $item->person?->name }} {{ $item->person?->lastname }}
+                            {{ $item->person?->nombre }} {{ $item->person?->apellido }}
                             <div class="text-xs text-gray-500 dark:text-zinc-400">
                                 CI: {{ $item->person?->ci ?? '-' }}
                             </div>
