@@ -4,7 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Product;
 use App\Models\Categoria;
-use App\Models\Lot;
+use App\Models\Lote;
 use App\Models\InventoryMovement;
 use Livewire\Component;
 use App\Models\Laboratorio;
@@ -126,15 +126,15 @@ class LivewireProductForm extends Component
                 $message = 'Producto registrado correctamente.';
 
                 if ($this->registerInitialStock) {
-                    $lot = Lot::create([
+                    $lot = Lote::create([
                         'id_product' => $product->id,
-                        'batch_code' => $this->initial_batch_code,
-                        'purchase_price' => $this->initial_purchase_price,
-                        'sale_price' => $this->form->sale_price,
-                        'quantity_in' => $this->initial_quantity,
-                        'quantity_available' => $this->initial_quantity,
-                        'expiration_date' => $this->initial_expiration_date ?: null,
-                        'state' => 1,
+                        'codigo_lote' => $this->initial_batch_code,
+                        'precio_compra' => $this->initial_purchase_price,
+                        'precio_venta' => $this->form->sale_price,
+                        'cantidad_ingresada' => $this->initial_quantity,
+                        'cantidad_disponible' => $this->initial_quantity,
+                        'fecha_vencimiento' => $this->initial_expiration_date ?: null,
+                        'estado' => 1,
                     ]);
 
                     InventoryMovement::create([

@@ -23,7 +23,7 @@ class LivewireKardex extends Component
                 $q->where('name', 'like', "%{$this->search}%")
                   ->orWhere('code', 'like', "%{$this->search}%");
             })->orWhereHas('lot', function ($q) {
-                $q->where('batch_code', 'like', "%{$this->search}%");
+                $q->where('codigo_lote', 'like', "%{$this->search}%");
             });
         }
 

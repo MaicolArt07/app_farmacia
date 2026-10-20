@@ -2,7 +2,7 @@
 
 namespace App\Exports\Sheets;
 
-use App\Models\Lot;
+use App\Models\Lote;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -16,11 +16,11 @@ class NearExpirationLotsSheet implements FromCollection, WithHeadings, WithMappi
         $today = now()->toDateString();
         $limitDate = now()->addDays(30)->toDateString();
 
-        return Lot::with('product')
-            ->whereDate('expiration_date', '>=', $today)
-            ->whereDate('expiration_date', '<=', $limitDate)
-            ->where('quantity_available', '>', 0)
-            ->orderBy('expiration_date')
+        return Lote::with('product')
+            ->whereDate('fecha_vencimiento', '>=', $today)
+            ->whereDate('fecha_vencimiento', '<=', $limitDate)
+            ->where('cantidad_disponible', '>', 0)
+            ->orderBy('fecha_vencimiento')
             ->get();
     }
 
@@ -33,9 +33,9 @@ class NearExpirationLotsSheet implements FromCollection, WithHeadings, WithMappi
     {
         return [
             $lot->product?->name,
-            $lot->batch_code,
-            optional($lot->expiration_date)->format('d/m/Y'),
-            $lot->quantity_available,
+            $lot->codigo_lote,
+            optional($lot->fecha_vencimiento)->format('d/m/Y'),
+            $lot->cantidad_disponible,
         ];
     }
 

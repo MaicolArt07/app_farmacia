@@ -35,7 +35,7 @@ class KardexExport implements FromCollection, WithHeadings, WithMapping, ShouldA
         return [
             optional($movement->created_at)->format('d/m/Y H:i'),
             $movement->product?->name,
-            $movement->lot?->batch_code ?? '-',
+            $movement->lot?->codigo_lote ?? '-',
             $movement->movement_type,
             $movement->reference_type . ($movement->reference_id ? ' #' . $movement->reference_id : ''),
             (string) $movement->quantity,

@@ -17,7 +17,7 @@ class LowStockSheet implements FromCollection, WithHeadings, WithMapping, WithTi
             ->where('state', 1)
             ->get()
             ->filter(function ($product) {
-                $stock = $product->lots->where('state', 1)->sum('quantity_available');
+                $stock = $product->lots->where('estado', 1)->sum('cantidad_disponible');
                 return $stock <= $product->minimum_stock;
             })
             ->values();
@@ -30,7 +30,7 @@ class LowStockSheet implements FromCollection, WithHeadings, WithMapping, WithTi
 
     public function map($product): array
     {
-        $stock = $product->lots->where('state', 1)->sum('quantity_available');
+        $stock = $product->lots->where('estado', 1)->sum('cantidad_disponible');
 
         // string: evita que PhpSpreadsheet trate un stock igual a 0 (el
         // caso más importante de esta hoja) como null y deje la celda vacía.

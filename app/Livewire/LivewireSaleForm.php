@@ -2,7 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Models\Lot;
+use App\Models\Lote;
 use App\Models\Sale;
 use App\Models\Cliente;
 use App\Models\Product;
@@ -56,9 +56,9 @@ class LivewireSaleForm extends Component
                     'id_product' => $detail->id_product,
                     'id_lot' => $detail->id_lot,
                     'product_label' => $detail->product?->code . ' - ' . $detail->product?->name,
-                    'lot_label' => $detail->lot?->batch_code . ' | Vence: ' . optional($detail->lot?->expiration_date)->format('d/m/Y'),
+                    'lot_label' => $detail->lot?->codigo_lote . ' | Vence: ' . optional($detail->lot?->fecha_vencimiento)->format('d/m/Y'),
                     'quantity' => $detail->quantity,
-                    'available' => $detail->lot?->quantity_available ?? 0,
+                    'available' => $detail->lot?->cantidad_disponible ?? 0,
                     'sale_price' => (float) $detail->sale_price,
                     'subtotal' => (float) $detail->subtotal,
                 ];
@@ -138,14 +138,14 @@ class LivewireSaleForm extends Component
             ->limit(10)
             ->get()
             ->map(function ($product) {
-                $stock = Lot::where('id_product', $product->id)
-                    ->where('state', 1)
-                    ->where('quantity_available', '>', 0)
+                $stock = Lote::where('id_product', $product->id)
+                    ->where('estado', 1)
+                    ->where('cantidad_disponible', '>', 0)
                     ->where(function ($q) {
-                        $q->whereNull('expiration_date')
-                            ->orWhereDate('expiration_date', '>=', now()->toDateString());
+                        $q->whereNull('fecha_vencimiento')
+                            ->orWhereDate('fecha_vencimiento', '>=', now()->toDateString());
                     })
-                    ->sum('quantity_available');
+                    ->sum('cantidad_disponible');
 
                 return [
                     'id' => $product->id,
@@ -167,15 +167,15 @@ class LivewireSaleForm extends Component
     {
         $product = Product::findOrFail($id);
 
-        $availableLot = Lot::where('id_product', $product->id)
-            ->where('state', 1)
-            ->where('quantity_available', '>', 0)
+        $availableLot = Lote::where('id_product', $product->id)
+            ->where('estado', 1)
+            ->where('cantidad_disponible', '>', 0)
             ->where(function ($q) {
-                $q->whereNull('expiration_date')
-                    ->orWhereDate('expiration_date', '>=', now()->toDateString());
+                $q->whereNull('fecha_vencimiento')
+                    ->orWhereDate('fecha_vencimiento', '>=', now()->toDateString());
             })
-            ->orderByRaw('expiration_date IS NULL')
-            ->orderBy('expiration_date', 'asc')
+            ->orderByRaw('fecha_vencimiento IS NULL')
+            ->orderBy('fecha_vencimiento', 'asc')
             ->first();
 
         if (!$availableLot) {
@@ -183,17 +183,17 @@ class LivewireSaleForm extends Component
             return;
         }
 
-        $lotExpirationLabel = optional($availableLot->expiration_date)->format('d/m/Y') ?? 'Sin vencimiento';
+        $lotExpirationLabel = optional($availableLot->fecha_vencimiento)->format('d/m/Y') ?? 'Sin vencimiento';
 
         $this->details[] = [
             'id_product' => $product->id,
             'id_lot' => $availableLot->id,
             'product_label' => $product->code . ' - ' . $product->name . ($product->concentration ? ' | ' . $product->concentration : ''),
-            'lot_label' => $availableLot->batch_code . ' | Vence: ' . $lotExpirationLabel . ' | Stock: ' . $availableLot->quantity_available,
+            'lot_label' => $availableLot->codigo_lote . ' | Vence: ' . $lotExpirationLabel . ' | Stock: ' . $availableLot->cantidad_disponible,
             'quantity' => 1,
-            'available' => $availableLot->quantity_available,
-            'sale_price' => (float) $availableLot->sale_price,
-            'subtotal' => (float) $availableLot->sale_price,
+            'available' => $availableLot->cantidad_disponible,
+            'sale_price' => (float) $availableLot->precio_venta,
+            'subtotal' => (float) $availableLot->precio_venta,
         ];
 
         $this->productSearch = '';
@@ -338,12 +338,12 @@ class LivewireSaleForm extends Component
             ]);
 
             foreach ($this->details as $detail) {
-                $lot = Lot::where('id', $detail['id_lot'])
-                    ->where('state', 1)
-                    ->where('quantity_available', '>=', (int) $detail['quantity'])
+                $lot = Lote::where('id', $detail['id_lot'])
+                    ->where('estado', 1)
+                    ->where('cantidad_disponible', '>=', (int) $detail['quantity'])
                     ->where(function ($q) {
-                        $q->whereNull('expiration_date')
-                            ->orWhereDate('expiration_date', '>=', now()->toDateString());
+                        $q->whereNull('fecha_vencimiento')
+                            ->orWhereDate('fecha_vencimiento', '>=', now()->toDateString());
                     })
                     ->lockForUpdate()
                     ->first();
@@ -352,7 +352,7 @@ class LivewireSaleForm extends Component
                     throw new \Exception('Stock insuficiente o lote vencido.');
                 }
 
-                $stockBefore = $lot->quantity_available;
+                $stockBefore = $lot->cantidad_disponible;
 
                 SaleDetail::create([
                     'id_sale' => $sale->id,
@@ -363,7 +363,7 @@ class LivewireSaleForm extends Component
                     'subtotal' => $detail['subtotal'],
                 ]);
 
-                $lot->quantity_available -= (int) $detail['quantity'];
+                $lot->cantidad_disponible -= (int) $detail['quantity'];
                 $lot->save();
 
                 InventoryMovement::create([
@@ -375,7 +375,7 @@ class LivewireSaleForm extends Component
                     'reference_id' => $sale->id,
                     'quantity' => (int) $detail['quantity'],
                     'stock_before' => $stockBefore,
-                    'stock_after' => $lot->quantity_available,
+                    'stock_after' => $lot->cantidad_disponible,
                     'description' => 'Salida por venta #' . $sale->id,
                 ]);
             }

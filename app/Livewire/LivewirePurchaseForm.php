@@ -2,7 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Models\Lot;
+use App\Models\Lote;
 use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\Proveedor;
@@ -233,9 +233,9 @@ class LivewirePurchaseForm extends Component
                 $existingDetails = PurchaseDetail::where('id_purchase', $purchase->id)->get();
 
                 foreach ($existingDetails as $existingDetail) {
-                    $existingLot = Lot::where('id_product', $existingDetail->id_product)
-                        ->where('batch_code', $existingDetail->batch_code)
-                        ->where('expiration_date', $existingDetail->expiration_date)
+                    $existingLot = Lote::where('id_product', $existingDetail->id_product)
+                        ->where('codigo_lote', $existingDetail->batch_code)
+                        ->where('fecha_vencimiento', $existingDetail->expiration_date)
                         ->lockForUpdate()
                         ->first();
 
@@ -255,7 +255,7 @@ class LivewirePurchaseForm extends Component
                         return;
                     }
 
-                    if ($existingLot->quantity_available < $existingDetail->quantity) {
+                    if ($existingLot->cantidad_disponible < $existingDetail->quantity) {
                         DB::rollBack();
                         $this->dispatch(
                             'toast',
@@ -265,17 +265,17 @@ class LivewirePurchaseForm extends Component
                         return;
                     }
 
-                    $revertStockBefore = $existingLot->quantity_available;
+                    $revertStockBefore = $existingLot->cantidad_disponible;
 
-                    $existingLot->quantity_in -= (int) $existingDetail->quantity;
-                    $existingLot->quantity_available -= (int) $existingDetail->quantity;
+                    $existingLot->cantidad_ingresada -= (int) $existingDetail->quantity;
+                    $existingLot->cantidad_disponible -= (int) $existingDetail->quantity;
 
-                    if ($existingLot->quantity_in < 0) {
-                        $existingLot->quantity_in = 0;
+                    if ($existingLot->cantidad_ingresada < 0) {
+                        $existingLot->cantidad_ingresada = 0;
                     }
 
-                    if ($existingLot->quantity_available < 0) {
-                        $existingLot->quantity_available = 0;
+                    if ($existingLot->cantidad_disponible < 0) {
+                        $existingLot->cantidad_disponible = 0;
                     }
 
                     $existingLot->save();
@@ -289,7 +289,7 @@ class LivewirePurchaseForm extends Component
                         'reference_id' => $purchase->id,
                         'quantity' => (int) $existingDetail->quantity,
                         'stock_before' => $revertStockBefore,
-                        'stock_after' => $existingLot->quantity_available,
+                        'stock_after' => $existingLot->cantidad_disponible,
                         'description' => 'Reversión de stock por edición de compra #' . $purchase->id,
                     ]);
                 }
@@ -320,39 +320,39 @@ class LivewirePurchaseForm extends Component
                     'subtotal' => $detail['subtotal'],
                 ]);
 
-                $lot = Lot::where('id_product', $detail['id_product'])
-                    ->where('batch_code', $detail['batch_code'])
-                    ->where('expiration_date', $detail['expiration_date'])
+                $lot = Lote::where('id_product', $detail['id_product'])
+                    ->where('codigo_lote', $detail['batch_code'])
+                    ->where('fecha_vencimiento', $detail['expiration_date'])
                     ->lockForUpdate()
                     ->first();
 
                 if ($lot) {
-                    $stockBefore = $lot->quantity_available;
+                    $stockBefore = $lot->cantidad_disponible;
 
-                    $lot->quantity_in += (int) $detail['quantity'];
-                    $lot->quantity_available += (int) $detail['quantity'];
-                    $lot->purchase_price = $detail['purchase_price'];
-                    $lot->sale_price = $detail['sale_price'];
-                    $lot->state = 1;
+                    $lot->cantidad_ingresada += (int) $detail['quantity'];
+                    $lot->cantidad_disponible += (int) $detail['quantity'];
+                    $lot->precio_compra = $detail['purchase_price'];
+                    $lot->precio_venta = $detail['sale_price'];
+                    $lot->estado = 1;
                     $lot->save();
 
-                    $stockAfter = $lot->quantity_available;
+                    $stockAfter = $lot->cantidad_disponible;
                 } else {
                     $stockBefore = 0;
 
-                    $lot = Lot::create([
+                    $lot = Lote::create([
                         'id_product' => $detail['id_product'],
-                        'batch_code' => $detail['batch_code'],
-                        'purchase_price' => $detail['purchase_price'],
-                        'sale_price' => $detail['sale_price'],
-                        'quantity_in' => $detail['quantity'],
-                        'quantity_available' => $detail['quantity'],
-                        'expiration_date' => $detail['expiration_date'],
-                        'location' => null,
-                        'state' => 1,
+                        'codigo_lote' => $detail['batch_code'],
+                        'precio_compra' => $detail['purchase_price'],
+                        'precio_venta' => $detail['sale_price'],
+                        'cantidad_ingresada' => $detail['quantity'],
+                        'cantidad_disponible' => $detail['quantity'],
+                        'fecha_vencimiento' => $detail['expiration_date'],
+                        'ubicacion' => null,
+                        'estado' => 1,
                     ]);
 
-                    $stockAfter = $lot->quantity_available;
+                    $stockAfter = $lot->cantidad_disponible;
                 }
 
                 InventoryMovement::create([

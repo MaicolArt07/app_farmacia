@@ -2,7 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Models\Lot;
+use App\Models\Lote;
 use Livewire\Component;
 use App\Models\Product;
 use App\Models\InventoryMovement;
@@ -76,27 +76,27 @@ class LivewireInventoryAdjustmentForm extends Component
             return;
         }
 
-        $this->lotResults = Lot::where('id_product', $this->id_product)
-            ->where('state', 1)
+        $this->lotResults = Lote::where('id_product', $this->id_product)
+            ->where('estado', 1)
             ->where(function ($q) {
-                $q->where('batch_code', 'like', "%{$this->lotSearch}%")
-                  ->orWhere('expiration_date', 'like', "%{$this->lotSearch}%");
+                $q->where('codigo_lote', 'like', "%{$this->lotSearch}%")
+                  ->orWhere('fecha_vencimiento', 'like', "%{$this->lotSearch}%");
             })
             ->limit(10)
             ->get()
             ->map(fn ($lot) => [
                 'id' => $lot->id,
-                'label' => $lot->batch_code . ' | Vence: ' . (optional($lot->expiration_date)->format('d/m/Y') ?? 'Sin vencimiento') . ' | Stock: ' . $lot->quantity_available,
+                'label' => $lot->codigo_lote . ' | Vence: ' . (optional($lot->fecha_vencimiento)->format('d/m/Y') ?? 'Sin vencimiento') . ' | Stock: ' . $lot->cantidad_disponible,
             ])
             ->toArray();
     }
 
     public function selectLot($id)
     {
-        $lot = Lot::findOrFail($id);
+        $lot = Lote::findOrFail($id);
 
         $this->id_lot = $lot->id;
-        $this->selectedLotLabel = $lot->batch_code . ' | Vence: ' . (optional($lot->expiration_date)->format('d/m/Y') ?? 'Sin vencimiento') . ' | Stock: ' . $lot->quantity_available;
+        $this->selectedLotLabel = $lot->codigo_lote . ' | Vence: ' . (optional($lot->fecha_vencimiento)->format('d/m/Y') ?? 'Sin vencimiento') . ' | Stock: ' . $lot->cantidad_disponible;
 
         $this->lotSearch = '';
         $this->lotResults = [];
@@ -114,7 +114,7 @@ class LivewireInventoryAdjustmentForm extends Component
     {
         $this->validate([
             'id_product' => 'required|exists:products,id',
-            'id_lot' => 'required|exists:lots,id',
+            'id_lot' => 'required|exists:lotes,id',
             'type' => 'required|in:INCREASE,DECREASE',
             'quantity' => 'required|integer|min:1',
             'reason' => 'required|string|min:5',
@@ -128,26 +128,26 @@ class LivewireInventoryAdjustmentForm extends Component
         DB::beginTransaction();
 
         try {
-            $lot = Lot::where('id', $this->id_lot)
+            $lot = Lote::where('id', $this->id_lot)
                 ->where('id_product', $this->id_product)
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            $stockBefore = $lot->quantity_available;
+            $stockBefore = $lot->cantidad_disponible;
 
-            if ($this->type === 'DECREASE' && $this->quantity > $lot->quantity_available) {
+            if ($this->type === 'DECREASE' && $this->quantity > $lot->cantidad_disponible) {
                 DB::rollBack();
                 $this->dispatch('toast', type: 'warning', message: 'No puede disminuir más stock del disponible.');
                 return;
             }
 
             if ($this->type === 'INCREASE') {
-                $lot->quantity_available += (int) $this->quantity;
-                $lot->quantity_in += (int) $this->quantity;
+                $lot->cantidad_disponible += (int) $this->quantity;
+                $lot->cantidad_ingresada += (int) $this->quantity;
                 $movementType = 'ADJUSTMENT';
                 $description = 'Ajuste positivo de inventario.';
             } else {
-                $lot->quantity_available -= (int) $this->quantity;
+                $lot->cantidad_disponible -= (int) $this->quantity;
                 $movementType = 'ADJUSTMENT';
                 $description = 'Ajuste negativo de inventario.';
             }
@@ -162,7 +162,7 @@ class LivewireInventoryAdjustmentForm extends Component
                 'quantity' => $this->quantity,
                 'reason' => $this->reason,
                 'stock_before' => $stockBefore,
-                'stock_after' => $lot->quantity_available,
+                'stock_after' => $lot->cantidad_disponible,
                 'state' => 1,
             ]);
 
@@ -175,7 +175,7 @@ class LivewireInventoryAdjustmentForm extends Component
                 'reference_id' => $adjustment->id,
                 'quantity' => (int) $this->quantity,
                 'stock_before' => $stockBefore,
-                'stock_after' => $lot->quantity_available,
+                'stock_after' => $lot->cantidad_disponible,
                 'description' => $description . ' Motivo: ' . $this->reason,
             ]);
 

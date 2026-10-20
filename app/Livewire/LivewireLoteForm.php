@@ -2,14 +2,14 @@
 
 namespace App\Livewire;
 
-use App\Models\Lot;
+use App\Models\Lote;
 use App\Models\Product;
 use Livewire\Component;
-use App\Livewire\Form\LotForm;
+use App\Livewire\Form\LoteForm;
 
-class LivewireLotForm extends Component
+class LivewireLoteForm extends Component
 {
-    public LotForm $form;
+    public LoteForm $form;
 
     public $productSearch = '';
     public $productResults = [];
@@ -20,7 +20,7 @@ class LivewireLotForm extends Component
         $this->form->resetForm();
 
         if ($lot) {
-            $lot = Lot::with('product')->findOrFail($lot);
+            $lot = Lote::with('product')->findOrFail($lot);
             $this->form->fillForm($lot);
 
             if ($lot->product) {
@@ -65,8 +65,8 @@ class LivewireLotForm extends Component
         $this->selectedProductLabel = $product->code . ' - ' . $product->name .
             ($product->concentration ? ' | ' . $product->concentration : '');
 
-        if (!$this->form->sale_price || $this->form->sale_price == 0) {
-            $this->form->sale_price = $product->sale_price;
+        if (!$this->form->precio_venta || $this->form->precio_venta == 0) {
+            $this->form->precio_venta = $product->sale_price;
         }
 
         $this->productSearch = '';
@@ -85,35 +85,35 @@ class LivewireLotForm extends Component
     {
         $this->validate($this->form->rules(), $this->form->messages());
 
-        if ($this->form->quantity_available > $this->form->quantity_in) {
+        if ($this->form->cantidad_disponible > $this->form->cantidad_ingresada) {
             $this->dispatch('toast', type: 'warning', message: 'La cantidad disponible no puede ser mayor a la cantidad ingresada.');
             return;
         }
 
         try {
-            $expirationDate = $this->form->expiration_date ?: null;
+            $expirationDate = $this->form->fecha_vencimiento ?: null;
 
             $data = [
                 'id_product' => $this->form->id_product,
-                'batch_code' => $this->form->batch_code,
-                'purchase_price' => $this->form->purchase_price,
-                'sale_price' => $this->form->sale_price,
-                'quantity_in' => $this->form->quantity_in,
-                'quantity_available' => $this->form->quantity_available,
-                'expiration_date' => $expirationDate,
-                'location' => $this->form->location ?: null,
-                'state' => $this->form->state,
+                'codigo_lote' => $this->form->codigo_lote,
+                'precio_compra' => $this->form->precio_compra,
+                'precio_venta' => $this->form->precio_venta,
+                'cantidad_ingresada' => $this->form->cantidad_ingresada,
+                'cantidad_disponible' => $this->form->cantidad_disponible,
+                'fecha_vencimiento' => $expirationDate,
+                'ubicacion' => $this->form->ubicacion ?: null,
+                'estado' => $this->form->estado,
             ];
 
             if ($this->form->id) {
-                $lot = Lot::findOrFail($this->form->id);
+                $lot = Lote::findOrFail($this->form->id);
                 $lot->update($data);
                 $message = 'Lote actualizado correctamente.';
             } else {
-                $exists = Lot::where('id_product', $this->form->id_product)
-                    ->where('batch_code', $this->form->batch_code)
-                    ->when($expirationDate, fn ($q) => $q->where('expiration_date', $expirationDate))
-                    ->when(!$expirationDate, fn ($q) => $q->whereNull('expiration_date'))
+                $exists = Lote::where('id_product', $this->form->id_product)
+                    ->where('codigo_lote', $this->form->codigo_lote)
+                    ->when($expirationDate, fn ($q) => $q->where('fecha_vencimiento', $expirationDate))
+                    ->when(!$expirationDate, fn ($q) => $q->whereNull('fecha_vencimiento'))
                     ->exists();
 
                 if ($exists) {
@@ -121,13 +121,13 @@ class LivewireLotForm extends Component
                     return;
                 }
 
-                Lot::create($data);
+                Lote::create($data);
                 $message = 'Lote registrado correctamente.';
             }
 
             $this->dispatch('toast', type: 'success', message: $message);
 
-            return redirect()->route('lots');
+            return redirect()->route('lotes');
         } catch (\Throwable $e) {
             $this->dispatch('toast', type: 'error', message: 'No se pudo guardar el lote.');
         }
@@ -135,11 +135,11 @@ class LivewireLotForm extends Component
 
     public function cancel()
     {
-        return redirect()->route('lots');
+        return redirect()->route('lotes');
     }
 
     public function render()
     {
-        return view('livewire.lot.form');
+        return view('livewire.lote.form');
     }
 }

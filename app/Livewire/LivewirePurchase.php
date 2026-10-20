@@ -2,7 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Models\Lot;
+use App\Models\Lote;
 use App\Models\Purchase;
 use App\Models\SaleDetail;
 use App\Models\InventoryMovement;
@@ -60,9 +60,9 @@ class LivewirePurchase extends Component
             }
 
             foreach ($purchase->details as $detail) {
-                $lot = Lot::where('id_product', $detail->id_product)
-                    ->where('batch_code', $detail->batch_code)
-                    ->where('expiration_date', $detail->expiration_date)
+                $lot = Lote::where('id_product', $detail->id_product)
+                    ->where('codigo_lote', $detail->batch_code)
+                    ->where('fecha_vencimiento', $detail->expiration_date)
                     ->lockForUpdate()
                     ->firstOrFail();
 
@@ -78,7 +78,7 @@ class LivewirePurchase extends Component
                     return;
                 }
 
-                if ($lot->quantity_available < $detail->quantity) {
+                if ($lot->cantidad_disponible < $detail->quantity) {
                     DB::rollBack();
                     $this->dispatch(
                         'toast',
@@ -88,17 +88,17 @@ class LivewirePurchase extends Component
                     return;
                 }
 
-                $stockBefore = $lot->quantity_available;
+                $stockBefore = $lot->cantidad_disponible;
 
-                $lot->quantity_in -= (int) $detail->quantity;
-                $lot->quantity_available -= (int) $detail->quantity;
+                $lot->cantidad_ingresada -= (int) $detail->quantity;
+                $lot->cantidad_disponible -= (int) $detail->quantity;
 
-                if ($lot->quantity_in < 0) {
-                    $lot->quantity_in = 0;
+                if ($lot->cantidad_ingresada < 0) {
+                    $lot->cantidad_ingresada = 0;
                 }
 
-                if ($lot->quantity_available < 0) {
-                    $lot->quantity_available = 0;
+                if ($lot->cantidad_disponible < 0) {
+                    $lot->cantidad_disponible = 0;
                 }
 
                 $lot->save();
@@ -112,7 +112,7 @@ class LivewirePurchase extends Component
                     'reference_id' => $purchase->id,
                     'quantity' => (int) $detail->quantity,
                     'stock_before' => $stockBefore,
-                    'stock_after' => $lot->quantity_available,
+                    'stock_after' => $lot->cantidad_disponible,
                     'description' => 'Reversión de stock por anulación de compra #' . $purchase->id,
                 ]);
             }

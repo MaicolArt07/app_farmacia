@@ -1,6 +1,6 @@
 <div class="p-6">
     <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <a href="{{ route('lots.create') }}" wire:navigate
+        <a href="{{ route('lotes.create') }}" wire:navigate
             class="cursor-pointer rounded-lg bg-emerald-600 px-4 py-2 text-center text-white transition hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600">
             <i class="bi bi-box2-heart mr-1"></i> Nuevo lote
         </a>
@@ -41,45 +41,45 @@
                         </td>
 
                         <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
-                            {{ $item->batch_code }}
+                            {{ $item->codigo_lote }}
                         </td>
 
                         <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
-                            {{ $item->expiration_date ? $item->expiration_date->format('d/m/Y') : 'Sin vencimiento' }}
+                            {{ $item->fecha_vencimiento ? $item->fecha_vencimiento->format('d/m/Y') : 'Sin vencimiento' }}
                         </td>
 
                         <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
-                            {{ number_format($item->purchase_price, 2) }}
+                            {{ number_format($item->precio_compra, 2) }}
                         </td>
 
                         <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
-                            {{ number_format($item->sale_price, 2) }}
+                            {{ number_format($item->precio_venta, 2) }}
                         </td>
 
                         <td class="px-4 py-3 text-center text-zinc-800 dark:text-zinc-100">
-                            {{ $item->quantity_in }}
+                            {{ $item->cantidad_ingresada }}
                         </td>
 
                         <td class="px-4 py-3 text-center">
-                            <span class="rounded-full px-3 py-1 text-xs font-medium {{ $item->quantity_available > 0 ? 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' }}">
-                                {{ $item->quantity_available }}
+                            <span class="rounded-full px-3 py-1 text-xs font-medium {{ $item->cantidad_disponible > 0 ? 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' }}">
+                                {{ $item->cantidad_disponible }}
                             </span>
                         </td>
 
                         <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
-                            {{ $item->location ?: '-' }}
+                            {{ $item->ubicacion ?: '-' }}
                         </td>
 
                         <td class="px-4 py-3 text-center">
-                            <span class="rounded-full px-3 py-1 text-xs font-medium {{ $item->state ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' }}">
-                                {{ $item->state ? 'Activo' : 'Inactivo' }}
+                            <span class="rounded-full px-3 py-1 text-xs font-medium {{ $item->estado ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' }}">
+                                {{ $item->estado ? 'Activo' : 'Inactivo' }}
                             </span>
                         </td>
 
                         <td class="px-4 py-3">
                             <div class="flex justify-center gap-3">
                                 <a
-                                    href="{{ route('lots.edit', $item->id) }}" wire:navigate
+                                    href="{{ route('lotes.edit', $item->id) }}" wire:navigate
                                     class="cursor-pointer text-yellow-500 transition hover:text-yellow-600 dark:text-yellow-400 dark:hover:text-yellow-300">
                                     <i class="bi bi-pencil-square text-lg"></i>
                                 </a>
@@ -87,11 +87,11 @@
                                 <button
                                     type="button"
                                     x-on:click.prevent="confirmAction({
-                                        text: '¿Deseas {{ $item->state ? 'desactivar' : 'activar' }} este registro?',
-                                        confirmText: 'Sí, {{ $item->state ? 'desactivar' : 'activar' }}',
+                                        text: '¿Deseas {{ $item->estado ? 'desactivar' : 'activar' }} este registro?',
+                                        confirmText: 'Sí, {{ $item->estado ? 'desactivar' : 'activar' }}',
                                     }).then((ok) => { if (ok) $wire.delete({{ $item->id }}) })"
-                                    class="{{ $item->state ? 'text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300' : 'text-gray-400 dark:text-zinc-500' }} cursor-pointer">
-                                    <i class="bi {{ $item->state ? 'bi-trash' : 'bi-arrow-clockwise' }} text-lg"></i>
+                                    class="{{ $item->estado ? 'text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300' : 'text-gray-400 dark:text-zinc-500' }} cursor-pointer">
+                                    <i class="bi {{ $item->estado ? 'bi-trash' : 'bi-arrow-clockwise' }} text-lg"></i>
                                 </button>
                             </div>
                         </td>

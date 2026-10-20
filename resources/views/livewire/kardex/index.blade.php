@@ -37,7 +37,7 @@
                             {{ $item->product?->name }}
                         </td>
                         <td class="px-4 py-3">
-                            {{ $item->lot?->batch_code ?? '-' }}
+                            {{ $item->lot?->codigo_lote ?? '-' }}
                         </td>
                         <td class="px-4 py-3">
                             {{ $item->movement_type }}

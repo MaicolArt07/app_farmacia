@@ -5,31 +5,31 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Lot extends Model
+class Lote extends Model
 {
     use HasFactory;
 
-    protected $table = 'lots';
+    protected $table = 'lotes';
 
     protected $fillable = [
         'id_product',
-        'batch_code',
-        'purchase_price',
-        'sale_price',
-        'quantity_in',
-        'quantity_available',
-        'expiration_date',
-        'location',
-        'state',
+        'codigo_lote',
+        'precio_compra',
+        'precio_venta',
+        'cantidad_ingresada',
+        'cantidad_disponible',
+        'fecha_vencimiento',
+        'ubicacion',
+        'estado',
     ];
 
     protected $casts = [
-        'purchase_price' => 'decimal:2',
-        'sale_price' => 'decimal:2',
-        'quantity_in' => 'integer',
-        'quantity_available' => 'integer',
-        'expiration_date' => 'date',
-        'state' => 'integer',
+        'precio_compra' => 'decimal:2',
+        'precio_venta' => 'decimal:2',
+        'cantidad_ingresada' => 'integer',
+        'cantidad_disponible' => 'integer',
+        'fecha_vencimiento' => 'date',
+        'estado' => 'integer',
     ];
 
     public function product()

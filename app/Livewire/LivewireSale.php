@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Sale;
-use App\Models\Lot;
+use App\Models\Lote;
 use App\Models\CashRegister;
 use App\Models\CashMovement;
 use App\Models\InventoryMovement;
@@ -120,13 +120,13 @@ class LivewireSale extends Component
             }
 
             foreach ($sale->details as $detail) {
-                $lot = Lot::where('id', $detail->id_lot)
+                $lot = Lote::where('id', $detail->id_lot)
                     ->lockForUpdate()
                     ->firstOrFail();
 
-                $stockBefore = $lot->quantity_available;
+                $stockBefore = $lot->cantidad_disponible;
 
-                $lot->quantity_available += $detail->quantity;
+                $lot->cantidad_disponible += $detail->quantity;
                 $lot->save();
 
                 InventoryMovement::create([
@@ -138,7 +138,7 @@ class LivewireSale extends Component
                     'reference_id' => $sale->id,
                     'quantity' => $detail->quantity,
                     'stock_before' => $stockBefore,
-                    'stock_after' => $lot->quantity_available,
+                    'stock_after' => $lot->cantidad_disponible,
                     'description' => 'Devolución de stock por anulación de venta #' . $sale->id,
                 ]);
             }

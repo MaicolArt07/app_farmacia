@@ -160,7 +160,7 @@
                     @php
                         $isFarmaciaSection = request()->routeIs('proveedores*') || request()->routeIs('laboratorios*')
                             || request()->routeIs('categorias*') || request()->routeIs('presentaciones*')
-                            || request()->routeIs('lots*')
+                            || request()->routeIs('lotes*')
                             || request()->routeIs('inventory-adjustments*') || request()->routeIs('invoices*')
                             || request()->routeIs('kardex*') || request()->routeIs('inventory-alerts*')
                             || request()->routeIs('reports*');
@@ -209,7 +209,7 @@
                             </a>
                             @endcan
                             @can('Ver Lotes')
-                            <a href="{{ route('lots') }}" wire:navigate title="{{ __('Lotes') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('lots*') ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-white' : 'text-zinc-700 dark:text-zinc-300' }}">
+                            <a href="{{ route('lotes') }}" wire:navigate title="{{ __('Lotes') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('lotes*') ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-white' : 'text-zinc-700 dark:text-zinc-300' }}">
                                 <i class="bi bi-box-fill text-base"></i>
                             </a>
                             @endcan
@@ -280,7 +280,7 @@
                                     </a>
                                     @endcan
                                     @can('Ver Lotes')
-                                    <a href="{{ route('lots') }}" wire:navigate class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition {{ request()->routeIs('lots*') ? 'bg-zinc-200 font-semibold text-zinc-900 dark:bg-zinc-800 dark:text-white' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
+                                    <a href="{{ route('lotes') }}" wire:navigate class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition {{ request()->routeIs('lotes*') ? 'bg-zinc-200 font-semibold text-zinc-900 dark:bg-zinc-800 dark:text-white' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                         <i class="bi bi-box-fill text-base"></i> {{ __('Lotes') }}
                                     </a>
                                     @endcan
@@ -617,7 +617,7 @@
                                     </flux:navlist.item>
                                     @endcan
                                     @can('Ver Lotes')
-                                    <flux:navlist.item :href="route('lots')" :current="request()->routeIs('lots*')" wire:navigate class="rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                                    <flux:navlist.item :href="route('lotes')" :current="request()->routeIs('lotes*')" wire:navigate class="rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800">
                                         <i class="bi bi-box-fill me-2"></i> {{ __('Lotes') }}
                                     </flux:navlist.item>
                                     @endcan

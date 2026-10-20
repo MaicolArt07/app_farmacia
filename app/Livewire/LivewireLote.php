@@ -2,11 +2,11 @@
 
 namespace App\Livewire;
 
-use App\Models\Lot;
+use App\Models\Lote;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class LivewireLot extends Component
+class LivewireLote extends Component
 {
     use WithPagination;
 
@@ -21,13 +21,13 @@ class LivewireLot extends Component
 
     public function render()
     {
-        $query = Lot::with('product');
+        $query = Lote::with('product');
 
         if (!empty($this->search)) {
             $query->where(function ($q) {
-                $q->where('batch_code', 'like', "%{$this->search}%")
-                  ->orWhere('location', 'like', "%{$this->search}%")
-                  ->orWhere('expiration_date', 'like', "%{$this->search}%")
+                $q->where('codigo_lote', 'like', "%{$this->search}%")
+                  ->orWhere('ubicacion', 'like', "%{$this->search}%")
+                  ->orWhere('fecha_vencimiento', 'like', "%{$this->search}%")
                   ->orWhereHas('product', function ($sub) {
                       $sub->where('code', 'like', "%{$this->search}%")
                           ->orWhere('barcode', 'like', "%{$this->search}%")
@@ -37,8 +37,8 @@ class LivewireLot extends Component
             });
         }
 
-        return view('livewire.lot.index', [
-            'lots' => $query->orderBy('expiration_date', 'asc')
+        return view('livewire.lote.index', [
+            'lots' => $query->orderBy('fecha_vencimiento', 'asc')
                             ->orderBy('id', 'desc')
                             ->paginate(10),
         ]);
@@ -47,14 +47,14 @@ class LivewireLot extends Component
     public function delete($id)
     {
         try {
-            $lot = Lot::findOrFail($id);
-            $lot->state = $lot->state ? 0 : 1;
+            $lot = Lote::findOrFail($id);
+            $lot->estado = $lot->estado ? 0 : 1;
             $lot->save();
 
             $this->dispatch(
                 'toast',
-                type: $lot->state ? 'success' : 'warning',
-                message: $lot->state
+                type: $lot->estado ? 'success' : 'warning',
+                message: $lot->estado
                     ? 'Lote activado correctamente.'
                     : 'Lote desactivado correctamente.'
             );

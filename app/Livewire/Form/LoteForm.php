@@ -5,35 +5,35 @@ namespace App\Livewire\Form;
 use Livewire\Form;
 use Illuminate\Validation\Rule;
 
-class LotForm extends Form
+class LoteForm extends Form
 {
     public $id = null;
     public $id_product = null;
 
-    public $batch_code = '';
-    public $purchase_price = '';
-    public $sale_price = '';
-    public $quantity_in = 0;
-    public $quantity_available = 0;
-    public $expiration_date = '';
-    public $location = '';
-    public $state = 1;
+    public $codigo_lote = '';
+    public $precio_compra = '';
+    public $precio_venta = '';
+    public $cantidad_ingresada = 0;
+    public $cantidad_disponible = 0;
+    public $fecha_vencimiento = '';
+    public $ubicacion = '';
+    public $estado = 1;
 
     public function rules()
     {
         return [
             'form.id_product' => 'required|exists:products,id',
-            'form.batch_code' => [
+            'form.codigo_lote' => [
                 'required',
                 'string',
                 'max:100',
             ],
-            'form.purchase_price' => 'required|numeric|min:0',
-            'form.sale_price' => 'required|numeric|min:0',
-            'form.quantity_in' => 'required|integer|min:0',
-            'form.quantity_available' => 'required|integer|min:0',
-            'form.expiration_date' => 'nullable|date',
-            'form.location' => 'nullable|string|max:100',
+            'form.precio_compra' => 'required|numeric|min:0',
+            'form.precio_venta' => 'required|numeric|min:0',
+            'form.cantidad_ingresada' => 'required|integer|min:0',
+            'form.cantidad_disponible' => 'required|integer|min:0',
+            'form.fecha_vencimiento' => 'nullable|date',
+            'form.ubicacion' => 'nullable|string|max:100',
         ];
     }
 
@@ -42,12 +42,12 @@ class LotForm extends Form
         return [
             'form.id_product.required' => 'Debe seleccionar un producto.',
             'form.id_product.exists' => 'El producto seleccionado no es válido.',
-            'form.batch_code.required' => 'El lote es obligatorio.',
-            'form.expiration_date.date' => 'La fecha de vencimiento no es válida.',
-            'form.purchase_price.required' => 'El precio de compra es obligatorio.',
-            'form.sale_price.required' => 'El precio de venta es obligatorio.',
-            'form.quantity_in.required' => 'La cantidad ingresada es obligatoria.',
-            'form.quantity_available.required' => 'La cantidad disponible es obligatoria.',
+            'form.codigo_lote.required' => 'El lote es obligatorio.',
+            'form.fecha_vencimiento.date' => 'La fecha de vencimiento no es válida.',
+            'form.precio_compra.required' => 'El precio de compra es obligatorio.',
+            'form.precio_venta.required' => 'El precio de venta es obligatorio.',
+            'form.cantidad_ingresada.required' => 'La cantidad ingresada es obligatoria.',
+            'form.cantidad_disponible.required' => 'La cantidad disponible es obligatoria.',
         ];
     }
 
@@ -56,14 +56,14 @@ class LotForm extends Form
         $this->id = null;
         $this->id_product = null;
 
-        $this->batch_code = '';
-        $this->purchase_price = '';
-        $this->sale_price = '';
-        $this->quantity_in = 0;
-        $this->quantity_available = 0;
-        $this->expiration_date = '';
-        $this->location = '';
-        $this->state = 1;
+        $this->codigo_lote = '';
+        $this->precio_compra = '';
+        $this->precio_venta = '';
+        $this->cantidad_ingresada = 0;
+        $this->cantidad_disponible = 0;
+        $this->fecha_vencimiento = '';
+        $this->ubicacion = '';
+        $this->estado = 1;
     }
 
     public function fillForm($lot)
@@ -71,13 +71,13 @@ class LotForm extends Form
         $this->id = $lot->id;
         $this->id_product = $lot->id_product;
 
-        $this->batch_code = $lot->batch_code;
-        $this->purchase_price = $lot->purchase_price;
-        $this->sale_price = $lot->sale_price;
-        $this->quantity_in = $lot->quantity_in;
-        $this->quantity_available = $lot->quantity_available;
-        $this->expiration_date = optional($lot->expiration_date)->format('Y-m-d');
-        $this->location = $lot->location;
-        $this->state = $lot->state;
+        $this->codigo_lote = $lot->codigo_lote;
+        $this->precio_compra = $lot->precio_compra;
+        $this->precio_venta = $lot->precio_venta;
+        $this->cantidad_ingresada = $lot->cantidad_ingresada;
+        $this->cantidad_disponible = $lot->cantidad_disponible;
+        $this->fecha_vencimiento = optional($lot->fecha_vencimiento)->format('Y-m-d');
+        $this->ubicacion = $lot->ubicacion;
+        $this->estado = $lot->estado;
     }
 }

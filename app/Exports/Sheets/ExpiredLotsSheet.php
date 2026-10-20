@@ -2,7 +2,7 @@
 
 namespace App\Exports\Sheets;
 
-use App\Models\Lot;
+use App\Models\Lote;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -13,10 +13,10 @@ class ExpiredLotsSheet implements FromCollection, WithHeadings, WithMapping, Wit
 {
     public function collection()
     {
-        return Lot::with('product')
-            ->whereDate('expiration_date', '<', now()->toDateString())
-            ->where('quantity_available', '>', 0)
-            ->orderBy('expiration_date')
+        return Lote::with('product')
+            ->whereDate('fecha_vencimiento', '<', now()->toDateString())
+            ->where('cantidad_disponible', '>', 0)
+            ->orderBy('fecha_vencimiento')
             ->get();
     }
 
@@ -29,9 +29,9 @@ class ExpiredLotsSheet implements FromCollection, WithHeadings, WithMapping, Wit
     {
         return [
             $lot->product?->name,
-            $lot->batch_code,
-            optional($lot->expiration_date)->format('d/m/Y'),
-            $lot->quantity_available,
+            $lot->codigo_lote,
+            optional($lot->fecha_vencimiento)->format('d/m/Y'),
+            $lot->cantidad_disponible,
         ];
     }
 

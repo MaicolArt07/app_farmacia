@@ -145,9 +145,9 @@ class UpgradeSchemaCommand extends Command
 
     private function makeLotsExpirationDateNullable(): void
     {
-        $this->line('Haciendo lots.expiration_date nullable...');
+        $this->line('Haciendo lotes.fecha_vencimiento nullable...');
 
-        DB::statement('ALTER TABLE `lots` MODIFY `expiration_date` DATE NULL DEFAULT NULL');
+        DB::statement('ALTER TABLE `lotes` MODIFY `fecha_vencimiento` DATE NULL DEFAULT NULL');
         $this->info('  -> aplicado.');
     }
 
@@ -233,7 +233,7 @@ class UpgradeSchemaCommand extends Command
             ['products', 'id_category', 'categorias', 'id', 'RESTRICT'],
             ['products', 'id_laboratory', 'laboratorios', 'id', 'RESTRICT'],
             ['products', 'id_presentation', 'presentaciones', 'id', 'RESTRICT'],
-            ['lots', 'id_product', 'products', 'id', 'RESTRICT'],
+            ['lotes', 'id_product', 'products', 'id', 'RESTRICT'],
             ['purchases', 'id_supplier', 'proveedores', 'id', 'RESTRICT'],
             ['purchases', 'id_user', 'users', 'id', 'RESTRICT'],
             ['purchases', 'cancelled_by', 'users', 'id', 'SET NULL'],
@@ -244,15 +244,15 @@ class UpgradeSchemaCommand extends Command
             ['sales', 'cancelled_by', 'users', 'id', 'SET NULL'],
             ['sale_details', 'id_sale', 'sales', 'id', 'CASCADE'],
             ['sale_details', 'id_product', 'products', 'id', 'RESTRICT'],
-            ['sale_details', 'id_lot', 'lots', 'id', 'RESTRICT'],
+            ['sale_details', 'id_lot', 'lotes', 'id', 'RESTRICT'],
             ['cash_registers', 'id_user', 'users', 'id', 'RESTRICT'],
             ['cash_movements', 'id_cash_register', 'cash_registers', 'id', 'CASCADE'],
             ['cash_movements', 'id_user', 'users', 'id', 'RESTRICT'],
             ['inventory_movements', 'id_product', 'products', 'id', 'RESTRICT'],
-            ['inventory_movements', 'id_lot', 'lots', 'id', 'SET NULL'],
+            ['inventory_movements', 'id_lot', 'lotes', 'id', 'SET NULL'],
             ['inventory_movements', 'id_user', 'users', 'id', 'RESTRICT'],
             ['inventory_adjustments', 'id_product', 'products', 'id', 'RESTRICT'],
-            ['inventory_adjustments', 'id_lot', 'lots', 'id', 'RESTRICT'],
+            ['inventory_adjustments', 'id_lot', 'lotes', 'id', 'RESTRICT'],
             ['inventory_adjustments', 'id_user', 'users', 'id', 'RESTRICT'],
             ['invoices', 'id_sale', 'sales', 'id', 'RESTRICT'],
             ['invoices', 'id_user', 'users', 'id', 'RESTRICT'],

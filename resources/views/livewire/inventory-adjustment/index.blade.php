@@ -47,10 +47,10 @@
                         </td>
 
                         <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
-                            {{ $item->lot?->batch_code ?? '-' }}
+                            {{ $item->lot?->codigo_lote ?? '-' }}
                             <div class="text-xs text-gray-500 dark:text-zinc-400">
                                 Vence:
-                                {{ $item->lot?->expiration_date ? $item->lot->expiration_date->format('d/m/Y') : '-' }}
+                                {{ $item->lot?->fecha_vencimiento ? $item->lot->fecha_vencimiento->format('d/m/Y') : '-' }}
                             </div>
                         </td>
 

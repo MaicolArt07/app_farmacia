@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Categoria;
 use App\Models\InventoryMovement;
 use App\Models\Laboratorio;
-use App\Models\Lot;
+use App\Models\Lote;
 use App\Models\Presentacion;
 use App\Models\Product;
 use App\Models\User;
@@ -145,7 +145,7 @@ class ImportInventoryCommand extends Command
             'purchase_details', 'purchases',
             'cash_movements', 'cash_registers',
             'inventory_movements', 'inventory_adjustments',
-            'lots', 'products',
+            'lotes', 'products',
             'clientes', 'proveedores',
             'categorias', 'presentaciones', 'laboratorios',
         ] as $table) {
@@ -229,16 +229,16 @@ class ImportInventoryCommand extends Command
 
         $summary['products_created']++;
 
-        $lot = Lot::create([
+        $lot = Lote::create([
             'id_product' => $product->id,
-            'batch_code' => 'CARGA-INICIAL-' . $clave,
-            'purchase_price' => $precioCompra,
-            'sale_price' => $precioVenta,
-            'quantity_in' => $quantity,
-            'quantity_available' => $quantity,
-            'expiration_date' => null,
-            'location' => null,
-            'state' => 1,
+            'codigo_lote' => 'CARGA-INICIAL-' . $clave,
+            'precio_compra' => $precioCompra,
+            'precio_venta' => $precioVenta,
+            'cantidad_ingresada' => $quantity,
+            'cantidad_disponible' => $quantity,
+            'fecha_vencimiento' => null,
+            'ubicacion' => null,
+            'estado' => 1,
         ]);
 
         $summary['lots_created']++;

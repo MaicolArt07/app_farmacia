@@ -31,7 +31,7 @@ class InventoryMovement extends Model
 
     public function lot()
     {
-        return $this->belongsTo(Lot::class, 'id_lot');
+        return $this->belongsTo(Lote::class, 'id_lot');
     }
 
     public function user()

@@ -1,6 +1,6 @@
 <div class="mx-auto max-w-4xl p-6">
     <div class="mb-6">
-        <a href="{{ route('lots') }}" wire:navigate class="mb-2 inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
+        <a href="{{ route('lotes') }}" wire:navigate class="mb-2 inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
             <i class="bi bi-arrow-left"></i> Volver a lotes
         </a>
         <h1 class="text-xl font-semibold text-zinc-800 dark:text-zinc-100">
@@ -54,51 +54,51 @@
 
             <div>
                 <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Lote <span class="text-red-600">*</span></label>
-                <input type="text" wire:model="form.batch_code"
+                <input type="text" wire:model="form.codigo_lote"
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
-                @error('form.batch_code') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                @error('form.codigo_lote') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
             </div>
 
             <div>
                 <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Fecha de vencimiento <span class="text-xs font-normal text-gray-400 dark:text-zinc-500">(Opcional)</span></label>
-                <input type="date" wire:model="form.expiration_date"
+                <input type="date" wire:model="form.fecha_vencimiento"
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
-                @error('form.expiration_date') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                @error('form.fecha_vencimiento') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
             </div>
 
             <div>
                 <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Ubicación <span class="text-xs font-normal text-gray-400 dark:text-zinc-500">(Opcional)</span></label>
-                <input type="text" wire:model="form.location"
+                <input type="text" wire:model="form.ubicacion"
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
-                @error('form.location') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                @error('form.ubicacion') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
             </div>
 
             <div>
                 <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Precio compra <span class="text-red-600">*</span></label>
-                <input type="number" step="0.01" wire:model="form.purchase_price"
+                <input type="number" step="0.01" wire:model="form.precio_compra"
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
-                @error('form.purchase_price') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                @error('form.precio_compra') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
             </div>
 
             <div>
                 <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Precio venta <span class="text-red-600">*</span></label>
-                <input type="number" step="0.01" wire:model="form.sale_price"
+                <input type="number" step="0.01" wire:model="form.precio_venta"
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
-                @error('form.sale_price') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                @error('form.precio_venta') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
             </div>
 
             <div>
                 <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Cantidad ingresada <span class="text-red-600">*</span></label>
-                <input type="number" wire:model="form.quantity_in"
+                <input type="number" wire:model="form.cantidad_ingresada"
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
-                @error('form.quantity_in') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                @error('form.cantidad_ingresada') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
             </div>
 
             <div>
                 <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Cantidad disponible <span class="text-red-600">*</span></label>
-                <input type="number" wire:model="form.quantity_available"
+                <input type="number" wire:model="form.cantidad_disponible"
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
-                @error('form.quantity_available') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                @error('form.cantidad_disponible') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
             </div>
         </div>
 

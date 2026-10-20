@@ -13,7 +13,7 @@ class StockExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
     public function collection()
     {
         return Product::with(['category', 'laboratory', 'lots' => function ($q) {
-            $q->where('state', 1);
+            $q->where('estado', 1);
         }])
             ->where('state', 1)
             ->orderBy('name')
@@ -27,10 +27,10 @@ class StockExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
 
     public function map($product): array
     {
-        $activeLots = $product->lots->where('quantity_available', '>', 0);
+        $activeLots = $product->lots->where('cantidad_disponible', '>', 0);
 
-        $stock = $activeLots->sum('quantity_available');
-        $avgCost = $activeLots->isNotEmpty() ? (float) $activeLots->avg('purchase_price') : 0.0;
+        $stock = $activeLots->sum('cantidad_disponible');
+        $avgCost = $activeLots->isNotEmpty() ? (float) $activeLots->avg('precio_compra') : 0.0;
         $utilidad = (float) $product->sale_price - $avgCost;
 
         // string: evita que PhpSpreadsheet trate un valor igual a 0 (muy

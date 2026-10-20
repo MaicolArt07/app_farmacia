@@ -12,9 +12,9 @@
         @forelse($expiredLots as $lot)
             <div class="border-b border-zinc-200 py-2 dark:border-zinc-800">
                 <strong>{{ $lot->product?->name }}</strong>
-                | Lote: {{ $lot->batch_code }}
-                | Vence: {{ $lot->expiration_date->format('d/m/Y') }}
-                | Stock: {{ $lot->quantity_available }}
+                | Lote: {{ $lot->codigo_lote }}
+                | Vence: {{ $lot->fecha_vencimiento->format('d/m/Y') }}
+                | Stock: {{ $lot->cantidad_disponible }}
             </div>
         @empty
             <p class="text-sm text-zinc-500">No hay productos vencidos.</p>
@@ -29,9 +29,9 @@
         @forelse($nearExpirationLots as $lot)
             <div class="border-b border-zinc-200 py-2 dark:border-zinc-800">
                 <strong>{{ $lot->product?->name }}</strong>
-                | Lote: {{ $lot->batch_code }}
-                | Vence: {{ $lot->expiration_date->format('d/m/Y') }}
-                | Stock: {{ $lot->quantity_available }}
+                | Lote: {{ $lot->codigo_lote }}
+                | Vence: {{ $lot->fecha_vencimiento->format('d/m/Y') }}
+                | Stock: {{ $lot->cantidad_disponible }}
             </div>
         @empty
             <p class="text-sm text-zinc-500">No hay productos próximos a vencer.</p>
@@ -45,7 +45,7 @@
 
         @forelse($lowStockProducts as $product)
             @php
-                $stock = $product->lots->where('state', 1)->sum('quantity_available');
+                $stock = $product->lots->where('estado', 1)->sum('cantidad_disponible');
             @endphp
 
             <div class="border-b border-zinc-200 py-2 dark:border-zinc-800">
