@@ -21,7 +21,7 @@
                     <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
                     Actualizado
                 </span>
-                <a href="{{ route('products') }}" wire:navigate
+                <a href="{{ route('productos') }}" wire:navigate
                     class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition-all active:scale-95 hover:bg-slate-200 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700">
                     <i class="bi bi-capsule-pill"></i>
                     <span>Ver Productos</span>
@@ -284,7 +284,7 @@
                 </h3>
                 <p class="mt-0.5 text-sm text-slate-500 dark:text-zinc-400">Productos con mayor movimiento en el periodo.</p>
             </div>
-            <a href="{{ route('products') }}" wire:navigate class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 transition-colors hover:text-slate-800 dark:text-zinc-300 dark:hover:text-white">
+            <a href="{{ route('productos') }}" wire:navigate class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 transition-colors hover:text-slate-800 dark:text-zinc-300 dark:hover:text-white">
                 <span>Ver todos</span>
                 <i class="bi bi-arrow-right"></i>
             </a>

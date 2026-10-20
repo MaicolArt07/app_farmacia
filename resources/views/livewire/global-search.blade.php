@@ -17,7 +17,7 @@
                 <div class="border-b border-zinc-100 px-3 py-1.5 text-xs font-semibold uppercase text-zinc-400 dark:border-zinc-800">Clientes</div>
                 @foreach ($clients as $client)
                     <a
-                        href="{{ route('clients') }}"
+                        href="{{ route('clientes') }}"
                         wire:navigate
                         class="flex items-center gap-2 px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
                     >
@@ -30,7 +30,7 @@
                 <div class="border-b border-zinc-100 px-3 py-1.5 text-xs font-semibold uppercase text-zinc-400 dark:border-zinc-800">Productos</div>
                 @foreach ($products as $product)
                     <a
-                        href="{{ route('products') }}"
+                        href="{{ route('productos') }}"
                         wire:navigate
                         class="flex items-center gap-2 px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
                     >
