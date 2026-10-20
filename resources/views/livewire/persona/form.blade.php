@@ -71,7 +71,7 @@
                     model="form.id_country"
                     :value="$form->id_country"
                     placeholder="Seleccione un pais"
-                    :options="$countries->map(fn ($c) => ['value' => $c->id, 'label' => $c->name])->values()"
+                    :options="$countries->map(fn ($c) => ['value' => $c->id, 'label' => $c->nombre])->values()"
                 />
 
                 @error('form.id_country')

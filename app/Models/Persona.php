@@ -19,7 +19,7 @@ class Persona extends Model
 
     public function country()
     {
-        return $this->belongsTo(Country::class, 'id_country');
+        return $this->belongsTo(Pais::class, 'id_country');
     }
     public function client()
     {

@@ -55,21 +55,21 @@ class UpgradeSchemaCommand extends Command
     {
         $this->line('Verificando país huérfano en personas.id_country...');
 
-        $bolivia = DB::table('country')->where('name', 'Bolivia')->first();
+        $bolivia = DB::table('paises')->where('nombre', 'Bolivia')->first();
 
         if (!$bolivia) {
-            $this->warnings[] = 'No existe un país "Bolivia" en la tabla country; no se corrigió personas.id_country.';
+            $this->warnings[] = 'No existe un país "Bolivia" en la tabla paises; no se corrigió personas.id_country.';
             return;
         }
 
-        $validIds = DB::table('country')->pluck('id')->all();
+        $validIds = DB::table('paises')->pluck('id')->all();
 
         $affected = DB::table('personas')
             ->whereNotIn('id_country', $validIds)
             ->update(['id_country' => $bolivia->id]);
 
         if ($affected > 0) {
-            $this->info("  -> {$affected} fila(s) de personas reapuntadas a country '{$bolivia->name}' (id={$bolivia->id}).");
+            $this->info("  -> {$affected} fila(s) de personas reapuntadas a pais '{$bolivia->nombre}' (id={$bolivia->id}).");
         } else {
             $this->line('  -> sin filas huérfanas.');
         }
@@ -226,7 +226,7 @@ class UpgradeSchemaCommand extends Command
         $this->line('Agregando foreign keys reales...');
 
         $definitions = [
-            ['personas', 'id_country', 'country', 'id', 'RESTRICT'],
+            ['personas', 'id_country', 'paises', 'id', 'RESTRICT'],
             ['clientes', 'id_person', 'personas', 'id', 'RESTRICT'],
             ['proveedores', 'id_person', 'personas', 'id', 'RESTRICT'],
             ['users', 'id_person', 'personas', 'id', 'SET NULL'],

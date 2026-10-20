@@ -4,13 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Country extends Model
+class Pais extends Model
 {
-    protected $table = 'country';
+    protected $table = 'paises';
 
     protected $fillable = [
         'id',
-        'name',
-        'state'
+        'nombre',
+        'estado'
     ];
 }

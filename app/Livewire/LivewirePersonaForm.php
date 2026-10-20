@@ -5,7 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Persona;
 use App\Livewire\Form\PersonaForm;
-use App\Models\Country;
+use App\Models\Pais;
 
 class LivewirePersonaForm extends Component
 {
@@ -55,7 +55,7 @@ class LivewirePersonaForm extends Component
     public function render()
     {
         return view('livewire.persona.form', [
-            'countries' => Country::where('state', 1)->get(),
+            'countries' => Pais::where('estado', 1)->get(),
         ]);
     }
 }
