@@ -23,7 +23,7 @@
         <div class="banner">DOCUMENTO SIMULADO — SIN VALIDEZ FISCAL</div>
     @endif
 
-    @php($company = \App\Models\Company::current())
+    @php($company = \App\Models\Empresa::current())
 
     <div class="header">
         <h2>{{ $company->razon_social ?? config('facturacion.emisor.razon_social') ?: 'Farmacia' }}</h2>
