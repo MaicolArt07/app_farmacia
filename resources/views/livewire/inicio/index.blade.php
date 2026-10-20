@@ -353,6 +353,7 @@
 
 @script
 <script>
+(function () {
     function isDark() {
         return document.documentElement.classList.contains('dark');
     }
@@ -451,5 +452,6 @@
     }
 
     buildCharts();
+})();
 </script>
 @endscript
