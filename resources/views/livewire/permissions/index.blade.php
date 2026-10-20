@@ -7,12 +7,12 @@
 
     <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <!-- Boton Crear -->
-        <a
-            href="{{ route('permissions.create') }}" wire:navigate
+        <button
+            type="button" wire:click="create"
             class="flex w-full cursor-pointer items-center justify-center gap-2 rounded bg-green-600 px-4 py-2 text-white transition hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 sm:w-auto"
         >
             <i class="bi bi-plus-circle"></i>
-        </a>
+        </button>
 
         <!-- Buscador -->
         <div class="relative w-full sm:w-1/2">
@@ -50,13 +50,13 @@
                         </td>
 
                         <td class="border border-gray-200 px-4 py-2 text-center dark:border-zinc-700">
-                            <a
-                                href="{{ route('permissions.edit', $permission->id) }}" wire:navigate
+                            <button
+                                type="button" wire:click="edit({{ $permission->id }})"
                                 class="cursor-pointer text-yellow-500 transition hover:text-yellow-600 dark:text-yellow-400 dark:hover:text-yellow-300"
                                 title="Editar"
                             >
                                 <i class="bi bi-pencil-square text-lg"></i>
-                            </a>
+                            </button>
 
                             <button
                                 type="button"
@@ -86,5 +86,33 @@
     <div class="mt-4 dark:text-zinc-200">
         {{ $permissions->links() }}
     </div>
+
+    <flux:modal wire:model="modalVisible" class="max-w-md">
+        <div class="space-y-6">
+            <flux:heading size="lg">
+                {{ $form->permissionId ? 'Editar Permiso' : 'Crear Permiso' }}
+            </flux:heading>
+
+            <div>
+                <flux:input
+                    label="Nombre del Permiso"
+                    wire:model.defer="form.name"
+                />
+                @error('form.name')
+                    <span class="text-sm text-red-600">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <flux:button variant="danger" wire:click="cancel">
+                    Cancelar
+                </flux:button>
+
+                <flux:button variant="primary" wire:click="save">
+                    {{ $form->permissionId ? 'Actualizar' : 'Guardar' }}
+                </flux:button>
+            </div>
+        </div>
+    </flux:modal>
 
 </div>
