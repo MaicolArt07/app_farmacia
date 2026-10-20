@@ -2,20 +2,20 @@
 
 namespace App\Livewire;
 
-use App\Models\PaymentMethod;
+use App\Models\MetodoPago;
 use Livewire\Component;
-use App\Livewire\Form\PaymentMethodForm;
+use App\Livewire\Form\MetodoPagoForm;
 
-class LivewirePaymentMethodForm extends Component
+class LivewireMetodoPagoForm extends Component
 {
-    public PaymentMethodForm $form;
+    public MetodoPagoForm $form;
 
     public function mount($paymentMethod = null)
     {
         $this->form->resetForm();
 
         if ($paymentMethod) {
-            $paymentMethod = PaymentMethod::findOrFail($paymentMethod);
+            $paymentMethod = MetodoPago::findOrFail($paymentMethod);
             $this->form->fillForm($paymentMethod);
         }
     }
@@ -26,17 +26,17 @@ class LivewirePaymentMethodForm extends Component
 
         try {
             $data = [
-                'name' => $this->form->name,
+                'nombre' => $this->form->name,
                 'codigo_sin' => $this->form->codigo_sin ?: null,
-                'state' => $this->form->state,
+                'estado' => $this->form->state,
             ];
 
             if ($this->form->id) {
-                $paymentMethod = PaymentMethod::findOrFail($this->form->id);
+                $paymentMethod = MetodoPago::findOrFail($this->form->id);
                 $paymentMethod->update($data);
                 $message = 'Método de pago actualizado correctamente.';
             } else {
-                PaymentMethod::create($data);
+                MetodoPago::create($data);
                 $message = 'Método de pago registrado correctamente.';
             }
 
@@ -55,6 +55,6 @@ class LivewirePaymentMethodForm extends Component
 
     public function render()
     {
-        return view('livewire.payment-method.form');
+        return view('livewire.metodo-pago.form');
     }
 }

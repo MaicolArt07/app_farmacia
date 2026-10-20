@@ -4,7 +4,7 @@ namespace App\Livewire\Form;
 
 use Livewire\Form;
 
-class PaymentMethodForm extends Form
+class MetodoPagoForm extends Form
 {
     public $id = null;
     public $name = '';
@@ -37,8 +37,8 @@ class PaymentMethodForm extends Form
     public function fillForm($paymentMethod)
     {
         $this->id = $paymentMethod->id;
-        $this->name = $paymentMethod->name;
+        $this->name = $paymentMethod->nombre;
         $this->codigo_sin = $paymentMethod->codigo_sin;
-        $this->state = $paymentMethod->state;
+        $this->state = $paymentMethod->estado;
     }
 }

@@ -5,21 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class PaymentMethod extends Model
+class MetodoPago extends Model
 {
     use HasFactory;
 
-    protected $table = 'payment_methods';
+    protected $table = 'metodos_pago';
 
     protected $fillable = [
-        'name',
+        'nombre',
         'codigo_sin',
-        'state',
+        'estado',
     ];
 
     protected $casts = [
         'codigo_sin' => 'integer',
-        'state' => 'integer',
+        'estado' => 'integer',
     ];
 
     public function sales()

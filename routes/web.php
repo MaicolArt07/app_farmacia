@@ -16,8 +16,8 @@ use App\Livewire\LivewireLaboratorioForm;
 use App\Livewire\LivewireCompanyForm;
 use App\Livewire\LivewireBranch;
 use App\Livewire\LivewireBranchForm;
-use App\Livewire\LivewirePaymentMethod;
-use App\Livewire\LivewirePaymentMethodForm;
+use App\Livewire\LivewireMetodoPago;
+use App\Livewire\LivewireMetodoPagoForm;
 use App\Livewire\LivewireCategoria;
 use App\Livewire\LivewireCategoriaForm;
 use App\Livewire\LivewirePresentacion;
@@ -117,15 +117,15 @@ Route::middleware(['auth'])->group(function () {
     ->middleware('can:Ver Sucursales')
     ->name('branches.edit');
 
-    Route::get('/payment-methods', LivewirePaymentMethod::class)
+    Route::get('/payment-methods', LivewireMetodoPago::class)
     ->middleware('can:Ver Metodos Pago')
     ->name('payment-methods');
 
-    Route::get('/payment-methods/create', LivewirePaymentMethodForm::class)
+    Route::get('/payment-methods/create', LivewireMetodoPagoForm::class)
     ->middleware('can:Ver Metodos Pago')
     ->name('payment-methods.create');
 
-    Route::get('/payment-methods/{paymentMethod}/edit', LivewirePaymentMethodForm::class)
+    Route::get('/payment-methods/{paymentMethod}/edit', LivewireMetodoPagoForm::class)
     ->middleware('can:Ver Metodos Pago')
     ->name('payment-methods.edit');
 

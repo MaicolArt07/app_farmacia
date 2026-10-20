@@ -104,7 +104,7 @@
                 <select wire:model="form.id_payment_method" @disabled($viewMode)
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 disabled:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:disabled:bg-zinc-700">
                     @foreach($paymentMethods as $method)
-                        <option value="{{ $method->id }}">{{ $method->name }}</option>
+                        <option value="{{ $method->id }}">{{ $method->nombre }}</option>
                     @endforeach
                 </select>
                 @error('form.id_payment_method') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
@@ -239,7 +239,7 @@
                     <div class="mt-4 border-t border-gray-200 pt-3 dark:border-zinc-700">
                         <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">
                             Monto recibido
-                            @if(strtoupper(optional($paymentMethods->firstWhere('id', $form->id_payment_method))->name) === 'EFECTIVO')
+                            @if(strtoupper(optional($paymentMethods->firstWhere('id', $form->id_payment_method))->nombre) === 'EFECTIVO')
                                 <span class="text-red-600">*</span>
                             @else
                                 <span class="text-xs font-normal text-gray-400 dark:text-zinc-500">(Opcional)</span>

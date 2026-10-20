@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Form;
 
-use App\Models\PaymentMethod;
+use App\Models\MetodoPago;
 use Livewire\Form;
 
 class VentaForm extends Form
@@ -24,7 +24,7 @@ class VentaForm extends Form
         return [
             'form.id_client' => 'nullable|exists:clientes,id',
             'form.sale_date' => 'required|date',
-            'form.id_payment_method' => 'required|exists:payment_methods,id',
+            'form.id_payment_method' => 'required|exists:metodos_pago,id',
             'form.discount' => 'nullable|numeric|min:0',
             'form.amount_paid' => 'nullable|numeric|min:0',
             'form.observation' => 'nullable|string',
@@ -47,7 +47,7 @@ class VentaForm extends Form
         $this->id = null;
         $this->id_client = null;
         $this->sale_date = now()->format('Y-m-d');
-        $this->id_payment_method = PaymentMethod::where('name', 'Efectivo')->value('id');
+        $this->id_payment_method = MetodoPago::where('nombre', 'Efectivo')->value('id');
         $this->subtotal = 0;
         $this->discount = 0;
         $this->total = 0;
