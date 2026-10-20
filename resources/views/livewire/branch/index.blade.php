@@ -1,9 +1,9 @@
 <div class="p-6">
     <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <a href="{{ route('branches.create') }}" wire:navigate
+        <button type="button" wire:click="create"
             class="cursor-pointer rounded-lg bg-emerald-600 px-4 py-2 text-center text-white transition hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600">
             <i class="bi bi-shop mr-1"></i> Nueva sucursal
-        </a>
+        </button>
 
         <input
             type="text"
@@ -48,11 +48,10 @@
                         </td>
                         <td class="px-4 py-3">
                             <div class="flex justify-center gap-3">
-                                <a
-                                    href="{{ route('branches.edit', $item->id) }}" wire:navigate
+                                <button type="button" wire:click="edit({{ $item->id }})"
                                     class="cursor-pointer text-yellow-500 transition hover:text-yellow-600 dark:text-yellow-400 dark:hover:text-yellow-300">
                                     <i class="bi bi-pencil-square text-lg"></i>
-                                </a>
+                                </button>
 
                                 <button
                                     type="button"
@@ -80,4 +79,52 @@
     <div class="mt-4 dark:text-zinc-200">
         {{ $branches->links() }}
     </div>
+
+    <flux:modal wire:model="modalVisible" class="max-w-xl">
+        <div class="space-y-6">
+            <flux:heading size="lg">
+                {{ $form->id ? 'Editar sucursal' : 'Nueva sucursal' }}
+            </flux:heading>
+
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <flux:input type="number" min="0" label="N° Sucursal (SIN)" wire:model="form.numero_sucursal" />
+                        <p class="mt-1 text-xs text-gray-400 dark:text-zinc-500">0 = Casa matriz</p>
+                        @error('form.numero_sucursal') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div>
+                        <flux:input type="number" min="0" label="Punto de Venta (SIN)" wire:model="form.punto_venta" />
+                        @error('form.punto_venta') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <flux:input label="Nombre" wire:model="form.nombre" />
+                @error('form.nombre') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+
+                <div>
+                    <flux:input label="Municipio" wire:model="form.municipio" placeholder="Ej: Santa Cruz de la Sierra" />
+                    <p class="mt-1 text-xs text-gray-400 dark:text-zinc-500">Obligatorio para la facturación (campo "municipio" del XML).</p>
+                    @error('form.municipio') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                </div>
+
+                <flux:input label="Dirección (Opcional)" wire:model="form.direccion" />
+                @error('form.direccion') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+
+                <flux:input label="Teléfono (Opcional)" wire:model="form.telefono" />
+                @error('form.telefono') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <flux:button variant="danger" wire:click="cancel">
+                    Cancelar
+                </flux:button>
+
+                <flux:button variant="primary" wire:click="save">
+                    Guardar
+                </flux:button>
+            </div>
+        </div>
+    </flux:modal>
 </div>
