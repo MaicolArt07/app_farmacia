@@ -23,7 +23,6 @@ use App\Livewire\LivewireCompraForm;
 use App\Livewire\LivewireVenta;
 use App\Livewire\LivewireVentaForm;
 use App\Livewire\LivewireAjusteInventario;
-use App\Livewire\LivewireAjusteInventarioForm;
 use App\Livewire\LivewireCaja;
 use App\Livewire\LivewireInventoryAlerts;
 use App\Livewire\LivewireKardex;
@@ -155,9 +154,6 @@ Route::middleware(['auth'])->group(function () {
         ->middleware('can:Ver Ajustes Inventario')
         ->name('inventory-adjustments');
 
-    Route::get('/inventory-adjustments/create', LivewireAjusteInventarioForm::class)
-        ->middleware('can:Crear Ajustes Inventario')
-        ->name('inventory-adjustments.create');
 
     Route::get('/inventory-alerts', LivewireInventoryAlerts::class)
         ->middleware('can:Ver Alertas Inventario')

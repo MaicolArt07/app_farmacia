@@ -2,10 +2,10 @@
 
     <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         @can('Crear Ajustes Inventario')
-            <a href="{{ route('inventory-adjustments.create') }}" wire:navigate
+            <button type="button" wire:click="create"
                 class="cursor-pointer rounded-lg bg-emerald-600 px-4 py-2 text-center text-white transition hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600">
                 <i class="bi bi-sliders2-vertical mr-1"></i> Nuevo ajuste
-            </a>
+            </button>
         @endcan
 
         <input
@@ -40,7 +40,7 @@
                         </td>
 
                         <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
-                            {{ $item->product?->name ?? '-' }}
+                            {{ $item->product?->nombre ?? '-' }}
                             <div class="text-xs text-gray-500 dark:text-zinc-400">
                                 {{ $item->product?->code ?? '-' }}
                             </div>
@@ -101,5 +101,136 @@
         {{ $adjustments->links() }}
     </div>
 
+    <flux:modal wire:model="modalVisible" class="max-w-3xl">
+        <div class="space-y-6">
+            <flux:heading size="lg">
+                Nuevo ajuste de inventario
+            </flux:heading>
+
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+
+                <div class="md:col-span-2">
+                    <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Producto <span class="text-red-600">*</span></label>
+
+                    @if($selectedProductLabel)
+                        <div class="flex items-center justify-between rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2 dark:border-emerald-800 dark:bg-emerald-900/20">
+                            <span class="text-sm text-emerald-700 dark:text-emerald-300">
+                                {{ $selectedProductLabel }}
+                            </span>
+
+                            <button wire:click="resetProduct" type="button" class="text-red-500 hover:text-red-700">
+                                <i class="bi bi-x-circle"></i>
+                            </button>
+                        </div>
+                    @else
+                        <div class="relative">
+                            <input
+                                type="text"
+                                wire:model.live="productSearch"
+                                placeholder="Buscar producto por código, nombre o genérico..."
+                                class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-zinc-800 focus:border-blue-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
+                            >
+
+                            @if(!empty($productResults))
+                                <div class="absolute z-10 mt-1 max-h-56 w-full overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
+                                    @foreach($productResults as $product)
+                                        <button
+                                            type="button"
+                                            wire:click="selectProduct({{ $product['id'] }})"
+                                            class="block w-full border-b border-gray-100 px-3 py-2 text-left text-sm hover:bg-gray-100 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-700"
+                                        >
+                                            {{ $product['label'] }}
+                                        </button>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+
+                    @error('form.id_product')
+                        <span class="mt-1 block text-sm text-red-500">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Lote <span class="text-red-600">*</span></label>
+
+                    @if($selectedLotLabel)
+                        <div class="flex items-center justify-between rounded-lg border border-sky-300 bg-sky-50 px-3 py-2 dark:border-sky-800 dark:bg-sky-900/20">
+                            <span class="text-sm text-sky-700 dark:text-sky-300">
+                                {{ $selectedLotLabel }}
+                            </span>
+
+                            <button wire:click="clearLot" type="button" class="text-red-500 hover:text-red-700">
+                                <i class="bi bi-x-circle"></i>
+                            </button>
+                        </div>
+                    @else
+                        <div class="relative">
+                            <input
+                                type="text"
+                                wire:model.live="lotSearch"
+                                placeholder="Buscar lote por código o vencimiento..."
+                                @disabled(!$form->id_product)
+                                class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-zinc-800 disabled:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:disabled:bg-zinc-700"
+                            >
+
+                            @if(!empty($lotResults))
+                                <div class="absolute z-10 mt-1 max-h-56 w-full overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
+                                    @foreach($lotResults as $lot)
+                                        <button
+                                            type="button"
+                                            wire:click="selectLot({{ $lot['id'] }})"
+                                            class="block w-full border-b border-gray-100 px-3 py-2 text-left text-sm hover:bg-gray-100 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-700"
+                                        >
+                                            {{ $lot['label'] }}
+                                        </button>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+
+                    @error('form.id_lot')
+                        <span class="mt-1 block text-sm text-red-500">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <flux:select label="Tipo de ajuste" wire:model="form.type">
+                    <flux:select.option value="INCREASE">Aumentar stock</flux:select.option>
+                    <flux:select.option value="DECREASE">Disminuir stock</flux:select.option>
+                </flux:select>
+                @error('form.type')
+                    <span class="text-sm text-red-500">{{ $message }}</span>
+                @enderror
+
+                <flux:input type="number" min="1" label="Cantidad" wire:model="form.quantity" />
+                @error('form.quantity')
+                    <span class="text-sm text-red-500">{{ $message }}</span>
+                @enderror
+
+                <flux:textarea
+                    label="Motivo"
+                    wire:model="form.reason"
+                    rows="3"
+                    placeholder="Ej.: error de conteo físico, producto dañado, ajuste por inventario..."
+                    class="md:col-span-2"
+                />
+                @error('form.reason')
+                    <span class="text-sm text-red-500">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <flux:button variant="danger" wire:click="cancel">
+                    Cancelar
+                </flux:button>
+
+                <flux:button variant="primary" wire:click="save">
+                    Guardar ajuste
+                </flux:button>
+            </div>
+        </div>
+    </flux:modal>
 
 </div>
