@@ -5,12 +5,17 @@ namespace App\Livewire;
 use App\Models\Categoria;
 use Livewire\Component;
 use Livewire\WithPagination;
+use App\Livewire\Form\CategoriaForm;
 
 class LivewireCategoria extends Component
 {
     use WithPagination;
 
     public $search = '';
+
+    public CategoriaForm $form;
+
+    public $modalVisible = false;
 
     protected $paginationTheme = 'tailwind';
 
@@ -33,6 +38,45 @@ class LivewireCategoria extends Component
         return view('livewire.categoria.index', [
             'categorias' => $query->orderBy('id', 'desc')->paginate(10),
         ]);
+    }
+
+    public function create()
+    {
+        $this->form->resetForm();
+        $this->modalVisible = true;
+    }
+
+    public function edit($id)
+    {
+        $categoria = Categoria::findOrFail($id);
+        $this->form->fillForm($categoria);
+        $this->modalVisible = true;
+    }
+
+    public function save()
+    {
+        $this->validate($this->form->rules(), $this->form->messages());
+        try {
+            if ($this->form->id) {
+                $categoria = Categoria::findOrFail($this->form->id);
+                $categoria->update(['nombre' => $this->form->nombre, 'descripcion' => $this->form->descripcion, 'estado' => $this->form->estado]);
+                $message = 'Categoría actualizada correctamente.';
+            } else {
+                Categoria::create(['nombre' => $this->form->nombre, 'descripcion' => $this->form->descripcion, 'estado' => $this->form->estado]);
+                $message = 'Categoría registrada correctamente.';
+            }
+            $this->dispatch('toast', type: 'success', message: $message);
+            $this->modalVisible = false;
+            $this->form->resetForm();
+        } catch (\Throwable $e) {
+            $this->dispatch('toast', type: 'error', message: 'No se pudo guardar la categoría.');
+        }
+    }
+
+    public function cancel()
+    {
+        $this->modalVisible = false;
+        $this->form->resetForm();
     }
 
     public function delete($id)

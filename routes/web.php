@@ -18,7 +18,6 @@ use App\Livewire\LivewireSucursalForm;
 use App\Livewire\LivewireMetodoPago;
 use App\Livewire\LivewireMetodoPagoForm;
 use App\Livewire\LivewireCategoria;
-use App\Livewire\LivewireCategoriaForm;
 use App\Livewire\LivewirePresentacion;
 use App\Livewire\LivewirePresentacionForm;
 use App\Livewire\LivewireProducto;
@@ -131,14 +130,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/categorias', LivewireCategoria::class)
     ->middleware('can:Ver Categorias')
     ->name('categorias');
-
-    Route::get('/categorias/create', LivewireCategoriaForm::class)
-    ->middleware('can:Ver Categorias')
-    ->name('categorias.create');
-
-    Route::get('/categorias/{categoria}/edit', LivewireCategoriaForm::class)
-    ->middleware('can:Ver Categorias')
-    ->name('categorias.edit');
 
     Route::get('/presentaciones', LivewirePresentacion::class)
     ->middleware('can:Ver Presentaciones')
