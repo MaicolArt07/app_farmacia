@@ -16,29 +16,18 @@ class CajaForm extends Form
     public function rulesOpen()
     {
         return [
-            'form.opening_amount' => 'required|numeric|min:0',
-            'form.validity_period' => 'required|in:DAILY,WEEKLY,MONTHLY',
-            'form.observation' => 'nullable|string',
-        ];
-    }
-
-    public function rulesClose()
-    {
-        return [
-            'form.closing_amount' => 'required|numeric|min:0',
-            'form.observation' => 'nullable|string',
+            'openForm.opening_amount' => 'required|numeric|min:0',
+            'openForm.validity_period' => 'required|in:DAILY,WEEKLY,MONTHLY',
+            'openForm.observation' => 'nullable|string',
         ];
     }
 
     public function messages()
     {
         return [
-            'form.opening_date.required' => 'La fecha de apertura es obligatoria.',
-            'form.opening_amount.required' => 'El monto inicial es obligatorio.',
-            'form.opening_amount.numeric' => 'El monto inicial debe ser numérico.',
-            'form.closing_amount.required' => 'El monto contado es obligatorio.',
-            'form.closing_amount.numeric' => 'El monto contado debe ser numérico.',
-            'form.validity_period.required' => 'Debe seleccionar la duración de la caja.',
+            'openForm.opening_amount.required' => 'El monto inicial es obligatorio.',
+            'openForm.opening_amount.numeric' => 'El monto inicial debe ser numérico.',
+            'openForm.validity_period.required' => 'Debe seleccionar la duración de la caja.',
         ];
     }
 

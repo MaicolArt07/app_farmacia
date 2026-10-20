@@ -2,10 +2,10 @@
 
     <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         @can('Crear Caja')
-            <a href="{{ route('cash-registers.create') }}" wire:navigate
+            <button type="button" wire:click="openOpenModal"
                 class="cursor-pointer rounded-lg bg-emerald-600 px-4 py-2 text-center text-white transition hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600">
                 <i class="bi bi-cash-coin mr-1"></i> Abrir caja
-            </a>
+            </button>
         @endcan
 
         <input
@@ -162,6 +162,10 @@
     <div class="mt-4 dark:text-zinc-200">
         {{ $cashRegisters->links() }}
     </div>
+
+    @if($openModalVisible)
+        @include('livewire.cash-register.modal.open')
+    @endif
 
     @if($movementModalVisible)
         @include('livewire.cash-register.modal.movement')

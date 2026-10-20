@@ -25,7 +25,6 @@ use App\Livewire\LivewireVentaForm;
 use App\Livewire\LivewireAjusteInventario;
 use App\Livewire\LivewireAjusteInventarioForm;
 use App\Livewire\LivewireCaja;
-use App\Livewire\LivewireCajaForm;
 use App\Livewire\LivewireInventoryAlerts;
 use App\Livewire\LivewireKardex;
 use App\Livewire\LivewireFactura;
@@ -151,9 +150,6 @@ Route::middleware(['auth'])->group(function () {
     ->middleware('can:Ver Caja')
     ->name('cash-registers');
 
-    Route::get('/cash-registers/create', LivewireCajaForm::class)
-    ->middleware('can:Crear Caja')
-    ->name('cash-registers.create');
 
     Route::get('/inventory-adjustments', LivewireAjusteInventario::class)
         ->middleware('can:Ver Ajustes Inventario')

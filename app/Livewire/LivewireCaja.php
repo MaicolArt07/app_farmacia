@@ -11,12 +11,14 @@ use Illuminate\Support\Facades\Auth;
 use App\Livewire\Form\MovimientoCajaForm;
 use App\Livewire\Form\CierreCajaForm;
 use App\Livewire\Form\ExtenderCajaForm;
+use App\Livewire\Form\CajaForm;
 
 class LivewireCaja extends Component
 {
     use WithPagination;
 
     public $search = '';
+    public $openModalVisible = false;
     public $movementModalVisible = false;
     public $closeModalVisible = false;
     public $extendModalVisible = false;
@@ -28,6 +30,7 @@ class LivewireCaja extends Component
     public $detailCash = null;
     public $closingCash = null;
 
+    public CajaForm $openForm;
     public MovimientoCajaForm $movementForm;
     public CierreCajaForm $closeForm;
     public ExtenderCajaForm $extendForm;
@@ -58,6 +61,55 @@ class LivewireCaja extends Component
         return view('livewire.cash-register.index', [
             'cashRegisters' => $query->orderBy('id', 'desc')->paginate(10),
         ]);
+    }
+
+    public function openOpenModal()
+    {
+        $this->openForm->resetForm();
+        $this->openModalVisible = true;
+    }
+
+    public function closeOpenModal()
+    {
+        $this->resetValidation();
+        $this->resetErrorBag();
+
+        $this->openForm->resetForm();
+        $this->openModalVisible = false;
+    }
+
+    public function saveOpen()
+    {
+        $this->validate($this->openForm->rulesOpen(), $this->openForm->messages());
+
+        $hasOpenCash = Caja::where('id_user', Auth::id())
+            ->where('status', 'OPEN')
+            ->exists();
+
+        if ($hasOpenCash) {
+            $this->dispatch('toast', type: 'warning', message: 'Ya tiene una caja abierta.');
+            return;
+        }
+
+        try {
+            Caja::create([
+                'id_user' => Auth::id(),
+                'fecha_apertura' => now()->toDateString(),
+                'monto_apertura' => $this->openForm->opening_amount,
+                'periodo_validez' => $this->openForm->validity_period,
+                'expires_at' => Caja::calculateExpiration($this->openForm->validity_period),
+                'monto_cierre' => null,
+                'monto_esperado' => $this->openForm->opening_amount,
+                'diferencia' => null,
+                'status' => 'OPEN',
+                'estado' => 1,
+            ]);
+
+            $this->dispatch('toast', type: 'success', message: 'Caja abierta correctamente.');
+            $this->closeOpenModal();
+        } catch (\Throwable $e) {
+            $this->dispatch('toast', type: 'error', message: 'No se pudo abrir la caja.');
+        }
     }
 
     public function openMovementModal($id)
