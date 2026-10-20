@@ -22,10 +22,10 @@ class Proveedor extends Model
 
     public function person()
     {
-        return $this->belongsTo(Person::class, 'id_person');
+        return $this->belongsTo(Persona::class, 'id_person');
     }
     public function purchases()
 {
-    return $this->hasMany(Purchase::class, 'id_supplier');
+    return $this->hasMany(Compra::class, 'id_supplier');
 }
 }

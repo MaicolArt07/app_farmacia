@@ -1,6 +1,6 @@
 <div class="mx-auto max-w-6xl p-6">
     <div class="mb-6">
-        <a href="{{ route('purchases') }}" wire:navigate class="mb-2 inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
+        <a href="{{ route('compras') }}" wire:navigate class="mb-2 inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
             <i class="bi bi-arrow-left"></i> Volver a compras
         </a>
         <h1 class="text-xl font-semibold text-zinc-800 dark:text-zinc-100">

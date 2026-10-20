@@ -4,7 +4,7 @@ namespace App\Exports\Sheets;
 
 use App\Models\CashMovement;
 use App\Models\CashRegister;
-use App\Models\Purchase;
+use App\Models\Compra;
 use App\Models\Sale;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -22,8 +22,8 @@ class DailyBookSummarySheet implements FromArray, WithTitle, ShouldAutoSize
             ->whereBetween('sale_date', [$this->from . ' 00:00:00', $this->to . ' 23:59:59'])
             ->get();
 
-        $purchases = Purchase::where('status', 'ACTIVE')
-            ->whereBetween('purchase_date', [$this->from, $this->to])
+        $purchases = Compra::where('status', 'ACTIVE')
+            ->whereBetween('fecha_compra', [$this->from, $this->to])
             ->get();
 
         $movements = CashMovement::whereHas('cashRegister', function ($q) {

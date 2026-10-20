@@ -22,7 +22,7 @@ class Cliente extends Model
 
     public function person()
     {
-        return $this->belongsTo(Person::class, 'id_person');
+        return $this->belongsTo(Persona::class, 'id_person');
     }
 
     public function sales()

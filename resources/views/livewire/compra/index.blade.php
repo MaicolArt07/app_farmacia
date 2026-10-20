@@ -1,6 +1,6 @@
 <div class="p-6">
     <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <a href="{{ route('purchases.create') }}" wire:navigate
+        <a href="{{ route('compras.create') }}" wire:navigate
             class="cursor-pointer rounded-lg bg-emerald-600 px-4 py-2 text-center text-white transition hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600">
             <i class="bi bi-bag-plus mr-1"></i> Nueva compra
         </a>
@@ -30,13 +30,13 @@
                 @forelse ($purchases as $item)
                     <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/70">
                         <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
-                            {{ \Carbon\Carbon::parse($item->purchase_date)->format('d/m/Y') }}
+                            {{ \Carbon\Carbon::parse($item->fecha_compra)->format('d/m/Y') }}
                         </td>
                         <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
-                            {{ $item->supplier?->company_name ?? '-' }}
+                            {{ $item->supplier?->razon_social ?? '-' }}
                         </td>
                         <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
-                            {{ $item->invoice_number ?: '-' }}
+                            {{ $item->numero_factura ?: '-' }}
                         </td>
                         <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
                             {{ number_format($item->total, 2) }}
@@ -54,23 +54,23 @@
                         </td>
                         <td class="px-4 py-3">
                             <div class="flex justify-center gap-3">
-                                <a href="{{ route('purchases.view', $item->id) }}" wire:navigate
+                                <a href="{{ route('compras.view', $item->id) }}" wire:navigate
                                     class="cursor-pointer text-sky-500 transition hover:text-sky-600 dark:text-sky-400">
                                     <i class="bi bi-eye text-lg"></i>
                                 </a>
 
-                                <a href="{{ route('purchases.edit', $item->id) }}" wire:navigate
+                                <a href="{{ route('compras.edit', $item->id) }}" wire:navigate
                                     class="cursor-pointer text-yellow-500 transition hover:text-yellow-600 dark:text-yellow-400">
                                     <i class="bi bi-pencil-square text-lg"></i>
                                 </a>
 
                                 <button type="button"
                                     x-on:click.prevent="confirmAction({
-                                        text: '¿Deseas {{ $item->state ? 'desactivar' : 'activar' }} este registro?',
-                                        confirmText: 'Sí, {{ $item->state ? 'desactivar' : 'activar' }}',
+                                        text: '¿Deseas {{ $item->estado ? 'desactivar' : 'activar' }} este registro?',
+                                        confirmText: 'Sí, {{ $item->estado ? 'desactivar' : 'activar' }}',
                                     }).then((ok) => { if (ok) $wire.delete({{ $item->id }}) })"
-                                    class="{{ $item->state ? 'text-red-600 hover:text-red-800 dark:text-red-400' : 'text-gray-400 dark:text-zinc-500' }} cursor-pointer">
-                                    <i class="bi {{ $item->state ? 'bi-trash' : 'bi-arrow-clockwise' }} text-lg"></i>
+                                    class="{{ $item->estado ? 'text-red-600 hover:text-red-800 dark:text-red-400' : 'text-gray-400 dark:text-zinc-500' }} cursor-pointer">
+                                    <i class="bi {{ $item->estado ? 'bi-trash' : 'bi-arrow-clockwise' }} text-lg"></i>
                                 </button>
 
                                 @can('Cambiar Estado Compras')

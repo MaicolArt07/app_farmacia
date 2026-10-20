@@ -5,34 +5,34 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class PurchaseDetail extends Model
+class DetalleCompra extends Model
 {
     use HasFactory;
 
-    protected $table = 'purchase_details';
+    protected $table = 'detalles_compra';
 
     protected $fillable = [
         'id_purchase',
         'id_product',
-        'batch_code',
-        'expiration_date',
+        'codigo_lote',
+        'fecha_vencimiento',
         'quantity',
-        'purchase_price',
-        'sale_price',
+        'precio_compra',
+        'precio_venta',
         'subtotal',
     ];
 
     protected $casts = [
-        'expiration_date' => 'date',
+        'fecha_vencimiento' => 'date',
         'quantity' => 'integer',
-        'purchase_price' => 'decimal:2',
-        'sale_price' => 'decimal:2',
+        'precio_compra' => 'decimal:2',
+        'precio_venta' => 'decimal:2',
         'subtotal' => 'decimal:2',
     ];
 
     public function purchase()
     {
-        return $this->belongsTo(Purchase::class, 'id_purchase');
+        return $this->belongsTo(Compra::class, 'id_purchase');
     }
 
     public function product()

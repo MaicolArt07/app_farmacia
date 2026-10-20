@@ -4,7 +4,7 @@ namespace App\Livewire\Form;
 
 use Livewire\Form;
 
-class PurchaseForm extends Form
+class CompraForm extends Form
 {
     public $id = null;
     public $id_supplier = null;
@@ -50,11 +50,11 @@ class PurchaseForm extends Form
     {
         $this->id = $purchase->id;
         $this->id_supplier = $purchase->id_supplier;
-        $this->invoice_number = $purchase->invoice_number;
-        $this->purchase_date = optional($purchase->purchase_date)->format('Y-m-d');
+        $this->invoice_number = $purchase->numero_factura;
+        $this->purchase_date = optional($purchase->fecha_compra)->format('Y-m-d');
         $this->subtotal = $purchase->subtotal;
         $this->total = $purchase->total;
-        $this->observation = $purchase->observation;
-        $this->state = $purchase->state;
+        $this->observation = $purchase->observacion;
+        $this->state = $purchase->estado;
     }
 }

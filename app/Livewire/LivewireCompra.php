@@ -3,14 +3,14 @@
 namespace App\Livewire;
 
 use App\Models\Lote;
-use App\Models\Purchase;
+use App\Models\Compra;
 use App\Models\SaleDetail;
 use App\Models\InventoryMovement;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\DB;
 
-class LivewirePurchase extends Component
+class LivewireCompra extends Component
 {
     use WithPagination;
 
@@ -25,12 +25,12 @@ class LivewirePurchase extends Component
 
     public function render()
     {
-        $query = Purchase::with(['supplier.person', 'user']);
+        $query = Compra::with(['supplier.person', 'user']);
 
         if (!empty($this->search)) {
             $query->where(function ($q) {
-                $q->where('invoice_number', 'like', "%{$this->search}%")
-                  ->orWhere('purchase_date', 'like', "%{$this->search}%")
+                $q->where('numero_factura', 'like', "%{$this->search}%")
+                  ->orWhere('fecha_compra', 'like', "%{$this->search}%")
                   ->orWhereHas('supplier', function ($sub) {
                       $sub->where('razon_social', 'like', "%{$this->search}%")
                           ->orWhere('nit', 'like', "%{$this->search}%");
@@ -38,7 +38,7 @@ class LivewirePurchase extends Component
             });
         }
 
-        return view('livewire.purchase.index', [
+        return view('livewire.compra.index', [
             'purchases' => $query->orderBy('id', 'desc')->paginate(10),
         ]);
     }
@@ -48,7 +48,7 @@ class LivewirePurchase extends Component
         DB::beginTransaction();
 
         try {
-            $purchase = Purchase::with('details')
+            $purchase = Compra::with('details')
                 ->where('id', $id)
                 ->lockForUpdate()
                 ->firstOrFail();
@@ -61,8 +61,8 @@ class LivewirePurchase extends Component
 
             foreach ($purchase->details as $detail) {
                 $lot = Lote::where('id_product', $detail->id_product)
-                    ->where('codigo_lote', $detail->batch_code)
-                    ->where('fecha_vencimiento', $detail->expiration_date)
+                    ->where('codigo_lote', $detail->codigo_lote)
+                    ->where('fecha_vencimiento', $detail->fecha_vencimiento)
                     ->lockForUpdate()
                     ->firstOrFail();
 
@@ -118,7 +118,7 @@ class LivewirePurchase extends Component
             }
 
             $purchase->status = 'CANCELLED';
-            $purchase->state = 0;
+            $purchase->estado = 0;
             $purchase->cancelled_at = now();
             $purchase->cancelled_by = auth()->id();
             $purchase->cancel_reason = 'Compra anulada desde el módulo de compras.';
@@ -138,14 +138,14 @@ class LivewirePurchase extends Component
     public function delete($id)
     {
         try {
-            $purchase = Purchase::findOrFail($id);
-            $purchase->state = $purchase->state ? 0 : 1;
+            $purchase = Compra::findOrFail($id);
+            $purchase->estado = $purchase->estado ? 0 : 1;
             $purchase->save();
 
             $this->dispatch(
                 'toast',
-                type: $purchase->state ? 'success' : 'warning',
-                message: $purchase->state
+                type: $purchase->estado ? 'success' : 'warning',
+                message: $purchase->estado
                     ? 'Compra activada correctamente.'
                     : 'Compra desactivada correctamente.'
             );

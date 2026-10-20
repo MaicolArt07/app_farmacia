@@ -26,8 +26,8 @@ use App\Livewire\LivewireProducto;
 use App\Livewire\LivewireProductoForm;
 use App\Livewire\LivewireLote;
 use App\Livewire\LivewireLoteForm;
-use App\Livewire\LivewirePurchase;
-use App\Livewire\LivewirePurchaseForm;
+use App\Livewire\LivewireCompra;
+use App\Livewire\LivewireCompraForm;
 use App\Livewire\LivewireSale;
 use App\Livewire\LivewireSaleForm;
 use App\Livewire\LivewireInventoryAdjustment;
@@ -177,21 +177,21 @@ Route::middleware(['auth'])->group(function () {
     ->middleware('can:Ver Lotes')
     ->name('lotes.edit');
 
-    Route::get('/purchases', LivewirePurchase::class)
+    Route::get('/compras', LivewireCompra::class)
     ->middleware('can:Ver Compras')
-    ->name('purchases');
+    ->name('compras');
 
-    Route::get('/purchases/create', LivewirePurchaseForm::class)
+    Route::get('/compras/create', LivewireCompraForm::class)
     ->middleware('can:Ver Compras')
-    ->name('purchases.create');
+    ->name('compras.create');
 
-    Route::get('/purchases/{purchase}/edit', LivewirePurchaseForm::class)
+    Route::get('/compras/{purchase}/edit', LivewireCompraForm::class)
     ->middleware('can:Ver Compras')
-    ->name('purchases.edit');
+    ->name('compras.edit');
 
-    Route::get('/purchases/{purchase}/view', LivewirePurchaseForm::class)
+    Route::get('/compras/{purchase}/view', LivewireCompraForm::class)
     ->middleware('can:Ver Compras')
-    ->name('purchases.view');
+    ->name('compras.view');
 
     Route::get('/sales', LivewireSale::class)
     ->middleware('can:Ver Ventas')

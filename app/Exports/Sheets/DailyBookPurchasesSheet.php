@@ -2,7 +2,7 @@
 
 namespace App\Exports\Sheets;
 
-use App\Models\Purchase;
+use App\Models\Compra;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -17,9 +17,9 @@ class DailyBookPurchasesSheet implements FromCollection, WithHeadings, WithMappi
 
     public function collection()
     {
-        return Purchase::with(['supplier.person', 'user'])
-            ->whereBetween('purchase_date', [$this->from, $this->to])
-            ->orderBy('purchase_date')
+        return Compra::with(['supplier.person', 'user'])
+            ->whereBetween('fecha_compra', [$this->from, $this->to])
+            ->orderBy('fecha_compra')
             ->get();
     }
 
@@ -31,9 +31,9 @@ class DailyBookPurchasesSheet implements FromCollection, WithHeadings, WithMappi
     public function map($purchase): array
     {
         return [
-            optional($purchase->purchase_date)->format('d/m/Y'),
+            optional($purchase->fecha_compra)->format('d/m/Y'),
             $purchase->supplier?->razon_social,
-            $purchase->invoice_number,
+            $purchase->numero_factura,
             $purchase->user?->name,
             (string) $purchase->total,
             $purchase->status === 'CANCELLED' ? 'Anulada' : 'Activa',

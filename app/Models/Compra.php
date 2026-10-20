@@ -5,21 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Purchase extends Model
+class Compra extends Model
 {
     use HasFactory;
 
-    protected $table = 'purchases';
+    protected $table = 'compras';
 
     protected $fillable = [
         'id_supplier',
         'id_user',
-        'invoice_number',
-        'purchase_date',
+        'numero_factura',
+        'fecha_compra',
         'subtotal',
         'total',
-        'observation',
-        'state',
+        'observacion',
+        'estado',
         'status',
         'cancelled_at',
         'cancelled_by',
@@ -27,10 +27,10 @@ class Purchase extends Model
     ];
 
     protected $casts = [
-        'purchase_date' => 'date',
+        'fecha_compra' => 'date',
         'subtotal' => 'decimal:2',
         'total' => 'decimal:2',
-        'state' => 'integer',
+        'estado' => 'integer',
         'cancelled_at' => 'datetime',
     ];
 
@@ -51,7 +51,7 @@ class Purchase extends Model
 
     public function details()
     {
-        return $this->hasMany(PurchaseDetail::class, 'id_purchase');
+        return $this->hasMany(DetalleCompra::class, 'id_purchase');
     }
 
     public function scopeActive($query)

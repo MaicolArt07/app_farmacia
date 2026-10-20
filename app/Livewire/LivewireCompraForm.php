@@ -4,19 +4,19 @@ namespace App\Livewire;
 
 use App\Models\Lote;
 use App\Models\Producto;
-use App\Models\Purchase;
+use App\Models\Compra;
 use App\Models\Proveedor;
 use App\Models\InventoryMovement;
 use App\Models\SaleDetail;
 use Livewire\Component;
-use App\Models\PurchaseDetail;
+use App\Models\DetalleCompra;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Livewire\Form\PurchaseForm;
+use App\Livewire\Form\CompraForm;
 
-class LivewirePurchaseForm extends Component
+class LivewireCompraForm extends Component
 {
-    public PurchaseForm $form;
+    public CompraForm $form;
 
     public $viewMode = false;
 
@@ -33,10 +33,10 @@ class LivewirePurchaseForm extends Component
     {
         $this->form->resetForm();
         $this->details = [];
-        $this->viewMode = request()->routeIs('purchases.view');
+        $this->viewMode = request()->routeIs('compras.view');
 
         if ($purchase) {
-            $purchase = Purchase::with(['supplier.person', 'details.product'])->findOrFail($purchase);
+            $purchase = Compra::with(['supplier.person', 'details.product'])->findOrFail($purchase);
             $this->form->fillForm($purchase);
 
             if ($purchase->supplier) {
@@ -48,11 +48,11 @@ class LivewirePurchaseForm extends Component
                 $this->details[] = [
                     'id_product' => $detail->id_product,
                     'product_label' => $detail->product?->code . ' - ' . $detail->product?->nombre,
-                    'batch_code' => $detail->batch_code,
-                    'expiration_date' => optional($detail->expiration_date)->format('Y-m-d'),
+                    'batch_code' => $detail->codigo_lote,
+                    'expiration_date' => optional($detail->fecha_vencimiento)->format('Y-m-d'),
                     'quantity' => $detail->quantity,
-                    'purchase_price' => (float) $detail->purchase_price,
-                    'sale_price' => (float) $detail->sale_price,
+                    'purchase_price' => (float) $detail->precio_compra,
+                    'sale_price' => (float) $detail->precio_venta,
                     'subtotal' => (float) $detail->subtotal,
                 ];
             }
@@ -217,25 +217,25 @@ class LivewirePurchaseForm extends Component
             $this->calculateTotals();
 
             if ($this->form->id) {
-                $purchase = Purchase::findOrFail($this->form->id);
+                $purchase = Compra::findOrFail($this->form->id);
 
                 $purchase->update([
                     'id_supplier' => $this->form->id_supplier,
                     'id_user' => Auth::id(),
-                    'invoice_number' => $this->form->invoice_number ?: null,
-                    'purchase_date' => $this->form->purchase_date,
+                    'numero_factura' => $this->form->invoice_number ?: null,
+                    'fecha_compra' => $this->form->purchase_date,
                     'subtotal' => $this->form->subtotal,
                     'total' => $this->form->total,
-                    'observation' => $this->form->observation ?: null,
-                    'state' => $this->form->state,
+                    'observacion' => $this->form->observation ?: null,
+                    'estado' => $this->form->state,
                 ]);
 
-                $existingDetails = PurchaseDetail::where('id_purchase', $purchase->id)->get();
+                $existingDetails = DetalleCompra::where('id_purchase', $purchase->id)->get();
 
                 foreach ($existingDetails as $existingDetail) {
                     $existingLot = Lote::where('id_product', $existingDetail->id_product)
-                        ->where('codigo_lote', $existingDetail->batch_code)
-                        ->where('fecha_vencimiento', $existingDetail->expiration_date)
+                        ->where('codigo_lote', $existingDetail->codigo_lote)
+                        ->where('fecha_vencimiento', $existingDetail->fecha_vencimiento)
                         ->lockForUpdate()
                         ->first();
 
@@ -294,29 +294,29 @@ class LivewirePurchaseForm extends Component
                     ]);
                 }
 
-                PurchaseDetail::where('id_purchase', $purchase->id)->delete();
+                DetalleCompra::where('id_purchase', $purchase->id)->delete();
             } else {
-                $purchase = Purchase::create([
+                $purchase = Compra::create([
                     'id_supplier' => $this->form->id_supplier,
                     'id_user' => Auth::id(),
-                    'invoice_number' => $this->form->invoice_number ?: null,
-                    'purchase_date' => $this->form->purchase_date,
+                    'numero_factura' => $this->form->invoice_number ?: null,
+                    'fecha_compra' => $this->form->purchase_date,
                     'subtotal' => $this->form->subtotal,
                     'total' => $this->form->total,
-                    'observation' => $this->form->observation ?: null,
-                    'state' => $this->form->state,
+                    'observacion' => $this->form->observation ?: null,
+                    'estado' => $this->form->state,
                 ]);
             }
 
             foreach ($this->details as $detail) {
-                PurchaseDetail::create([
+                DetalleCompra::create([
                     'id_purchase' => $purchase->id,
                     'id_product' => $detail['id_product'],
-                    'batch_code' => $detail['batch_code'],
-                    'expiration_date' => $detail['expiration_date'],
+                    'codigo_lote' => $detail['batch_code'],
+                    'fecha_vencimiento' => $detail['expiration_date'],
                     'quantity' => $detail['quantity'],
-                    'purchase_price' => $detail['purchase_price'],
-                    'sale_price' => $detail['sale_price'],
+                    'precio_compra' => $detail['purchase_price'],
+                    'precio_venta' => $detail['sale_price'],
                     'subtotal' => $detail['subtotal'],
                 ]);
 
@@ -373,7 +373,7 @@ class LivewirePurchaseForm extends Component
 
             $this->dispatch('toast', type: 'success', message: $this->form->id ? 'Compra actualizada correctamente.' : 'Compra registrada correctamente.');
 
-            return redirect()->route('purchases');
+            return redirect()->route('compras');
         } catch (\Throwable $e) {
             DB::rollBack();
             $this->dispatch('toast', type: 'error', message: 'No se pudo guardar la compra.');
@@ -382,11 +382,11 @@ class LivewirePurchaseForm extends Component
 
     public function cancel()
     {
-        return redirect()->route('purchases');
+        return redirect()->route('compras');
     }
 
     public function render()
     {
-        return view('livewire.purchase.form');
+        return view('livewire.compra.form');
     }
 }

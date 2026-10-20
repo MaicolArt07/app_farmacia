@@ -132,8 +132,8 @@
                         @endcan
 
                         @can('Ver Compras')
-                        <a href="{{ route('purchases') }}" wire:navigate title="{{ __('Compras') }}"
-                            class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('purchases*') ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-white font-semibold' : 'text-zinc-700 dark:text-zinc-300' }}"
+                        <a href="{{ route('compras') }}" wire:navigate title="{{ __('Compras') }}"
+                            class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('compras*') ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-white font-semibold' : 'text-zinc-700 dark:text-zinc-300' }}"
                             :class="sidebarCollapsed ? 'justify-center' : 'gap-2'">
                             <i class="bi bi-cart-plus-fill shrink-0 text-base"></i>
                             <span class="overflow-hidden whitespace-nowrap transition-all duration-200" :class="sidebarCollapsed ? 'w-0 opacity-0' : 'opacity-100'">{{ __('Compras') }}</span>
@@ -556,7 +556,7 @@
                             </flux:navlist.item>
                             @endcan
                             @can('Ver Compras')
-                            <flux:navlist.item :href="route('purchases')" :current="request()->routeIs('purchases*')" wire:navigate class="rounded-xl px-3 py-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                            <flux:navlist.item :href="route('compras')" :current="request()->routeIs('compras*')" wire:navigate class="rounded-xl px-3 py-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800">
                                 <i class="bi bi-cart-plus-fill me-2"></i> {{ __('Compras') }}
                             </flux:navlist.item>
                             @endcan

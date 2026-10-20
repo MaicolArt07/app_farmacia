@@ -142,7 +142,7 @@ class ImportInventoryCommand extends Command
 
         foreach ([
             'sale_details', 'sales',
-            'purchase_details', 'purchases',
+            'detalles_compra', 'compras',
             'cash_movements', 'cash_registers',
             'inventory_movements', 'inventory_adjustments',
             'lotes', 'productos',
