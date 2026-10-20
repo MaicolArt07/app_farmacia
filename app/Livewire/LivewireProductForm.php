@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Product;
-use App\Models\Category;
+use App\Models\Categoria;
 use App\Models\Lot;
 use App\Models\InventoryMovement;
 use Livewire\Component;
@@ -173,7 +173,7 @@ class LivewireProductForm extends Component
     public function render()
     {
         return view('livewire.product.form', [
-            'categories' => Category::where('state', 1)->orderBy('name')->get(),
+            'categories' => Categoria::where('estado', 1)->orderBy('nombre')->get(),
             'laboratories' => Laboratory::where('state', 1)->orderBy('name')->get(),
             'presentations' => Presentation::where('state', 1)->orderBy('name')->get(),
             'sinProductCodes' => SinProductCode::orderBy('descripcion')->get(),

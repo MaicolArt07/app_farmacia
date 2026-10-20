@@ -82,7 +82,7 @@
                 <x-search-select
                     model="form.id_category"
                     :value="$form->id_category"
-                    :options="$categories->map(fn ($c) => ['value' => $c->id, 'label' => $c->name])->values()"
+                    :options="$categories->map(fn ($c) => ['value' => $c->id, 'label' => $c->nombre])->values()"
                 />
                 @error('form.id_category') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
             </div>

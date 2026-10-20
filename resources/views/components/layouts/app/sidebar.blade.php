@@ -159,7 +159,7 @@
                     ])
                     @php
                         $isFarmaciaSection = request()->routeIs('suppliers*') || request()->routeIs('laboratories*')
-                            || request()->routeIs('categories*') || request()->routeIs('presentations*')
+                            || request()->routeIs('categorias*') || request()->routeIs('presentations*')
                             || request()->routeIs('lots*')
                             || request()->routeIs('inventory-adjustments*') || request()->routeIs('invoices*')
                             || request()->routeIs('kardex*') || request()->routeIs('inventory-alerts*')
@@ -199,7 +199,7 @@
                             </a>
                             @endcan
                             @can('Ver Categorias')
-                            <a href="{{ route('categories') }}" wire:navigate title="{{ __('Categorías') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('categories*') ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-white' : 'text-zinc-700 dark:text-zinc-300' }}">
+                            <a href="{{ route('categorias') }}" wire:navigate title="{{ __('Categorías') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('categorias*') ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-white' : 'text-zinc-700 dark:text-zinc-300' }}">
                                 <i class="bi bi-tags-fill text-base"></i>
                             </a>
                             @endcan
@@ -270,7 +270,7 @@
                                     </a>
                                     @endcan
                                     @can('Ver Categorias')
-                                    <a href="{{ route('categories') }}" wire:navigate class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition {{ request()->routeIs('categories*') ? 'bg-zinc-200 font-semibold text-zinc-900 dark:bg-zinc-800 dark:text-white' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
+                                    <a href="{{ route('categorias') }}" wire:navigate class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition {{ request()->routeIs('categorias*') ? 'bg-zinc-200 font-semibold text-zinc-900 dark:bg-zinc-800 dark:text-white' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                         <i class="bi bi-tags-fill text-base"></i> {{ __('Categorías') }}
                                     </a>
                                     @endcan
@@ -607,7 +607,7 @@
                                     </flux:navlist.item>
                                     @endcan
                                     @can('Ver Categorias')
-                                    <flux:navlist.item :href="route('categories')" :current="request()->routeIs('categories*')" wire:navigate class="rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                                    <flux:navlist.item :href="route('categorias')" :current="request()->routeIs('categorias*')" wire:navigate class="rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800">
                                         <i class="bi bi-tags-fill me-2"></i> {{ __('Categorías') }}
                                     </flux:navlist.item>
                                     @endcan

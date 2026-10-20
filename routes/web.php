@@ -18,8 +18,8 @@ use App\Livewire\LivewireBranch;
 use App\Livewire\LivewireBranchForm;
 use App\Livewire\LivewirePaymentMethod;
 use App\Livewire\LivewirePaymentMethodForm;
-use App\Livewire\LivewireCategory;
-use App\Livewire\LivewireCategoryForm;
+use App\Livewire\LivewireCategoria;
+use App\Livewire\LivewireCategoriaForm;
 use App\Livewire\LivewirePresentation;
 use App\Livewire\LivewirePresentationForm;
 use App\Livewire\LivewireProduct;
@@ -129,17 +129,17 @@ Route::middleware(['auth'])->group(function () {
     ->middleware('can:Ver Metodos Pago')
     ->name('payment-methods.edit');
 
-    Route::get('/categories', LivewireCategory::class)
+    Route::get('/categorias', LivewireCategoria::class)
     ->middleware('can:Ver Categorias')
-    ->name('categories');
+    ->name('categorias');
 
-    Route::get('/categories/create', LivewireCategoryForm::class)
+    Route::get('/categorias/create', LivewireCategoriaForm::class)
     ->middleware('can:Ver Categorias')
-    ->name('categories.create');
+    ->name('categorias.create');
 
-    Route::get('/categories/{category}/edit', LivewireCategoryForm::class)
+    Route::get('/categorias/{categoria}/edit', LivewireCategoriaForm::class)
     ->middleware('can:Ver Categorias')
-    ->name('categories.edit');
+    ->name('categorias.edit');
 
     Route::get('/presentations', LivewirePresentation::class)
     ->middleware('can:Ver Presentaciones')

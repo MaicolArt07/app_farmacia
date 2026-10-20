@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Category;
+use App\Models\Categoria;
 use App\Models\InventoryMovement;
 use App\Models\Laboratory;
 use App\Models\Lot;
@@ -181,9 +181,11 @@ class ImportInventoryCommand extends Command
         }
 
         $category = $this->firstOrCreateCached(
-            Category::class,
+            Categoria::class,
             $categoriaNombre !== '' ? $categoriaNombre : self::FALLBACK_CATEGORY,
-            $summary['categories_created']
+            $summary['categories_created'],
+            'nombre',
+            'estado'
         );
 
         if ($categoriaNombre === '') {
@@ -261,7 +263,7 @@ class ImportInventoryCommand extends Command
         ]);
     }
 
-    private function firstOrCreateCached(string $modelClass, string $name, array &$createdTracker)
+    private function firstOrCreateCached(string $modelClass, string $name, array &$createdTracker, string $nameField = 'name', string $stateField = 'state')
     {
         static $cache = [];
 
@@ -271,14 +273,14 @@ class ImportInventoryCommand extends Command
             return $cache[$cacheKey];
         }
 
-        $existing = $modelClass::where('name', $name)->first();
+        $existing = $modelClass::where($nameField, $name)->first();
 
         if ($existing) {
             $cache[$cacheKey] = $existing;
             return $existing;
         }
 
-        $created = $modelClass::create(['name' => $name, 'state' => 1]);
+        $created = $modelClass::create([$nameField => $name, $stateField => 1]);
         $createdTracker[] = $name;
         $cache[$cacheKey] = $created;
 
