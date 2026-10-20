@@ -4,7 +4,7 @@ namespace App\Services\Facturacion;
 
 use App\Models\Sucursal;
 use App\Models\Empresa;
-use App\Models\Invoice;
+use App\Models\Factura;
 use App\Models\Venta;
 
 /**
@@ -33,7 +33,7 @@ use App\Models\Venta;
  */
 class SinFacturacionService implements FacturacionServiceInterface
 {
-    public function generar(Venta $sale, array $datosCliente = []): Invoice
+    public function generar(Venta $sale, array $datosCliente = []): Factura
     {
         throw new \RuntimeException(
             'Integración real con el SIN pendiente. Configure NIT, sucursal, punto de venta, ' .
@@ -44,7 +44,7 @@ class SinFacturacionService implements FacturacionServiceInterface
         );
     }
 
-    public function anular(Invoice $invoice, string $motivo): Invoice
+    public function anular(Factura $invoice, string $motivo): Factura
     {
         throw new \RuntimeException(
             'Integración real con el SIN pendiente. Ver App\\Services\\Facturacion\\SinFacturacionService::generar().'

@@ -2,12 +2,12 @@
 
 namespace App\Livewire;
 
-use App\Models\Invoice;
+use App\Models\Factura;
 use App\Services\Facturacion\FacturacionServiceInterface;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class LivewireInvoice extends Component
+class LivewireFactura extends Component
 {
     use WithPagination;
 
@@ -26,7 +26,7 @@ class LivewireInvoice extends Component
 
     public function render()
     {
-        $query = Invoice::with(['sale.client.person', 'user']);
+        $query = Factura::with(['sale.client.person', 'user']);
 
         if (!empty($this->search)) {
             $query->where(function ($q) {
@@ -65,7 +65,7 @@ class LivewireInvoice extends Component
         ]);
 
         try {
-            $invoice = Invoice::findOrFail($this->selectedInvoiceId);
+            $invoice = Factura::findOrFail($this->selectedInvoiceId);
 
             if ($invoice->estado === 'ANULADA') {
                 $this->dispatch('toast', type: 'warning', message: 'Esta factura ya está anulada.');

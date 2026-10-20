@@ -3,7 +3,7 @@
 namespace App\Services\Facturacion;
 
 use App\Models\Empresa;
-use App\Models\Invoice;
+use App\Models\Factura;
 use App\Models\Venta;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,12 +13,12 @@ use Illuminate\Support\Facades\Auth;
  */
 class SimulatedFacturacionService implements FacturacionServiceInterface
 {
-    public function generar(Venta $sale, array $datosCliente = []): Invoice
+    public function generar(Venta $sale, array $datosCliente = []): Factura
     {
         // Se consulta directo (sin depender de la relación cacheada en $sale)
         // para evitar re-insertar sobre un id_sale único si el caller reutiliza
         // la misma instancia de Sale entre llamadas.
-        $existing = Invoice::where('id_sale', $sale->id)->first();
+        $existing = Factura::where('id_sale', $sale->id)->first();
 
         if ($existing && $existing->estado === 'ENVIADA') {
             return $existing;
@@ -26,7 +26,7 @@ class SimulatedFacturacionService implements FacturacionServiceInterface
 
         $cliente = $this->resolveClienteData($sale, $datosCliente);
 
-        $invoice = $existing ?: new Invoice(['id_sale' => $sale->id]);
+        $invoice = $existing ?: new Factura(['id_sale' => $sale->id]);
 
         $company = Empresa::current();
 
@@ -53,7 +53,7 @@ class SimulatedFacturacionService implements FacturacionServiceInterface
         return $invoice;
     }
 
-    public function anular(Invoice $invoice, string $motivo): Invoice
+    public function anular(Factura $invoice, string $motivo): Factura
     {
         $invoice->estado = 'ANULADA';
         $invoice->anulado_at = now();
@@ -98,6 +98,6 @@ class SimulatedFacturacionService implements FacturacionServiceInterface
 
     private function nextNumeroFactura(): int
     {
-        return (int) (Invoice::max('numero_factura') ?? 0) + 1;
+        return (int) (Factura::max('numero_factura') ?? 0) + 1;
     }
 }

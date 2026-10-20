@@ -36,9 +36,9 @@ use App\Livewire\LivewireCaja;
 use App\Livewire\LivewireCajaForm;
 use App\Livewire\LivewireInventoryAlerts;
 use App\Livewire\LivewireKardex;
-use App\Livewire\LivewireInvoice;
+use App\Livewire\LivewireFactura;
 use App\Livewire\LivewireReports;
-use App\Models\Invoice;
+use App\Models\Factura;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -229,11 +229,11 @@ Route::middleware(['auth'])->group(function () {
         ->middleware('can:Ver Kardex')
         ->name('kardex');
 
-    Route::get('/invoices', LivewireInvoice::class)
+    Route::get('/invoices', LivewireFactura::class)
         ->middleware('can:Ver Facturas')
         ->name('invoices');
 
-    Route::get('/invoices/{invoice}/pdf', function (Invoice $invoice) {
+    Route::get('/invoices/{invoice}/pdf', function (Factura $invoice) {
         $invoice->load(['sale.details.product', 'sale.client.person']);
 
         return Pdf::loadView('pdf.invoice', ['invoice' => $invoice])

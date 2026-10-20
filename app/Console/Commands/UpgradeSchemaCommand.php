@@ -153,15 +153,15 @@ class UpgradeSchemaCommand extends Command
 
     private function createInvoicesTable(): void
     {
-        $this->line('Creando tabla invoices...');
+        $this->line('Creando tabla facturas...');
 
-        if (Schema::hasTable('invoices')) {
+        if (Schema::hasTable('facturas')) {
             $this->line('  -> ya existe.');
             return;
         }
 
         DB::statement(<<<SQL
-            CREATE TABLE `invoices` (
+            CREATE TABLE `facturas` (
               `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
               `id_sale` bigint UNSIGNED NOT NULL,
               `id_user` bigint UNSIGNED NOT NULL,
@@ -254,8 +254,8 @@ class UpgradeSchemaCommand extends Command
             ['ajustes_inventario', 'id_product', 'productos', 'id', 'RESTRICT'],
             ['ajustes_inventario', 'id_lot', 'lotes', 'id', 'RESTRICT'],
             ['ajustes_inventario', 'id_user', 'users', 'id', 'RESTRICT'],
-            ['invoices', 'id_sale', 'ventas', 'id', 'RESTRICT'],
-            ['invoices', 'id_user', 'users', 'id', 'RESTRICT'],
+            ['facturas', 'id_sale', 'ventas', 'id', 'RESTRICT'],
+            ['facturas', 'id_user', 'users', 'id', 'RESTRICT'],
         ];
 
         $database = DB::getDatabaseName();

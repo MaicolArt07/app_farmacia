@@ -84,7 +84,7 @@ class Venta extends Model
 
     public function invoice()
     {
-        return $this->hasOne(Invoice::class, 'id_sale');
+        return $this->hasOne(Factura::class, 'id_sale');
     }
 
     /*

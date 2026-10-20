@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Empresa;
-use App\Models\Invoice;
+use App\Models\Factura;
 use App\Models\Venta;
 use App\Services\Facturacion\FacturaXmlBuilder;
 use Illuminate\Console\Command;
@@ -60,7 +60,7 @@ class SiatPreviewFacturaXmlCommand extends Command
             return self::FAILURE;
         }
 
-        $numeroFactura = (int) (Invoice::max('numero_factura') ?? 0) + 1;
+        $numeroFactura = (int) (Factura::max('numero_factura') ?? 0) + 1;
 
         try {
             $builder = new FacturaXmlBuilder($sale, $company, $cufdCache['codigo'], $numeroFactura);
