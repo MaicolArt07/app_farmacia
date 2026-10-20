@@ -1,9 +1,9 @@
 <div class="p-6">
     <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <a href="{{ route('laboratorios.create') }}" wire:navigate
+        <button type="button" wire:click="create"
             class="cursor-pointer rounded-lg bg-emerald-600 px-4 py-2 text-center text-white transition hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600">
             <i class="bi bi-building-add mr-1"></i> Nuevo laboratorio
-        </a>
+        </button>
 
         <input
             type="text"
@@ -40,11 +40,10 @@
                         </td>
                         <td class="px-4 py-3">
                             <div class="flex justify-center gap-3">
-                                <a
-                                    href="{{ route('laboratorios.edit', $item->id) }}" wire:navigate
+                                <button type="button" wire:click="edit({{ $item->id }})"
                                     class="cursor-pointer text-yellow-500 transition hover:text-yellow-600 dark:text-yellow-400 dark:hover:text-yellow-300">
                                     <i class="bi bi-pencil-square text-lg"></i>
-                                </a>
+                                </button>
 
                                 <button
                                     type="button"
@@ -72,5 +71,42 @@
     <div class="mt-4 dark:text-zinc-200">
         {{ $laboratorios->links() }}
     </div>
+
+    <flux:modal wire:model="modalVisible" class="max-w-xl">
+        <div class="space-y-6">
+            <flux:heading size="lg">
+                {{ $form->id ? 'Editar laboratorio' : 'Nuevo laboratorio' }}
+            </flux:heading>
+
+            <div class="space-y-4">
+                <flux:input
+                    label="Nombre"
+                    wire:model="form.nombre"
+                />
+                @error('form.nombre')
+                    <span class="text-sm text-red-500">{{ $message }}</span>
+                @enderror
+
+                <flux:textarea
+                    label="Descripción (Opcional)"
+                    wire:model="form.descripcion"
+                    rows="3"
+                />
+                @error('form.descripcion')
+                    <span class="text-sm text-red-500">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <flux:button variant="danger" wire:click="cancel">
+                    Cancelar
+                </flux:button>
+
+                <flux:button variant="primary" wire:click="save">
+                    Guardar
+                </flux:button>
+            </div>
+        </div>
+    </flux:modal>
 
 </div>

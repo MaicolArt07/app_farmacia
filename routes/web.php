@@ -11,7 +11,6 @@ use App\Livewire\LivewireClienteForm;
 use App\Livewire\LivewireProveedor;
 use App\Livewire\LivewireProveedorForm;
 use App\Livewire\LivewireLaboratorio;
-use App\Livewire\LivewireLaboratorioForm;
 use App\Livewire\LivewireEmpresaForm;
 use App\Livewire\LivewireSucursal;
 use App\Livewire\LivewireSucursalForm;
@@ -90,13 +89,6 @@ Route::middleware(['auth'])->group(function () {
     ->middleware('can:Ver Laboratorios')
     ->name('laboratorios');
 
-    Route::get('/laboratorios/create', LivewireLaboratorioForm::class)
-    ->middleware('can:Ver Laboratorios')
-    ->name('laboratorios.create');
-
-    Route::get('/laboratorios/{laboratorio}/edit', LivewireLaboratorioForm::class)
-    ->middleware('can:Ver Laboratorios')
-    ->name('laboratorios.edit');
 
     Route::get('/company', LivewireEmpresaForm::class)
     ->middleware('can:Ver Empresa')
