@@ -13,7 +13,7 @@
 
         <div class="max-h-[70vh] space-y-4 overflow-y-auto px-6 py-5">
             @if($closingCash)
-                @include('livewire.cash-register.partials.summary', ['cash' => $closingCash])
+                @include('livewire.caja.partials.summary', ['cash' => $closingCash])
             @endif
 
             <div class="border-t border-gray-200 pt-4 dark:border-zinc-700">

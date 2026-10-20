@@ -49,7 +49,7 @@ class LivewireAjusteInventario extends Component
             });
         }
 
-        return view('livewire.inventory-adjustment.index', [
+        return view('livewire.ajuste-inventario.index', [
             'adjustments' => $query->orderBy('id', 'desc')->paginate(10),
         ]);
     }

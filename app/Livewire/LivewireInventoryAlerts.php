@@ -13,7 +13,7 @@ class LivewireInventoryAlerts extends Component
         $today = now()->toDateString();
         $limitDate = now()->addDays(30)->toDateString();
 
-        return view('livewire.inventory-alerts.index', [
+        return view('livewire.alertas-inventario.index', [
             'expiredLots' => Lote::with('product')
                 ->whereDate('fecha_vencimiento', '<', $today)
                 ->where('cantidad_disponible', '>', 0)

@@ -60,6 +60,6 @@ class LivewireEmpresaForm extends Component
 
     public function render()
     {
-        return view('livewire.company.form');
+        return view('livewire.empresa.form');
     }
 }

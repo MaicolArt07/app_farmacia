@@ -58,7 +58,7 @@ class LivewireCaja extends Component
             });
         }
 
-        return view('livewire.cash-register.index', [
+        return view('livewire.caja.index', [
             'cashRegisters' => $query->orderBy('id', 'desc')->paginate(10),
         ]);
     }

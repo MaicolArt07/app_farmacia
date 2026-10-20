@@ -32,3 +32,4 @@ yarn-error.log
 # Dumps y backups de base de datos (contienen datos reales y hashes de contraseña)
 /database/*.sql
 /database/backups/
+.playwright-mcp/

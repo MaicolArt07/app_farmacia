@@ -27,7 +27,7 @@ class LivewirePermissions extends Component
             $query->where('name', 'like', '%' . $this->search . '%');
         }
 
-        return view('livewire.permissions.index', [
+        return view('livewire.permisos.index', [
             'permissions' => $query->orderBy('name')->paginate(5),
         ]);
     }

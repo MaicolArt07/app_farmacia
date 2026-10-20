@@ -74,7 +74,7 @@ class LivewireUsers extends Component
     public function render()
     {
         if ($this->mode === 'form') {
-            return view('livewire.users.form');
+            return view('livewire.usuarios.form');
         }
 
         $query = User::with(['permissions', 'person']);
@@ -86,7 +86,7 @@ class LivewireUsers extends Component
             });
         }
 
-        return view('livewire.users.index', [
+        return view('livewire.usuarios.index', [
             'users' => $query->orderBy('id', 'desc')->paginate(10),
         ]);
     }

@@ -36,7 +36,7 @@ class LivewireSucursal extends Component
             });
         }
 
-        return view('livewire.branch.index', [
+        return view('livewire.sucursal.index', [
             'branches' => $query->orderBy('numero_sucursal')->paginate(10),
         ]);
     }

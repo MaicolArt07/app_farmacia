@@ -164,23 +164,23 @@
     </div>
 
     @if($openModalVisible)
-        @include('livewire.cash-register.modal.open')
+        @include('livewire.caja.modal.open')
     @endif
 
     @if($movementModalVisible)
-        @include('livewire.cash-register.modal.movement')
+        @include('livewire.caja.modal.movement')
     @endif
 
     @if($closeModalVisible)
-        @include('livewire.cash-register.modal.close')
+        @include('livewire.caja.modal.close')
     @endif
 
     @if($extendModalVisible)
-        @include('livewire.cash-register.modal.extend')
+        @include('livewire.caja.modal.extend')
     @endif
 
     @if($detailModalVisible)
-        @include('livewire.cash-register.modal.detail')
+        @include('livewire.caja.modal.detail')
     @endif
 
 </div>

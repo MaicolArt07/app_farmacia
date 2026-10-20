@@ -27,7 +27,7 @@
                 </div>
             @endif
 
-            @include('livewire.cash-register.partials.summary', ['cash' => $detailCash])
+            @include('livewire.caja.partials.summary', ['cash' => $detailCash])
         </div>
 
         <div class="flex justify-end gap-2 border-t border-gray-200 px-6 py-4 dark:border-zinc-800">

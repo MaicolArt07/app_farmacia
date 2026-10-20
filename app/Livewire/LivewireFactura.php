@@ -39,7 +39,7 @@ class LivewireFactura extends Component
             });
         }
 
-        return view('livewire.invoice.index', [
+        return view('livewire.factura.index', [
             'invoices' => $query->orderBy('id', 'desc')->paginate(10),
         ]);
     }

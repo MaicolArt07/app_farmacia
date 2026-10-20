@@ -8,7 +8,7 @@ class LivewireReports extends Component
 {
     public function render()
     {
-        return view('livewire.reports.index', [
+        return view('livewire.reportes.index', [
             'defaultFrom' => now()->startOfMonth()->toDateString(),
             'defaultTo' => now()->toDateString(),
         ]);
