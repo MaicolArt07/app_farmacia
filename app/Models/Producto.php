@@ -65,7 +65,7 @@ class Producto extends Model
     }
     public function saleDetails()
     {
-        return $this->hasMany(SaleDetail::class, 'id_product');
+        return $this->hasMany(DetalleVenta::class, 'id_product');
     }
     public function inventoryMovements()
     {

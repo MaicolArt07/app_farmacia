@@ -4,8 +4,8 @@ namespace App\Livewire;
 
 use App\Models\Cliente;
 use App\Models\Producto;
-use App\Models\Sale;
-use App\Models\SaleDetail;
+use App\Models\Venta;
+use App\Models\DetalleVenta;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -67,7 +67,7 @@ class LivewireHome extends Component
         $from = Carbon::parse($this->from)->startOfDay();
         $to = Carbon::parse($this->to)->endOfDay();
 
-        $salesQuery = Sale::whereBetween('sale_date', [$from, $to])
+        $salesQuery = Venta::whereBetween('fecha_venta', [$from, $to])
             ->where('status', '!=', 'CANCELLED');
 
         $salesCount = (clone $salesQuery)->count();
@@ -86,21 +86,21 @@ class LivewireHome extends Component
             ->get(['productos.id'])
             ->count();
 
-        $topProducts = SaleDetail::query()
-            ->join('sales', 'sales.id', '=', 'sale_details.id_sale')
-            ->join('productos', 'productos.id', '=', 'sale_details.id_product')
-            ->whereBetween('sales.sale_date', [$from, $to])
-            ->where('sales.status', '!=', 'CANCELLED')
+        $topProducts = DetalleVenta::query()
+            ->join('ventas', 'ventas.id', '=', 'detalles_venta.id_sale')
+            ->join('productos', 'productos.id', '=', 'detalles_venta.id_product')
+            ->whereBetween('ventas.fecha_venta', [$from, $to])
+            ->where('ventas.status', '!=', 'CANCELLED')
             ->groupBy('productos.id', 'productos.nombre', 'productos.code', 'productos.stock_minimo')
-            ->orderByDesc(DB::raw('SUM(sale_details.quantity)'))
+            ->orderByDesc(DB::raw('SUM(detalles_venta.quantity)'))
             ->limit(8)
             ->get([
                 'productos.id',
                 'productos.nombre as name',
                 'productos.code',
                 'productos.stock_minimo as minimum_stock',
-                DB::raw('SUM(sale_details.quantity) as total_quantity'),
-                DB::raw('SUM(sale_details.subtotal) as total_revenue'),
+                DB::raw('SUM(detalles_venta.quantity) as total_quantity'),
+                DB::raw('SUM(detalles_venta.subtotal) as total_revenue'),
             ]);
 
         $maxQuantity = $topProducts->max('total_quantity') ?: 1;
@@ -130,7 +130,7 @@ class LivewireHome extends Component
         }
 
         $salesByDayRaw = (clone $salesQuery)
-            ->selectRaw('DATE(sale_date) as day, SUM(total) as total')
+            ->selectRaw('DATE(fecha_venta) as day, SUM(total) as total')
             ->groupBy('day')
             ->pluck('total', 'day');
 

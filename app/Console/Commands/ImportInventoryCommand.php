@@ -141,7 +141,7 @@ class ImportInventoryCommand extends Command
         DB::statement('SET FOREIGN_KEY_CHECKS=0');
 
         foreach ([
-            'sale_details', 'sales',
+            'detalles_venta', 'ventas',
             'detalles_compra', 'compras',
             'cash_movements', 'cash_registers',
             'inventory_movements', 'inventory_adjustments',

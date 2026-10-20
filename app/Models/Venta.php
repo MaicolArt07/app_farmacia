@@ -5,26 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Sale extends Model
+class Venta extends Model
 {
     use HasFactory;
 
-    protected $table = 'sales';
+    protected $table = 'ventas';
 
     protected $fillable = [
         'id_client',
         'id_user',
         'id_cash_register',
         'id_payment_method',
-        'sale_date',
-        'payment_method',
+        'fecha_venta',
+        'metodo_pago',
         'subtotal',
-        'discount',
+        'descuento',
         'total',
-        'amount_paid',
-        'change_amount',
-        'observation',
-        'state',
+        'monto_pagado',
+        'monto_cambio',
+        'observacion',
+        'estado',
 
         // 🔹 nuevos campos
         'status',
@@ -34,13 +34,13 @@ class Sale extends Model
     ];
 
     protected $casts = [
-        'sale_date' => 'date',
+        'fecha_venta' => 'date',
         'subtotal' => 'decimal:2',
-        'discount' => 'decimal:2',
+        'descuento' => 'decimal:2',
         'total' => 'decimal:2',
-        'amount_paid' => 'decimal:2',
-        'change_amount' => 'decimal:2',
-        'state' => 'integer',
+        'monto_pagado' => 'decimal:2',
+        'monto_cambio' => 'decimal:2',
+        'estado' => 'integer',
 
         // 🔹 nuevos casts
         'cancelled_at' => 'datetime',
@@ -79,7 +79,7 @@ class Sale extends Model
 
     public function details()
     {
-        return $this->hasMany(SaleDetail::class, 'id_sale');
+        return $this->hasMany(DetalleVenta::class, 'id_sale');
     }
 
     public function invoice()

@@ -38,7 +38,7 @@ class Lote extends Model
     }
     public function saleDetails()
     {
-        return $this->hasMany(SaleDetail::class, 'id_lot');
+        return $this->hasMany(DetalleVenta::class, 'id_lot');
     }
     public function inventoryMovements()
     {

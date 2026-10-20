@@ -5,7 +5,7 @@ namespace App\Services\Facturacion;
 use App\Models\Branch;
 use App\Models\Company;
 use App\Models\Invoice;
-use App\Models\Sale;
+use App\Models\Venta;
 
 /**
  * Punto de extensión para la integración real con el Servicio de Impuestos
@@ -33,7 +33,7 @@ use App\Models\Sale;
  */
 class SinFacturacionService implements FacturacionServiceInterface
 {
-    public function generar(Sale $sale, array $datosCliente = []): Invoice
+    public function generar(Venta $sale, array $datosCliente = []): Invoice
     {
         throw new \RuntimeException(
             'Integración real con el SIN pendiente. Configure NIT, sucursal, punto de venta, ' .

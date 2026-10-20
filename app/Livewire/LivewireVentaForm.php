@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Lote;
-use App\Models\Sale;
+use App\Models\Venta;
 use App\Models\Cliente;
 use App\Models\Producto;
 use App\Models\CashRegister;
@@ -11,14 +11,14 @@ use App\Models\CashMovement;
 use App\Models\PaymentMethod;
 use App\Models\InventoryMovement;
 use Livewire\Component;
-use App\Models\SaleDetail;
+use App\Models\DetalleVenta;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Livewire\Form\SaleForm;
+use App\Livewire\Form\VentaForm;
 
-class LivewireSaleForm extends Component
+class LivewireVentaForm extends Component
 {
-    public SaleForm $form;
+    public VentaForm $form;
 
     public $viewMode = false;
 
@@ -38,11 +38,11 @@ class LivewireSaleForm extends Component
     {
         $this->form->resetForm();
         $this->details = [];
-        $this->viewMode = request()->routeIs('sales.view');
+        $this->viewMode = request()->routeIs('ventas.view');
         $this->refreshCashStatus();
 
         if ($sale) {
-            $sale = Sale::with(['client.person', 'details.product', 'details.lot'])->findOrFail($sale);
+            $sale = Venta::with(['client.person', 'details.product', 'details.lot'])->findOrFail($sale);
             $this->form->fillForm($sale);
 
             if ($sale->client) {
@@ -59,7 +59,7 @@ class LivewireSaleForm extends Component
                     'lot_label' => $detail->lot?->codigo_lote . ' | Vence: ' . optional($detail->lot?->fecha_vencimiento)->format('d/m/Y'),
                     'quantity' => $detail->quantity,
                     'available' => $detail->lot?->cantidad_disponible ?? 0,
-                    'sale_price' => (float) $detail->sale_price,
+                    'sale_price' => (float) $detail->precio_venta,
                     'subtotal' => (float) $detail->subtotal,
                 ];
             }
@@ -320,20 +320,20 @@ class LivewireSaleForm extends Component
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            $sale = Sale::create([
+            $sale = Venta::create([
                 'id_client' => $this->form->id_client ?: null,
                 'id_user' => Auth::id(),
                 'id_cash_register' => $cash->id,
-                'sale_date' => $this->form->sale_date,
+                'fecha_venta' => $this->form->sale_date,
                 'id_payment_method' => $paymentMethod->id,
-                'payment_method' => $paymentMethod->name,
+                'metodo_pago' => $paymentMethod->name,
                 'subtotal' => $this->form->subtotal,
-                'discount' => $this->form->discount ?: 0,
+                'descuento' => $this->form->discount ?: 0,
                 'total' => $this->form->total,
-                'amount_paid' => $amountPaid,
-                'change_amount' => $amountPaid !== null ? round($amountPaid - $this->form->total, 2) : null,
-                'observation' => $this->form->observation ?: null,
-                'state' => 1,
+                'monto_pagado' => $amountPaid,
+                'monto_cambio' => $amountPaid !== null ? round($amountPaid - $this->form->total, 2) : null,
+                'observacion' => $this->form->observation ?: null,
+                'estado' => 1,
                 'status' => 'ACTIVE',
             ]);
 
@@ -354,12 +354,12 @@ class LivewireSaleForm extends Component
 
                 $stockBefore = $lot->cantidad_disponible;
 
-                SaleDetail::create([
+                DetalleVenta::create([
                     'id_sale' => $sale->id,
                     'id_product' => $detail['id_product'],
                     'id_lot' => $detail['id_lot'],
                     'quantity' => $detail['quantity'],
-                    'sale_price' => $detail['sale_price'],
+                    'precio_venta' => $detail['sale_price'],
                     'subtotal' => $detail['subtotal'],
                 ]);
 
@@ -398,7 +398,7 @@ class LivewireSaleForm extends Component
 
             $this->dispatch('toast', type: 'success', message: 'Venta registrada correctamente.');
 
-            return redirect()->route('sales');
+            return redirect()->route('ventas');
         } catch (\Throwable $e) {
             DB::rollBack();
             $this->dispatch('toast', type: 'error', message: 'No se pudo guardar la venta. ' . $e->getMessage());
@@ -407,7 +407,7 @@ class LivewireSaleForm extends Component
 
     public function cancel()
     {
-        return redirect()->route('sales');
+        return redirect()->route('ventas');
     }
 
     public function refreshCashStatus()
@@ -434,7 +434,7 @@ class LivewireSaleForm extends Component
 
     public function render()
     {
-        return view('livewire.sale.form', [
+        return view('livewire.venta.form', [
             'paymentMethods' => PaymentMethod::where('state', 1)->orderBy('name')->get(),
         ]);
     }

@@ -37,7 +37,7 @@ class Invoice extends Model
 
     public function sale()
     {
-        return $this->belongsTo(Sale::class, 'id_sale');
+        return $this->belongsTo(Venta::class, 'id_sale');
     }
 
     public function user()

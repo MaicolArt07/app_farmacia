@@ -55,7 +55,7 @@ class CashRegister extends Model
 
     public function sales()
     {
-        return $this->hasMany(Sale::class, 'id_cash_register');
+        return $this->hasMany(Venta::class, 'id_cash_register');
     }
 
     public function incomes()

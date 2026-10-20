@@ -1,7 +1,7 @@
 <div class="mx-auto max-w-6xl p-6">
     <div class="mb-6 flex items-center justify-between">
         <div>
-            <a href="{{ route('sales') }}" wire:navigate class="mb-2 inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
+            <a href="{{ route('ventas') }}" wire:navigate class="mb-2 inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
                 <i class="bi bi-arrow-left"></i> Volver a ventas
             </a>
             <h1 class="text-xl font-semibold text-zinc-800 dark:text-zinc-100">

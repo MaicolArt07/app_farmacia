@@ -27,6 +27,6 @@ class Cliente extends Model
 
     public function sales()
     {
-        return $this->hasMany(Sale::class, 'id_client');
+        return $this->hasMany(Venta::class, 'id_client');
     }
 }

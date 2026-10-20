@@ -7,7 +7,7 @@ use App\Models\Producto;
 use App\Models\Compra;
 use App\Models\Proveedor;
 use App\Models\InventoryMovement;
-use App\Models\SaleDetail;
+use App\Models\DetalleVenta;
 use Livewire\Component;
 use App\Models\DetalleCompra;
 use Illuminate\Support\Facades\DB;
@@ -243,7 +243,7 @@ class LivewireCompraForm extends Component
                         continue;
                     }
 
-                    $wasSold = SaleDetail::where('id_lot', $existingLot->id)->exists();
+                    $wasSold = DetalleVenta::where('id_lot', $existingLot->id)->exists();
 
                     if ($wasSold) {
                         DB::rollBack();

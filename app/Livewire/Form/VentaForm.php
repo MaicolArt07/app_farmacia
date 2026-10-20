@@ -5,7 +5,7 @@ namespace App\Livewire\Form;
 use App\Models\PaymentMethod;
 use Livewire\Form;
 
-class SaleForm extends Form
+class VentaForm extends Form
 {
     public $id = null;
     public $id_client = null;
@@ -61,14 +61,14 @@ class SaleForm extends Form
     {
         $this->id = $sale->id;
         $this->id_client = $sale->id_client;
-        $this->sale_date = optional($sale->sale_date)->format('Y-m-d');
+        $this->sale_date = optional($sale->fecha_venta)->format('Y-m-d');
         $this->id_payment_method = $sale->id_payment_method;
         $this->subtotal = $sale->subtotal;
-        $this->discount = $sale->discount;
+        $this->discount = $sale->descuento;
         $this->total = $sale->total;
-        $this->amount_paid = $sale->amount_paid;
-        $this->change_amount = $sale->change_amount;
-        $this->observation = $sale->observation;
-        $this->state = $sale->state;
+        $this->amount_paid = $sale->monto_pagado;
+        $this->change_amount = $sale->monto_cambio;
+        $this->observation = $sale->observacion;
+        $this->state = $sale->estado;
     }
 }

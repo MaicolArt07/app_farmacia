@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\Sale;
+use App\Models\Venta;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -16,9 +16,9 @@ class SalesExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
 
     public function collection()
     {
-        return Sale::with(['client.person', 'user'])
-            ->whereBetween('sale_date', [$this->from . ' 00:00:00', $this->to . ' 23:59:59'])
-            ->orderBy('sale_date')
+        return Venta::with(['client.person', 'user'])
+            ->whereBetween('fecha_venta', [$this->from . ' 00:00:00', $this->to . ' 23:59:59'])
+            ->orderBy('fecha_venta')
             ->get();
     }
 
@@ -33,14 +33,14 @@ class SalesExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
         // igual a 0 como equivalente a null (comparación floja) y deja la
         // celda vacía en vez de mostrar "0".
         return [
-            optional($sale->sale_date)->format('d/m/Y H:i'),
+            optional($sale->fecha_venta)->format('d/m/Y H:i'),
             $sale->client
                 ? trim(($sale->client->person?->nombre ?? '') . ' ' . ($sale->client->person?->apellido ?? ''))
                 : 'Consumidor final',
             $sale->user?->name,
-            $sale->payment_method,
+            $sale->metodo_pago,
             (string) $sale->subtotal,
-            (string) $sale->discount,
+            (string) $sale->descuento,
             (string) $sale->total,
             $sale->status === 'CANCELLED' ? 'Anulada' : 'Activa',
         ];

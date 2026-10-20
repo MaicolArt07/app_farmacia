@@ -4,7 +4,7 @@ namespace App\Services\Facturacion;
 
 use App\Models\Company;
 use App\Models\Invoice;
-use App\Models\Sale;
+use App\Models\Venta;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
  */
 class SimulatedFacturacionService implements FacturacionServiceInterface
 {
-    public function generar(Sale $sale, array $datosCliente = []): Invoice
+    public function generar(Venta $sale, array $datosCliente = []): Invoice
     {
         // Se consulta directo (sin depender de la relación cacheada en $sale)
         // para evitar re-insertar sobre un id_sale único si el caller reutiliza
@@ -63,7 +63,7 @@ class SimulatedFacturacionService implements FacturacionServiceInterface
         return $invoice;
     }
 
-    private function resolveClienteData(Sale $sale, array $override): array
+    private function resolveClienteData(Venta $sale, array $override): array
     {
         $nit = $override['nit'] ?? null;
         $razonSocial = $override['razon_social'] ?? null;
@@ -91,7 +91,7 @@ class SimulatedFacturacionService implements FacturacionServiceInterface
         ];
     }
 
-    private function fakeCuf(Sale $sale): string
+    private function fakeCuf(Venta $sale): string
     {
         return 'SIM-' . now()->format('YmdHis') . '-' . str_pad((string) $sale->id, 6, '0', STR_PAD_LEFT);
     }

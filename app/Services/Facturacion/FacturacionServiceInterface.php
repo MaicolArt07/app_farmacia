@@ -3,7 +3,7 @@
 namespace App\Services\Facturacion;
 
 use App\Models\Invoice;
-use App\Models\Sale;
+use App\Models\Venta;
 
 interface FacturacionServiceInterface
 {
@@ -17,7 +17,7 @@ interface FacturacionServiceInterface
      *
      * Claves soportadas: nit, razon_social, tipo_documento_identidad.
      */
-    public function generar(Sale $sale, array $datosCliente = []): Invoice;
+    public function generar(Venta $sale, array $datosCliente = []): Invoice;
 
     /**
      * Anula una factura ya generada.

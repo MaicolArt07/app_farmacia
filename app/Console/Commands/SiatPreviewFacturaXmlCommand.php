@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Company;
 use App\Models\Invoice;
-use App\Models\Sale;
+use App\Models\Venta;
 use App\Services\Facturacion\FacturaXmlBuilder;
 use Illuminate\Console\Command;
 
@@ -24,7 +24,7 @@ class SiatPreviewFacturaXmlCommand extends Command
 
     public function handle(): int
     {
-        $sale = Sale::with(['details.product.sinProductCode', 'details.product.presentation', 'client.person', 'paymentMethod', 'user'])
+        $sale = Venta::with(['details.product.sinProductCode', 'details.product.presentation', 'client.person', 'paymentMethod', 'user'])
             ->find($this->argument('sale'));
 
         if (!$sale) {

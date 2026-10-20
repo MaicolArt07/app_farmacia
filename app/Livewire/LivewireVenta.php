@@ -2,7 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Models\Sale;
+use App\Models\Venta;
 use App\Models\Lote;
 use App\Models\CashRegister;
 use App\Models\CashMovement;
@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Services\Facturacion\FacturacionServiceInterface;
 
-class LivewireSale extends Component
+class LivewireVenta extends Component
 {
     use WithPagination;
 
@@ -28,15 +28,15 @@ class LivewireSale extends Component
 
     public function render()
     {
-        $query = Sale::with(['client.person', 'user', 'invoice']);
+        $query = Venta::with(['client.person', 'user', 'invoice']);
 
         if (!empty($this->search)) {
             $query->where(function ($q) {
-                $q->where('sale_date', 'like', "%{$this->search}%")
-                    ->orWhere('payment_method', 'like', "%{$this->search}%")
+                $q->where('fecha_venta', 'like', "%{$this->search}%")
+                    ->orWhere('metodo_pago', 'like', "%{$this->search}%")
                     ->orWhereHas('client.person', function ($sub) {
-                        $sub->where('name', 'like', "%{$this->search}%")
-                            ->orWhere('lastname', 'like', "%{$this->search}%")
+                        $sub->where('nombre', 'like', "%{$this->search}%")
+                            ->orWhere('apellido', 'like', "%{$this->search}%")
                             ->orWhere('ci', 'like', "%{$this->search}%");
                     });
             });
@@ -47,7 +47,7 @@ class LivewireSale extends Component
             ->where('state', 1)
             ->first();
 
-        return view('livewire.sale.index', [
+        return view('livewire.venta.index', [
             'sales' => $query->orderBy('id', 'desc')->paginate(10),
             'openCash' => $openCash,
             'cashExpired' => $openCash ? $openCash->isExpired() : false,
@@ -73,7 +73,7 @@ class LivewireSale extends Component
     public function generarFactura($id)
     {
         try {
-            $sale = Sale::with(['client.person', 'invoice'])->findOrFail($id);
+            $sale = Venta::with(['client.person', 'invoice'])->findOrFail($id);
 
             if ($sale->status === 'CANCELLED') {
                 $this->dispatch('toast', type: 'warning', message: 'No se puede facturar una venta anulada.');
@@ -98,7 +98,7 @@ class LivewireSale extends Component
         DB::beginTransaction();
 
         try {
-            $sale = Sale::with(['details.lot', 'invoice'])
+            $sale = Venta::with(['details.lot', 'invoice'])
                 ->where('id', $id)
                 ->lockForUpdate()
                 ->firstOrFail();
@@ -164,7 +164,7 @@ class LivewireSale extends Component
             }
 
             $sale->status = 'CANCELLED';
-            $sale->state = 0;
+            $sale->estado = 0;
             $sale->cancelled_at = now();
             $sale->cancelled_by = Auth::id();
             $sale->cancel_reason = 'Venta anulada desde el módulo de ventas.';
@@ -183,14 +183,14 @@ class LivewireSale extends Component
     public function delete($id)
     {
         try {
-            $sale = Sale::findOrFail($id);
-            $sale->state = $sale->state ? 0 : 1;
+            $sale = Venta::findOrFail($id);
+            $sale->estado = $sale->estado ? 0 : 1;
             $sale->save();
 
             $this->dispatch(
                 'toast',
-                type: $sale->state ? 'success' : 'warning',
-                message: $sale->state
+                type: $sale->estado ? 'success' : 'warning',
+                message: $sale->estado
                     ? 'Venta activada correctamente.'
                     : 'Venta desactivada correctamente.'
             );

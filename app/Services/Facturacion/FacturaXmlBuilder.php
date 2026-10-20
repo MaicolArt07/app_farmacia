@@ -3,7 +3,7 @@
 namespace App\Services\Facturacion;
 
 use App\Models\Company;
-use App\Models\Sale;
+use App\Models\Venta;
 use Illuminate\Support\Carbon;
 
 /**
@@ -19,13 +19,13 @@ class FacturaXmlBuilder
 {
     public const CODIGO_DOCUMENTO_SECTOR = 1; // FCV, fijo para nuestra actividad (4772100)
 
-    private Sale $sale;
+    private Venta $sale;
     private Company $company;
     private string $cufd;
     private int $numeroFactura;
     private Carbon $fechaEmision;
 
-    public function __construct(Sale $sale, Company $company, string $cufd, int $numeroFactura, ?Carbon $fechaEmision = null)
+    public function __construct(Venta $sale, Company $company, string $cufd, int $numeroFactura, ?Carbon $fechaEmision = null)
     {
         $this->sale = $sale;
         $this->company = $company;
@@ -121,7 +121,7 @@ class FacturaXmlBuilder
         $this->appendText($dom, $cabecera, 'tipoCambio', '1.00');
         $this->appendText($dom, $cabecera, 'montoTotalMoneda', number_format((float) $this->sale->total, 2, '.', ''));
         $this->appendNillableText($dom, $cabecera, 'montoGiftCard', null);
-        $this->appendNillableText($dom, $cabecera, 'descuentoAdicional', $this->sale->discount > 0 ? number_format((float) $this->sale->discount, 2, '.', '') : null);
+        $this->appendNillableText($dom, $cabecera, 'descuentoAdicional', $this->sale->descuento > 0 ? number_format((float) $this->sale->descuento, 2, '.', '') : null);
         $this->appendNillableInt($dom, $cabecera, 'codigoExcepcion', null);
         $this->appendNillableText($dom, $cabecera, 'cafc', null);
         $this->appendText($dom, $cabecera, 'leyenda', $this->randomLeyenda());
@@ -138,7 +138,7 @@ class FacturaXmlBuilder
         $sinCode = $product?->sinProductCode;
 
         $cantidad = (float) $detail->quantity;
-        $precioUnitario = (float) $detail->sale_price;
+        $precioUnitario = (float) $detail->precio_venta;
         $subTotal = (float) $detail->subtotal;
 
         $this->appendText($dom, $detalle, 'actividadEconomica', '4772100');

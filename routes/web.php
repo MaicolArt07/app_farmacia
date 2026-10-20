@@ -28,8 +28,8 @@ use App\Livewire\LivewireLote;
 use App\Livewire\LivewireLoteForm;
 use App\Livewire\LivewireCompra;
 use App\Livewire\LivewireCompraForm;
-use App\Livewire\LivewireSale;
-use App\Livewire\LivewireSaleForm;
+use App\Livewire\LivewireVenta;
+use App\Livewire\LivewireVentaForm;
 use App\Livewire\LivewireInventoryAdjustment;
 use App\Livewire\LivewireInventoryAdjustmentForm;
 use App\Livewire\LivewireCashRegister;
@@ -193,17 +193,17 @@ Route::middleware(['auth'])->group(function () {
     ->middleware('can:Ver Compras')
     ->name('compras.view');
 
-    Route::get('/sales', LivewireSale::class)
+    Route::get('/ventas', LivewireVenta::class)
     ->middleware('can:Ver Ventas')
-    ->name('sales');
+    ->name('ventas');
 
-    Route::get('/sales/create', LivewireSaleForm::class)
+    Route::get('/ventas/create', LivewireVentaForm::class)
     ->middleware('can:Crear Ventas')
-    ->name('sales.create');
+    ->name('ventas.create');
 
-    Route::get('/sales/{sale}/view', LivewireSaleForm::class)
+    Route::get('/ventas/{sale}/view', LivewireVentaForm::class)
     ->middleware('can:Ver Ventas')
-    ->name('sales.view');
+    ->name('ventas.view');
 
     Route::get('/cash-registers', LivewireCashRegister::class)
     ->middleware('can:Ver Caja')

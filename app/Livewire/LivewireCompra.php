@@ -4,7 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Lote;
 use App\Models\Compra;
-use App\Models\SaleDetail;
+use App\Models\DetalleVenta;
 use App\Models\InventoryMovement;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -66,7 +66,7 @@ class LivewireCompra extends Component
                     ->lockForUpdate()
                     ->firstOrFail();
 
-                $wasSold = SaleDetail::where('id_lot', $lot->id)->exists();
+                $wasSold = DetalleVenta::where('id_lot', $lot->id)->exists();
 
                 if ($wasSold) {
                     DB::rollBack();

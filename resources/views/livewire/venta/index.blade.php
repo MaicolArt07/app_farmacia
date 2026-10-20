@@ -29,7 +29,7 @@
 
     <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         @can('Crear Ventas')
-        <a href="{{ route('sales.create') }}" wire:navigate
+        <a href="{{ route('ventas.create') }}" wire:navigate
             class="cursor-pointer rounded-lg bg-emerald-600 px-4 py-2 text-center text-white transition hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600">
             <i class="bi bi-bag-plus-fill mr-1"></i> Nueva venta
         </a>
@@ -60,7 +60,7 @@
                 @forelse ($sales as $item)
                     <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/70">
                         <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
-                            {{ \Carbon\Carbon::parse($item->sale_date)->format('d/m/Y') }}
+                            {{ \Carbon\Carbon::parse($item->fecha_venta)->format('d/m/Y') }}
                         </td>
 
                         <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
@@ -75,7 +75,7 @@
                         </td>
 
                         <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
-                            {{ $item->payment_method }}
+                            {{ $item->metodo_pago }}
                         </td>
 
                         <td class="px-4 py-3 text-right text-zinc-800 dark:text-zinc-100">
@@ -96,7 +96,7 @@
 
                         <td class="px-4 py-3">
                             <div class="flex justify-center gap-3">
-                                <a href="{{ route('sales.view', $item->id) }}" wire:navigate
+                                <a href="{{ route('ventas.view', $item->id) }}" wire:navigate
                                     class="cursor-pointer text-sky-500 transition hover:text-sky-600 dark:text-sky-400">
                                     <i class="bi bi-eye text-lg"></i>
                                 </a>
