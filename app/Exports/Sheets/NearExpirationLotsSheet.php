@@ -32,7 +32,7 @@ class NearExpirationLotsSheet implements FromCollection, WithHeadings, WithMappi
     public function map($lot): array
     {
         return [
-            $lot->product?->name,
+            $lot->product?->nombre,
             $lot->codigo_lote,
             optional($lot->fecha_vencimiento)->format('d/m/Y'),
             $lot->cantidad_disponible,

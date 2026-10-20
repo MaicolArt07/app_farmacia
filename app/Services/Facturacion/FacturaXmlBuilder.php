@@ -144,7 +144,7 @@ class FacturaXmlBuilder
         $this->appendText($dom, $detalle, 'actividadEconomica', '4772100');
         $this->appendText($dom, $detalle, 'codigoProductoSin', (string) ($sinCode->codigo_producto ?? 0));
         $this->appendText($dom, $detalle, 'codigoProducto', (string) ($product->code ?? 'N/A'));
-        $this->appendText($dom, $detalle, 'descripcion', $product->name ?? 'N/A');
+        $this->appendText($dom, $detalle, 'descripcion', $product->nombre ?? 'N/A');
         $this->appendText($dom, $detalle, 'cantidad', number_format($cantidad, 2, '.', ''));
         $this->appendText($dom, $detalle, 'unidadMedida', (string) ($product?->presentation?->codigo_sin ?? 57)); // 57 = UNIDAD (BIENES), respaldo
         $this->appendText($dom, $detalle, 'precioUnitario', number_format($precioUnitario, 2, '.', ''));

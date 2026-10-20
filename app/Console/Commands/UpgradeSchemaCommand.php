@@ -196,28 +196,28 @@ class UpgradeSchemaCommand extends Command
 
     private function addProductsCodeUnique(): void
     {
-        $this->line('Agregando UNIQUE en products.code...');
+        $this->line('Agregando UNIQUE en productos.code...');
 
-        $exists = DB::select("SHOW INDEX FROM `products` WHERE Key_name = 'products_code_unique'");
+        $exists = DB::select("SHOW INDEX FROM `productos` WHERE Key_name = 'products_code_unique'");
 
         if (!empty($exists)) {
             $this->line('  -> ya existe.');
             return;
         }
 
-        $duplicates = DB::table('products')
+        $duplicates = DB::table('productos')
             ->select('code')
             ->groupBy('code')
             ->havingRaw('COUNT(*) > 1')
             ->get();
 
         if ($duplicates->isNotEmpty()) {
-            $this->warnings[] = 'products.code tiene valores duplicados; no se agregó la restricción UNIQUE. Códigos: '
+            $this->warnings[] = 'productos.code tiene valores duplicados; no se agregó la restricción UNIQUE. Códigos: '
                 . $duplicates->pluck('code')->implode(', ');
             return;
         }
 
-        DB::statement('ALTER TABLE `products` ADD UNIQUE KEY `products_code_unique` (`code`)');
+        DB::statement('ALTER TABLE `productos` ADD UNIQUE KEY `products_code_unique` (`code`)');
         $this->info('  -> aplicado.');
     }
 
@@ -230,28 +230,28 @@ class UpgradeSchemaCommand extends Command
             ['clientes', 'id_person', 'personas', 'id', 'RESTRICT'],
             ['proveedores', 'id_person', 'personas', 'id', 'RESTRICT'],
             ['users', 'id_person', 'personas', 'id', 'SET NULL'],
-            ['products', 'id_category', 'categorias', 'id', 'RESTRICT'],
-            ['products', 'id_laboratory', 'laboratorios', 'id', 'RESTRICT'],
-            ['products', 'id_presentation', 'presentaciones', 'id', 'RESTRICT'],
-            ['lotes', 'id_product', 'products', 'id', 'RESTRICT'],
+            ['productos', 'id_category', 'categorias', 'id', 'RESTRICT'],
+            ['productos', 'id_laboratory', 'laboratorios', 'id', 'RESTRICT'],
+            ['productos', 'id_presentation', 'presentaciones', 'id', 'RESTRICT'],
+            ['lotes', 'id_product', 'productos', 'id', 'RESTRICT'],
             ['purchases', 'id_supplier', 'proveedores', 'id', 'RESTRICT'],
             ['purchases', 'id_user', 'users', 'id', 'RESTRICT'],
             ['purchases', 'cancelled_by', 'users', 'id', 'SET NULL'],
             ['purchase_details', 'id_purchase', 'purchases', 'id', 'CASCADE'],
-            ['purchase_details', 'id_product', 'products', 'id', 'RESTRICT'],
+            ['purchase_details', 'id_product', 'productos', 'id', 'RESTRICT'],
             ['sales', 'id_client', 'clientes', 'id', 'RESTRICT'],
             ['sales', 'id_user', 'users', 'id', 'RESTRICT'],
             ['sales', 'cancelled_by', 'users', 'id', 'SET NULL'],
             ['sale_details', 'id_sale', 'sales', 'id', 'CASCADE'],
-            ['sale_details', 'id_product', 'products', 'id', 'RESTRICT'],
+            ['sale_details', 'id_product', 'productos', 'id', 'RESTRICT'],
             ['sale_details', 'id_lot', 'lotes', 'id', 'RESTRICT'],
             ['cash_registers', 'id_user', 'users', 'id', 'RESTRICT'],
             ['cash_movements', 'id_cash_register', 'cash_registers', 'id', 'CASCADE'],
             ['cash_movements', 'id_user', 'users', 'id', 'RESTRICT'],
-            ['inventory_movements', 'id_product', 'products', 'id', 'RESTRICT'],
+            ['inventory_movements', 'id_product', 'productos', 'id', 'RESTRICT'],
             ['inventory_movements', 'id_lot', 'lotes', 'id', 'SET NULL'],
             ['inventory_movements', 'id_user', 'users', 'id', 'RESTRICT'],
-            ['inventory_adjustments', 'id_product', 'products', 'id', 'RESTRICT'],
+            ['inventory_adjustments', 'id_product', 'productos', 'id', 'RESTRICT'],
             ['inventory_adjustments', 'id_lot', 'lotes', 'id', 'RESTRICT'],
             ['inventory_adjustments', 'id_user', 'users', 'id', 'RESTRICT'],
             ['invoices', 'id_sale', 'sales', 'id', 'RESTRICT'],

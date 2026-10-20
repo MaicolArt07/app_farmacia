@@ -19,6 +19,6 @@ class Laboratorio extends Model
 
     public function products()
     {
-        return $this->hasMany(Product::class, 'id_laboratory');
+        return $this->hasMany(Producto::class, 'id_laboratory');
     }
 }

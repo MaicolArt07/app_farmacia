@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\Product;
+use App\Models\Producto;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -12,11 +12,11 @@ class StockExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
 {
     public function collection()
     {
-        return Product::with(['category', 'laboratory', 'lots' => function ($q) {
+        return Producto::with(['category', 'laboratory', 'lots' => function ($q) {
             $q->where('estado', 1);
         }])
-            ->where('state', 1)
-            ->orderBy('name')
+            ->where('estado', 1)
+            ->orderBy('nombre')
             ->get();
     }
 
@@ -31,19 +31,19 @@ class StockExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
 
         $stock = $activeLots->sum('cantidad_disponible');
         $avgCost = $activeLots->isNotEmpty() ? (float) $activeLots->avg('precio_compra') : 0.0;
-        $utilidad = (float) $product->sale_price - $avgCost;
+        $utilidad = (float) $product->precio_venta - $avgCost;
 
         // string: evita que PhpSpreadsheet trate un valor igual a 0 (muy
         // frecuente en stock mínimo, stock disponible y costo/utilidad)
         // como null y deje la celda vacía.
         return [
             $product->code,
-            $product->name,
-            $product->category?->name,
-            $product->laboratory?->name,
+            $product->nombre,
+            $product->category?->nombre,
+            $product->laboratory?->nombre,
             (string) $stock,
-            (string) $product->minimum_stock,
-            (string) $product->sale_price,
+            (string) $product->stock_minimo,
+            (string) $product->precio_venta,
             (string) round($avgCost, 2),
             (string) round($utilidad, 2),
         ];

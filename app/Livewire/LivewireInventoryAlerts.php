@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Lote;
-use App\Models\Product;
+use App\Models\Producto;
 use Livewire\Component;
 
 class LivewireInventoryAlerts extends Component
@@ -27,12 +27,12 @@ class LivewireInventoryAlerts extends Component
                 ->orderBy('fecha_vencimiento')
                 ->get(),
 
-            'lowStockProducts' => Product::with('lots')
-                ->where('state', 1)
+            'lowStockProducts' => Producto::with('lots')
+                ->where('estado', 1)
                 ->get()
                 ->filter(function ($product) {
                     $stock = $product->lots->where('estado', 1)->sum('cantidad_disponible');
-                    return $stock <= $product->minimum_stock;
+                    return $stock <= $product->stock_minimo;
                 }),
         ]);
     }

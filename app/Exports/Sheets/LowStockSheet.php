@@ -2,7 +2,7 @@
 
 namespace App\Exports\Sheets;
 
-use App\Models\Product;
+use App\Models\Producto;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -13,12 +13,12 @@ class LowStockSheet implements FromCollection, WithHeadings, WithMapping, WithTi
 {
     public function collection()
     {
-        return Product::with('lots')
-            ->where('state', 1)
+        return Producto::with('lots')
+            ->where('estado', 1)
             ->get()
             ->filter(function ($product) {
                 $stock = $product->lots->where('estado', 1)->sum('cantidad_disponible');
-                return $stock <= $product->minimum_stock;
+                return $stock <= $product->stock_minimo;
             })
             ->values();
     }
@@ -36,9 +36,9 @@ class LowStockSheet implements FromCollection, WithHeadings, WithMapping, WithTi
         // caso más importante de esta hoja) como null y deje la celda vacía.
         return [
             $product->code,
-            $product->name,
+            $product->nombre,
             (string) $stock,
-            (string) $product->minimum_stock,
+            (string) $product->stock_minimo,
         ];
     }
 

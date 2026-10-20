@@ -11,7 +11,7 @@
 
         @forelse($expiredLots as $lot)
             <div class="border-b border-zinc-200 py-2 dark:border-zinc-800">
-                <strong>{{ $lot->product?->name }}</strong>
+                <strong>{{ $lot->product?->nombre }}</strong>
                 | Lote: {{ $lot->codigo_lote }}
                 | Vence: {{ $lot->fecha_vencimiento->format('d/m/Y') }}
                 | Stock: {{ $lot->cantidad_disponible }}
@@ -28,7 +28,7 @@
 
         @forelse($nearExpirationLots as $lot)
             <div class="border-b border-zinc-200 py-2 dark:border-zinc-800">
-                <strong>{{ $lot->product?->name }}</strong>
+                <strong>{{ $lot->product?->nombre }}</strong>
                 | Lote: {{ $lot->codigo_lote }}
                 | Vence: {{ $lot->fecha_vencimiento->format('d/m/Y') }}
                 | Stock: {{ $lot->cantidad_disponible }}
@@ -49,10 +49,10 @@
             @endphp
 
             <div class="border-b border-zinc-200 py-2 dark:border-zinc-800">
-                <strong>{{ $product->name }}</strong>
+                <strong>{{ $product->nombre }}</strong>
                 | Código: {{ $product->code }}
                 | Stock: {{ $stock }}
-                | Mínimo: {{ $product->minimum_stock }}
+                | Mínimo: {{ $product->stock_minimo }}
             </div>
         @empty
             <p class="text-sm text-zinc-500">No hay productos con stock bajo.</p>

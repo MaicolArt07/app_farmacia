@@ -4,7 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Lote;
 use Livewire\Component;
-use App\Models\Product;
+use App\Models\Producto;
 use App\Models\InventoryMovement;
 use Illuminate\Support\Facades\DB;
 use App\Models\InventoryAdjustment;
@@ -32,11 +32,11 @@ class LivewireInventoryAdjustmentForm extends Component
             return;
         }
 
-        $this->productResults = Product::where('state', 1)
+        $this->productResults = Producto::where('estado', 1)
             ->where(function ($q) {
                 $q->where('code', 'like', "%{$this->productSearch}%")
-                  ->orWhere('name', 'like', "%{$this->productSearch}%")
-                  ->orWhere('generic_name', 'like', "%{$this->productSearch}%");
+                  ->orWhere('nombre', 'like', "%{$this->productSearch}%")
+                  ->orWhere('nombre_generico', 'like', "%{$this->productSearch}%");
             })
             ->limit(10)
             ->get()
@@ -49,10 +49,10 @@ class LivewireInventoryAdjustmentForm extends Component
 
     public function selectProduct($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Producto::findOrFail($id);
 
         $this->id_product = $product->id;
-        $this->selectedProductLabel = $product->code . ' - ' . $product->name;
+        $this->selectedProductLabel = $product->code . ' - ' . $product->nombre;
 
         $this->productSearch = '';
         $this->productResults = [];

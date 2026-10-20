@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Lote;
-use App\Models\Product;
+use App\Models\Producto;
 use App\Models\Purchase;
 use App\Models\Proveedor;
 use App\Models\InventoryMovement;
@@ -47,7 +47,7 @@ class LivewirePurchaseForm extends Component
             foreach ($purchase->details as $detail) {
                 $this->details[] = [
                     'id_product' => $detail->id_product,
-                    'product_label' => $detail->product?->code . ' - ' . $detail->product?->name,
+                    'product_label' => $detail->product?->code . ' - ' . $detail->product?->nombre,
                     'batch_code' => $detail->batch_code,
                     'expiration_date' => optional($detail->expiration_date)->format('Y-m-d'),
                     'quantity' => $detail->quantity,
@@ -116,22 +116,22 @@ class LivewirePurchaseForm extends Component
             return;
         }
 
-        $this->productResults = Product::query()
-            ->where('state', 1)
+        $this->productResults = Producto::query()
+            ->where('estado', 1)
             ->where(function ($q) {
                 $q->where('code', 'like', "%{$this->productSearch}%")
                   ->orWhere('barcode', 'like', "%{$this->productSearch}%")
-                  ->orWhere('name', 'like', "%{$this->productSearch}%")
-                  ->orWhere('generic_name', 'like', "%{$this->productSearch}%");
+                  ->orWhere('nombre', 'like', "%{$this->productSearch}%")
+                  ->orWhere('nombre_generico', 'like', "%{$this->productSearch}%");
             })
             ->limit(10)
             ->get()
             ->map(function ($product) {
                 return [
                     'id' => $product->id,
-                    'label' => $product->code . ' - ' . $product->name .
-                        ($product->concentration ? ' | ' . $product->concentration : ''),
-                    'sale_price' => (float) $product->sale_price,
+                    'label' => $product->code . ' - ' . $product->nombre .
+                        ($product->concentracion ? ' | ' . $product->concentracion : ''),
+                    'sale_price' => (float) $product->precio_venta,
                 ];
             })
             ->toArray();
@@ -139,16 +139,16 @@ class LivewirePurchaseForm extends Component
 
     public function addProductToDetail($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Producto::findOrFail($id);
 
         $this->details[] = [
             'id_product' => $product->id,
-            'product_label' => $product->code . ' - ' . $product->name . ($product->concentration ? ' | ' . $product->concentration : ''),
+            'product_label' => $product->code . ' - ' . $product->nombre . ($product->concentracion ? ' | ' . $product->concentracion : ''),
             'batch_code' => '',
             'expiration_date' => '',
             'quantity' => 1,
             'purchase_price' => 0,
-            'sale_price' => (float) $product->sale_price,
+            'sale_price' => (float) $product->precio_venta,
             'subtotal' => 0,
         ];
 

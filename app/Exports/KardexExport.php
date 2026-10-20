@@ -34,7 +34,7 @@ class KardexExport implements FromCollection, WithHeadings, WithMapping, ShouldA
         // 0 como null y deje la celda vacía.
         return [
             optional($movement->created_at)->format('d/m/Y H:i'),
-            $movement->product?->name,
+            $movement->product?->nombre,
             $movement->lot?->codigo_lote ?? '-',
             $movement->movement_type,
             $movement->reference_type . ($movement->reference_id ? ' #' . $movement->reference_id : ''),

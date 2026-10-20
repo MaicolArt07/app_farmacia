@@ -33,7 +33,7 @@ class SaleDetail extends Model
 
     public function product()
     {
-        return $this->belongsTo(Product::class, 'id_product');
+        return $this->belongsTo(Producto::class, 'id_product');
     }
 
     public function lot()

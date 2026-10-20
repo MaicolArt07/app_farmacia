@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Lote;
-use App\Models\Product;
+use App\Models\Producto;
 use Livewire\Component;
 
 class LivewireNotificationBell extends Component
@@ -22,12 +22,12 @@ class LivewireNotificationBell extends Component
             ->where('cantidad_disponible', '>', 0)
             ->count();
 
-        $lowStockProducts = Product::with('lots')
-            ->where('state', 1)
+        $lowStockProducts = Producto::with('lots')
+            ->where('estado', 1)
             ->get()
             ->filter(function ($product) {
                 $stock = $product->lots->where('estado', 1)->sum('cantidad_disponible');
-                return $stock <= $product->minimum_stock;
+                return $stock <= $product->stock_minimo;
             });
 
         $lowStockCount = $lowStockProducts->count();

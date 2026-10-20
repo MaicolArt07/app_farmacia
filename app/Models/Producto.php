@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Product extends Model
+class Producto extends Model
 {
     use HasFactory;
 
-    protected $table = 'products';
+    protected $table = 'productos';
 
     protected $fillable = [
         'id_category',
@@ -18,21 +18,21 @@ class Product extends Model
         'id_sin_product_code',
         'code',
         'barcode',
-        'name',
-        'generic_name',
-        'concentration',
-        'description',
-        'sale_price',
-        'minimum_stock',
-        'requires_prescription',
-        'state',
+        'nombre',
+        'nombre_generico',
+        'concentracion',
+        'descripcion',
+        'precio_venta',
+        'stock_minimo',
+        'requiere_receta',
+        'estado',
     ];
 
     protected $casts = [
-        'sale_price' => 'decimal:2',
-        'requires_prescription' => 'boolean',
-        'minimum_stock' => 'integer',
-        'state' => 'integer',
+        'precio_venta' => 'decimal:2',
+        'requiere_receta' => 'boolean',
+        'stock_minimo' => 'integer',
+        'estado' => 'integer',
     ];
 
     public function category()

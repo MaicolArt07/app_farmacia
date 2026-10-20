@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Cliente;
-use App\Models\Product;
+use App\Models\Producto;
 use App\Models\Sale;
 use App\Models\SaleDetail;
 use Carbon\Carbon;
@@ -73,32 +73,32 @@ class LivewireHome extends Component
         $salesCount = (clone $salesQuery)->count();
         $salesTotal = (float) (clone $salesQuery)->sum('total');
 
-        $totalProducts = Product::where('state', 1)->count();
+        $totalProducts = Producto::where('estado', 1)->count();
         $totalClients = Cliente::where('estado', 1)->count();
 
-        $lowStockCount = DB::table('products')
-            ->where('products.state', 1)
+        $lowStockCount = DB::table('productos')
+            ->where('productos.estado', 1)
             ->leftJoin('lotes', function ($join) {
-                $join->on('lotes.id_product', '=', 'products.id')->where('lotes.estado', 1);
+                $join->on('lotes.id_product', '=', 'productos.id')->where('lotes.estado', 1);
             })
-            ->groupBy('products.id', 'products.minimum_stock')
-            ->havingRaw('COALESCE(SUM(lotes.cantidad_disponible), 0) <= products.minimum_stock')
-            ->get(['products.id'])
+            ->groupBy('productos.id', 'productos.stock_minimo')
+            ->havingRaw('COALESCE(SUM(lotes.cantidad_disponible), 0) <= productos.stock_minimo')
+            ->get(['productos.id'])
             ->count();
 
         $topProducts = SaleDetail::query()
             ->join('sales', 'sales.id', '=', 'sale_details.id_sale')
-            ->join('products', 'products.id', '=', 'sale_details.id_product')
+            ->join('productos', 'productos.id', '=', 'sale_details.id_product')
             ->whereBetween('sales.sale_date', [$from, $to])
             ->where('sales.status', '!=', 'CANCELLED')
-            ->groupBy('products.id', 'products.name', 'products.code', 'products.minimum_stock')
+            ->groupBy('productos.id', 'productos.nombre', 'productos.code', 'productos.stock_minimo')
             ->orderByDesc(DB::raw('SUM(sale_details.quantity)'))
             ->limit(8)
             ->get([
-                'products.id',
-                'products.name',
-                'products.code',
-                'products.minimum_stock',
+                'productos.id',
+                'productos.nombre as name',
+                'productos.code',
+                'productos.stock_minimo as minimum_stock',
                 DB::raw('SUM(sale_details.quantity) as total_quantity'),
                 DB::raw('SUM(sale_details.subtotal) as total_revenue'),
             ]);

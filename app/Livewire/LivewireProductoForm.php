@@ -2,7 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Models\Product;
+use App\Models\Producto;
 use App\Models\Categoria;
 use App\Models\Lote;
 use App\Models\InventoryMovement;
@@ -10,13 +10,13 @@ use Livewire\Component;
 use App\Models\Laboratorio;
 use App\Models\Presentacion;
 use App\Models\SinProductCode;
-use App\Livewire\Form\ProductForm;
+use App\Livewire\Form\ProductoForm;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class LivewireProductForm extends Component
+class LivewireProductoForm extends Component
 {
-    public ProductForm $form;
+    public ProductoForm $form;
 
     public $isCreating = true;
     public $step = 1;
@@ -33,7 +33,7 @@ class LivewireProductForm extends Component
         $this->resetStockFields();
 
         if ($product) {
-            $product = Product::findOrFail($product);
+            $product = Producto::findOrFail($product);
             $this->form->fillForm($product);
             $this->isCreating = false;
         }
@@ -107,22 +107,22 @@ class LivewireProductForm extends Component
                 'id_sin_product_code' => $this->form->id_sin_product_code ?: null,
                 'code' => $this->form->code,
                 'barcode' => $this->form->barcode ?: null,
-                'name' => $this->form->name,
-                'generic_name' => $this->form->generic_name ?: null,
-                'concentration' => $this->form->concentration ?: null,
-                'description' => $this->form->description ?: null,
-                'sale_price' => $this->form->sale_price,
-                'minimum_stock' => $this->form->minimum_stock,
-                'requires_prescription' => $this->form->requires_prescription ? 1 : 0,
-                'state' => $this->form->state,
+                'nombre' => $this->form->nombre,
+                'nombre_generico' => $this->form->nombre_generico ?: null,
+                'concentracion' => $this->form->concentracion ?: null,
+                'descripcion' => $this->form->descripcion ?: null,
+                'precio_venta' => $this->form->precio_venta,
+                'stock_minimo' => $this->form->stock_minimo,
+                'requiere_receta' => $this->form->requiere_receta ? 1 : 0,
+                'estado' => $this->form->estado,
             ];
 
             if ($this->form->id) {
-                $product = Product::findOrFail($this->form->id);
+                $product = Producto::findOrFail($this->form->id);
                 $product->update($data);
                 $message = 'Producto actualizado correctamente.';
             } else {
-                $product = Product::create($data);
+                $product = Producto::create($data);
                 $message = 'Producto registrado correctamente.';
 
                 if ($this->registerInitialStock) {
@@ -130,7 +130,7 @@ class LivewireProductForm extends Component
                         'id_product' => $product->id,
                         'codigo_lote' => $this->initial_batch_code,
                         'precio_compra' => $this->initial_purchase_price,
-                        'precio_venta' => $this->form->sale_price,
+                        'precio_venta' => $this->form->precio_venta,
                         'cantidad_ingresada' => $this->initial_quantity,
                         'cantidad_disponible' => $this->initial_quantity,
                         'fecha_vencimiento' => $this->initial_expiration_date ?: null,
@@ -158,7 +158,7 @@ class LivewireProductForm extends Component
 
             $this->dispatch('toast', type: 'success', message: $message);
 
-            return redirect()->route('products');
+            return redirect()->route('productos');
         } catch (\Throwable $e) {
             DB::rollBack();
             $this->dispatch('toast', type: 'error', message: 'No se pudo guardar el producto.');
@@ -167,12 +167,12 @@ class LivewireProductForm extends Component
 
     public function cancel()
     {
-        return redirect()->route('products');
+        return redirect()->route('productos');
     }
 
     public function render()
     {
-        return view('livewire.product.form', [
+        return view('livewire.producto.form', [
             'categories' => Categoria::where('estado', 1)->orderBy('nombre')->get(),
             'laboratories' => Laboratorio::where('estado', 1)->orderBy('nombre')->get(),
             'presentations' => Presentacion::where('estado', 1)->orderBy('nombre')->get(),

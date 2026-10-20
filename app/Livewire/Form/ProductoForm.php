@@ -5,7 +5,7 @@ namespace App\Livewire\Form;
 use Livewire\Form;
 use Illuminate\Validation\Rule;
 
-class ProductForm extends Form
+class ProductoForm extends Form
 {
     public $id = null;
 
@@ -16,40 +16,40 @@ class ProductForm extends Form
 
     public $code = '';
     public $barcode = '';
-    public $name = '';
-    public $generic_name = '';
-    public $concentration = '';
-    public $description = '';
+    public $nombre = '';
+    public $nombre_generico = '';
+    public $concentracion = '';
+    public $descripcion = '';
 
-    public $sale_price = '';
-    public $minimum_stock = 0;
-    public $requires_prescription = false;
-    public $state = 1;
+    public $precio_venta = '';
+    public $stock_minimo = 0;
+    public $requiere_receta = false;
+    public $estado = 1;
 
     public function rules()
     {
         return [
-            'form.id_category' => 'required|exists:categories,id',
-            'form.id_laboratory' => 'nullable|exists:laboratories,id',
-            'form.id_presentation' => 'required|exists:presentations,id',
+            'form.id_category' => 'required|exists:categorias,id',
+            'form.id_laboratory' => 'nullable|exists:laboratorios,id',
+            'form.id_presentation' => 'required|exists:presentaciones,id',
             'form.id_sin_product_code' => 'nullable|exists:sin_product_codes,id',
 
             'form.code' => [
                 'required',
                 'string',
                 'max:50',
-                Rule::unique('products', 'code')->ignore($this->id),
+                Rule::unique('productos', 'code')->ignore($this->id),
             ],
 
             'form.barcode' => 'nullable|string|max:100',
-            'form.name' => 'required|string|max:150',
-            'form.generic_name' => 'nullable|string|max:150',
-            'form.concentration' => 'nullable|string|max:100',
-            'form.description' => 'nullable|string',
+            'form.nombre' => 'required|string|max:150',
+            'form.nombre_generico' => 'nullable|string|max:150',
+            'form.concentracion' => 'nullable|string|max:100',
+            'form.descripcion' => 'nullable|string',
 
-            'form.sale_price' => 'required|numeric|min:0',
-            'form.minimum_stock' => 'required|integer|min:0',
-            'form.requires_prescription' => 'boolean',
+            'form.precio_venta' => 'required|numeric|min:0',
+            'form.stock_minimo' => 'required|integer|min:0',
+            'form.requiere_receta' => 'boolean',
         ];
     }
 
@@ -67,11 +67,11 @@ class ProductForm extends Form
             'form.code.required' => 'El código es obligatorio.',
             'form.code.unique' => 'El código ya está registrado.',
 
-            'form.name.required' => 'El nombre del producto es obligatorio.',
-            'form.sale_price.required' => 'El precio de venta es obligatorio.',
-            'form.sale_price.numeric' => 'El precio de venta debe ser numérico.',
-            'form.minimum_stock.required' => 'El stock mínimo es obligatorio.',
-            'form.minimum_stock.integer' => 'El stock mínimo debe ser entero.',
+            'form.nombre.required' => 'El nombre del producto es obligatorio.',
+            'form.precio_venta.required' => 'El precio de venta es obligatorio.',
+            'form.precio_venta.numeric' => 'El precio de venta debe ser numérico.',
+            'form.stock_minimo.required' => 'El stock mínimo es obligatorio.',
+            'form.stock_minimo.integer' => 'El stock mínimo debe ser entero.',
         ];
     }
 
@@ -86,15 +86,15 @@ class ProductForm extends Form
 
         $this->code = '';
         $this->barcode = '';
-        $this->name = '';
-        $this->generic_name = '';
-        $this->concentration = '';
-        $this->description = '';
+        $this->nombre = '';
+        $this->nombre_generico = '';
+        $this->concentracion = '';
+        $this->descripcion = '';
 
-        $this->sale_price = '';
-        $this->minimum_stock = 0;
-        $this->requires_prescription = false;
-        $this->state = 1;
+        $this->precio_venta = '';
+        $this->stock_minimo = 0;
+        $this->requiere_receta = false;
+        $this->estado = 1;
     }
 
     public function fillForm($product)
@@ -108,14 +108,14 @@ class ProductForm extends Form
 
         $this->code = $product->code;
         $this->barcode = $product->barcode;
-        $this->name = $product->name;
-        $this->generic_name = $product->generic_name;
-        $this->concentration = $product->concentration;
-        $this->description = $product->description;
+        $this->nombre = $product->nombre;
+        $this->nombre_generico = $product->nombre_generico;
+        $this->concentracion = $product->concentracion;
+        $this->descripcion = $product->descripcion;
 
-        $this->sale_price = $product->sale_price;
-        $this->minimum_stock = $product->minimum_stock;
-        $this->requires_prescription = (bool) $product->requires_prescription;
-        $this->state = $product->state;
+        $this->precio_venta = $product->precio_venta;
+        $this->stock_minimo = $product->stock_minimo;
+        $this->requiere_receta = (bool) $product->requiere_receta;
+        $this->estado = $product->estado;
     }
 }

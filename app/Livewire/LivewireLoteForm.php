@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Lote;
-use App\Models\Product;
+use App\Models\Producto;
 use Livewire\Component;
 use App\Livewire\Form\LoteForm;
 
@@ -24,8 +24,8 @@ class LivewireLoteForm extends Component
             $this->form->fillForm($lot);
 
             if ($lot->product) {
-                $this->selectedProductLabel = $lot->product->code . ' - ' . $lot->product->name .
-                    ($lot->product->concentration ? ' | ' . $lot->product->concentration : '');
+                $this->selectedProductLabel = $lot->product->code . ' - ' . $lot->product->nombre .
+                    ($lot->product->concentracion ? ' | ' . $lot->product->concentracion : '');
             }
         }
     }
@@ -37,21 +37,21 @@ class LivewireLoteForm extends Component
             return;
         }
 
-        $this->productResults = Product::query()
-            ->where('state', 1)
+        $this->productResults = Producto::query()
+            ->where('estado', 1)
             ->where(function ($q) {
                 $q->where('code', 'like', "%{$this->productSearch}%")
                   ->orWhere('barcode', 'like', "%{$this->productSearch}%")
-                  ->orWhere('name', 'like', "%{$this->productSearch}%")
-                  ->orWhere('generic_name', 'like', "%{$this->productSearch}%");
+                  ->orWhere('nombre', 'like', "%{$this->productSearch}%")
+                  ->orWhere('nombre_generico', 'like', "%{$this->productSearch}%");
             })
             ->limit(10)
             ->get()
             ->map(function ($product) {
                 return [
                     'id' => $product->id,
-                    'label' => $product->code . ' - ' . $product->name .
-                        ($product->concentration ? ' | ' . $product->concentration : ''),
+                    'label' => $product->code . ' - ' . $product->nombre .
+                        ($product->concentracion ? ' | ' . $product->concentracion : ''),
                 ];
             })
             ->toArray();
@@ -59,14 +59,14 @@ class LivewireLoteForm extends Component
 
     public function selectProduct($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Producto::findOrFail($id);
 
         $this->form->id_product = $product->id;
-        $this->selectedProductLabel = $product->code . ' - ' . $product->name .
-            ($product->concentration ? ' | ' . $product->concentration : '');
+        $this->selectedProductLabel = $product->code . ' - ' . $product->nombre .
+            ($product->concentracion ? ' | ' . $product->concentracion : '');
 
         if (!$this->form->precio_venta || $this->form->precio_venta == 0) {
-            $this->form->precio_venta = $product->sale_price;
+            $this->form->precio_venta = $product->precio_venta;
         }
 
         $this->productSearch = '';

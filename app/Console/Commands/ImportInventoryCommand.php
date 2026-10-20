@@ -7,7 +7,7 @@ use App\Models\InventoryMovement;
 use App\Models\Laboratorio;
 use App\Models\Lote;
 use App\Models\Presentacion;
-use App\Models\Product;
+use App\Models\Producto;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -145,7 +145,7 @@ class ImportInventoryCommand extends Command
             'purchase_details', 'purchases',
             'cash_movements', 'cash_registers',
             'inventory_movements', 'inventory_adjustments',
-            'lotes', 'products',
+            'lotes', 'productos',
             'clientes', 'proveedores',
             'categorias', 'presentaciones', 'laboratorios',
         ] as $table) {
@@ -211,20 +211,20 @@ class ImportInventoryCommand extends Command
             return;
         }
 
-        $product = Product::create([
+        $product = Producto::create([
             'id_category' => $category->id,
             'id_laboratory' => $laboratory?->id,
             'id_presentation' => $presentation->id,
             'code' => $clave,
             'barcode' => $clave,
-            'name' => $name,
-            'generic_name' => null,
-            'concentration' => null,
-            'description' => null,
-            'sale_price' => $precioVenta,
-            'minimum_stock' => 0,
-            'requires_prescription' => false,
-            'state' => 1,
+            'nombre' => $name,
+            'nombre_generico' => null,
+            'concentracion' => null,
+            'descripcion' => null,
+            'precio_venta' => $precioVenta,
+            'stock_minimo' => 0,
+            'requiere_receta' => false,
+            'estado' => 1,
         ]);
 
         $summary['products_created']++;

@@ -5,7 +5,7 @@ namespace App\Livewire;
 use App\Models\Lote;
 use App\Models\Sale;
 use App\Models\Cliente;
-use App\Models\Product;
+use App\Models\Producto;
 use App\Models\CashRegister;
 use App\Models\CashMovement;
 use App\Models\PaymentMethod;
@@ -55,7 +55,7 @@ class LivewireSaleForm extends Component
                 $this->details[] = [
                     'id_product' => $detail->id_product,
                     'id_lot' => $detail->id_lot,
-                    'product_label' => $detail->product?->code . ' - ' . $detail->product?->name,
+                    'product_label' => $detail->product?->code . ' - ' . $detail->product?->nombre,
                     'lot_label' => $detail->lot?->codigo_lote . ' | Vence: ' . optional($detail->lot?->fecha_vencimiento)->format('d/m/Y'),
                     'quantity' => $detail->quantity,
                     'available' => $detail->lot?->cantidad_disponible ?? 0,
@@ -126,14 +126,14 @@ class LivewireSaleForm extends Component
             return;
         }
 
-        $this->productResults = Product::query()
+        $this->productResults = Producto::query()
             ->with(['laboratory', 'presentation'])
-            ->where('state', 1)
+            ->where('estado', 1)
             ->where(function ($q) {
                 $q->where('code', 'like', "%{$this->productSearch}%")
                     ->orWhere('barcode', 'like', "%{$this->productSearch}%")
-                    ->orWhere('name', 'like', "%{$this->productSearch}%")
-                    ->orWhere('generic_name', 'like', "%{$this->productSearch}%");
+                    ->orWhere('nombre', 'like', "%{$this->productSearch}%")
+                    ->orWhere('nombre_generico', 'like', "%{$this->productSearch}%");
             })
             ->limit(10)
             ->get()
@@ -150,13 +150,13 @@ class LivewireSaleForm extends Component
                 return [
                     'id' => $product->id,
                     'code' => $product->code,
-                    'name' => $product->name . ($product->concentration ? ' | ' . $product->concentration : ''),
-                    'laboratory' => $product->laboratory?->name,
-                    'presentation' => $product->presentation?->name,
-                    'label' => $product->code . ' - ' . $product->name .
-                        ($product->concentration ? ' | ' . $product->concentration : '') .
+                    'name' => $product->nombre . ($product->concentracion ? ' | ' . $product->concentracion : ''),
+                    'laboratory' => $product->laboratory?->nombre,
+                    'presentation' => $product->presentation?->nombre,
+                    'label' => $product->code . ' - ' . $product->nombre .
+                        ($product->concentracion ? ' | ' . $product->concentracion : '') .
                         ' | Stock: ' . $stock,
-                    'sale_price' => (float) $product->sale_price,
+                    'sale_price' => (float) $product->precio_venta,
                     'stock' => $stock,
                 ];
             })
@@ -165,7 +165,7 @@ class LivewireSaleForm extends Component
 
     public function addProductToDetail($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Producto::findOrFail($id);
 
         $availableLot = Lote::where('id_product', $product->id)
             ->where('estado', 1)
@@ -188,7 +188,7 @@ class LivewireSaleForm extends Component
         $this->details[] = [
             'id_product' => $product->id,
             'id_lot' => $availableLot->id,
-            'product_label' => $product->code . ' - ' . $product->name . ($product->concentration ? ' | ' . $product->concentration : ''),
+            'product_label' => $product->code . ' - ' . $product->nombre . ($product->concentracion ? ' | ' . $product->concentracion : ''),
             'lot_label' => $availableLot->codigo_lote . ' | Vence: ' . $lotExpirationLabel . ' | Stock: ' . $availableLot->cantidad_disponible,
             'quantity' => 1,
             'available' => $availableLot->cantidad_disponible,

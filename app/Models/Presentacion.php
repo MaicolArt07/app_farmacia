@@ -20,6 +20,6 @@ class Presentacion extends Model
 
     public function products()
     {
-        return $this->hasMany(Product::class, 'id_presentation');
+        return $this->hasMany(Producto::class, 'id_presentation');
     }
 }

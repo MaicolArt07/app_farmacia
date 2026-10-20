@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Cliente;
-use App\Models\Product;
+use App\Models\Producto;
 use Livewire\Component;
 
 class LivewireGlobalSearch extends Component
@@ -43,10 +43,10 @@ class LivewireGlobalSearch extends Component
             : [];
 
         $this->products = auth()->user()->can('Ver Productos')
-            ? Product::where('name', 'like', "%{$term}%")
+            ? Producto::where('nombre', 'like', "%{$term}%")
                 ->orWhere('code', 'like', "%{$term}%")
                 ->limit(5)
-                ->get(['id', 'name', 'code'])
+                ->get(['id', 'nombre as name', 'code'])
                 ->toArray()
             : [];
     }
