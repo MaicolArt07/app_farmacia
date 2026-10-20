@@ -7,7 +7,6 @@ use App\Livewire\LivewirePersona;
 use App\Livewire\LivewireUsers;
 use App\Livewire\LivewireUserForm;
 use App\Livewire\LivewireCliente;
-use App\Livewire\LivewireClienteForm;
 use App\Livewire\LivewireProveedor;
 use App\Livewire\LivewireLaboratorio;
 use App\Livewire\LivewireEmpresaForm;
@@ -64,13 +63,6 @@ Route::middleware(['auth'])->group(function () {
     ->middleware('can:Ver Clientes')
     ->name('clientes');
 
-    Route::get('/clientes/create', LivewireClienteForm::class)
-    ->middleware('can:Ver Clientes')
-    ->name('clientes.create');
-
-    Route::get('/clientes/{client}/edit', LivewireClienteForm::class)
-    ->middleware('can:Ver Clientes')
-    ->name('clientes.edit');
 
     Route::get('/proveedores', LivewireProveedor::class)
     ->middleware('can:Ver Proveedores')
