@@ -6,6 +6,7 @@
 ])
 
 <div
+    wire:key="search-select-{{ $model }}-{{ $value ?? 'empty' }}"
     x-data="{
         open: false,
         search: '',
