@@ -159,7 +159,7 @@
                     ])
                     @php
                         $isFarmaciaSection = request()->routeIs('suppliers*') || request()->routeIs('laboratories*')
-                            || request()->routeIs('categorias*') || request()->routeIs('presentations*')
+                            || request()->routeIs('categorias*') || request()->routeIs('presentaciones*')
                             || request()->routeIs('lots*')
                             || request()->routeIs('inventory-adjustments*') || request()->routeIs('invoices*')
                             || request()->routeIs('kardex*') || request()->routeIs('inventory-alerts*')
@@ -204,7 +204,7 @@
                             </a>
                             @endcan
                             @can('Ver Presentaciones')
-                            <a href="{{ route('presentations') }}" wire:navigate title="{{ __('Presentaciones') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('presentations*') ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-white' : 'text-zinc-700 dark:text-zinc-300' }}">
+                            <a href="{{ route('presentaciones') }}" wire:navigate title="{{ __('Presentaciones') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('presentaciones*') ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-white' : 'text-zinc-700 dark:text-zinc-300' }}">
                                 <i class="bi bi-box-seam-fill text-base"></i>
                             </a>
                             @endcan
@@ -275,7 +275,7 @@
                                     </a>
                                     @endcan
                                     @can('Ver Presentaciones')
-                                    <a href="{{ route('presentations') }}" wire:navigate class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition {{ request()->routeIs('presentations*') ? 'bg-zinc-200 font-semibold text-zinc-900 dark:bg-zinc-800 dark:text-white' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
+                                    <a href="{{ route('presentaciones') }}" wire:navigate class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition {{ request()->routeIs('presentaciones*') ? 'bg-zinc-200 font-semibold text-zinc-900 dark:bg-zinc-800 dark:text-white' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                         <i class="bi bi-box-seam-fill text-base"></i> {{ __('Presentaciones') }}
                                     </a>
                                     @endcan
@@ -612,7 +612,7 @@
                                     </flux:navlist.item>
                                     @endcan
                                     @can('Ver Presentaciones')
-                                    <flux:navlist.item :href="route('presentations')" :current="request()->routeIs('presentations*')" wire:navigate class="rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                                    <flux:navlist.item :href="route('presentaciones')" :current="request()->routeIs('presentaciones*')" wire:navigate class="rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800">
                                         <i class="bi bi-box-seam-fill me-2"></i> {{ __('Presentaciones') }}
                                     </flux:navlist.item>
                                     @endcan

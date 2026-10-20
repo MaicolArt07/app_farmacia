@@ -92,7 +92,7 @@
                 <x-search-select
                     model="form.id_presentation"
                     :value="$form->id_presentation"
-                    :options="$presentations->map(fn ($p) => ['value' => $p->id, 'label' => $p->name])->values()"
+                    :options="$presentations->map(fn ($p) => ['value' => $p->id, 'label' => $p->nombre])->values()"
                 />
                 @error('form.id_presentation') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
             </div>

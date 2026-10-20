@@ -47,7 +47,7 @@ class Product extends Model
 
     public function presentation()
     {
-        return $this->belongsTo(Presentation::class, 'id_presentation');
+        return $this->belongsTo(Presentacion::class, 'id_presentation');
     }
 
     public function sinProductCode()

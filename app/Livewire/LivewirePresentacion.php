@@ -2,11 +2,11 @@
 
 namespace App\Livewire;
 
-use App\Models\Presentation;
+use App\Models\Presentacion;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class LivewirePresentation extends Component
+class LivewirePresentacion extends Component
 {
     use WithPagination;
 
@@ -21,31 +21,31 @@ class LivewirePresentation extends Component
 
     public function render()
     {
-        $query = Presentation::query();
+        $query = Presentacion::query();
 
         if (!empty($this->search)) {
             $query->where(function ($q) {
-                $q->where('name', 'like', "%{$this->search}%")
-                  ->orWhere('description', 'like', "%{$this->search}%");
+                $q->where('nombre', 'like', "%{$this->search}%")
+                  ->orWhere('descripcion', 'like', "%{$this->search}%");
             });
         }
 
-        return view('livewire.presentation.index', [
-            'presentations' => $query->orderBy('id', 'desc')->paginate(10),
+        return view('livewire.presentacion.index', [
+            'presentaciones' => $query->orderBy('id', 'desc')->paginate(10),
         ]);
     }
 
     public function delete($id)
     {
         try {
-            $presentation = Presentation::findOrFail($id);
-            $presentation->state = $presentation->state ? 0 : 1;
-            $presentation->save();
+            $presentacion = Presentacion::findOrFail($id);
+            $presentacion->estado = $presentacion->estado ? 0 : 1;
+            $presentacion->save();
 
             $this->dispatch(
                 'toast',
-                type: $presentation->state ? 'success' : 'warning',
-                message: $presentation->state
+                type: $presentacion->estado ? 'success' : 'warning',
+                message: $presentacion->estado
                     ? 'Presentación activada correctamente.'
                     : 'Presentación desactivada correctamente.'
             );

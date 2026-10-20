@@ -8,7 +8,7 @@ use App\Models\Lot;
 use App\Models\InventoryMovement;
 use Livewire\Component;
 use App\Models\Laboratory;
-use App\Models\Presentation;
+use App\Models\Presentacion;
 use App\Models\SinProductCode;
 use App\Livewire\Form\ProductForm;
 use Illuminate\Support\Facades\Auth;
@@ -175,7 +175,7 @@ class LivewireProductForm extends Component
         return view('livewire.product.form', [
             'categories' => Categoria::where('estado', 1)->orderBy('nombre')->get(),
             'laboratories' => Laboratory::where('state', 1)->orderBy('name')->get(),
-            'presentations' => Presentation::where('state', 1)->orderBy('name')->get(),
+            'presentations' => Presentacion::where('estado', 1)->orderBy('nombre')->get(),
             'sinProductCodes' => SinProductCode::orderBy('descripcion')->get(),
         ]);
     }

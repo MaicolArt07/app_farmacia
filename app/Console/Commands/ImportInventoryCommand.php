@@ -6,7 +6,7 @@ use App\Models\Categoria;
 use App\Models\InventoryMovement;
 use App\Models\Laboratory;
 use App\Models\Lot;
-use App\Models\Presentation;
+use App\Models\Presentacion;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Console\Command;
@@ -192,7 +192,7 @@ class ImportInventoryCommand extends Command
             $summary['fallback_category_rows']++;
         }
 
-        $presentation = $this->firstOrCreateCached(Presentation::class, $unidad, $summary['presentations_created']);
+        $presentation = $this->firstOrCreateCached(Presentacion::class, $unidad, $summary['presentations_created'], 'nombre', 'estado');
 
         $laboratory = null;
         if ($laboratorioNombre !== '') {
