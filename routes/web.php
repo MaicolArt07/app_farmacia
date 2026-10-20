@@ -19,7 +19,6 @@ use App\Livewire\LivewireMetodoPago;
 use App\Livewire\LivewireMetodoPagoForm;
 use App\Livewire\LivewireCategoria;
 use App\Livewire\LivewirePresentacion;
-use App\Livewire\LivewirePresentacionForm;
 use App\Livewire\LivewireProducto;
 use App\Livewire\LivewireProductoForm;
 use App\Livewire\LivewireLote;
@@ -135,13 +134,6 @@ Route::middleware(['auth'])->group(function () {
     ->middleware('can:Ver Presentaciones')
     ->name('presentaciones');
 
-    Route::get('/presentaciones/create', LivewirePresentacionForm::class)
-    ->middleware('can:Ver Presentaciones')
-    ->name('presentaciones.create');
-
-    Route::get('/presentaciones/{presentacion}/edit', LivewirePresentacionForm::class)
-    ->middleware('can:Ver Presentaciones')
-    ->name('presentaciones.edit');
 
     Route::get('/productos', LivewireProducto::class)
     ->middleware('can:Ver Productos')

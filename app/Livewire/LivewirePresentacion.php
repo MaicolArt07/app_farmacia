@@ -5,12 +5,17 @@ namespace App\Livewire;
 use App\Models\Presentacion;
 use Livewire\Component;
 use Livewire\WithPagination;
+use App\Livewire\Form\PresentacionForm;
 
 class LivewirePresentacion extends Component
 {
     use WithPagination;
 
     public $search = '';
+
+    public PresentacionForm $form;
+
+    public $modalVisible = false;
 
     protected $paginationTheme = 'tailwind';
 
@@ -33,6 +38,59 @@ class LivewirePresentacion extends Component
         return view('livewire.presentacion.index', [
             'presentaciones' => $query->orderBy('id', 'desc')->paginate(10),
         ]);
+    }
+
+    public function create()
+    {
+        $this->form->resetForm();
+        $this->modalVisible = true;
+    }
+
+    public function edit($id)
+    {
+        $presentacion = Presentacion::findOrFail($id);
+        $this->form->fillForm($presentacion);
+        $this->modalVisible = true;
+    }
+
+    public function save()
+    {
+        $this->validate($this->form->rules(), $this->form->messages());
+
+        try {
+            if ($this->form->id) {
+                $presentacion = Presentacion::findOrFail($this->form->id);
+                $presentacion->update([
+                    'nombre' => $this->form->nombre,
+                    'descripcion' => $this->form->descripcion,
+                    'codigo_sin' => $this->form->codigo_sin ?: null,
+                    'estado' => $this->form->estado,
+                ]);
+
+                $message = 'Presentación actualizada correctamente.';
+            } else {
+                Presentacion::create([
+                    'nombre' => $this->form->nombre,
+                    'descripcion' => $this->form->descripcion,
+                    'codigo_sin' => $this->form->codigo_sin ?: null,
+                    'estado' => $this->form->estado,
+                ]);
+
+                $message = 'Presentación registrada correctamente.';
+            }
+
+            $this->dispatch('toast', type: 'success', message: $message);
+            $this->modalVisible = false;
+            $this->form->resetForm();
+        } catch (\Throwable $e) {
+            $this->dispatch('toast', type: 'error', message: 'No se pudo guardar la presentación.');
+        }
+    }
+
+    public function cancel()
+    {
+        $this->modalVisible = false;
+        $this->form->resetForm();
     }
 
     public function delete($id)
