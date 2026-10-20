@@ -5,16 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Laboratory extends Model
+class Laboratorio extends Model
 {
     use HasFactory;
 
-    protected $table = 'laboratories';
+    protected $table = 'laboratorios';
 
     protected $fillable = [
-        'name',
-        'description',
-        'state',
+        'nombre',
+        'descripcion',
+        'estado',
     ];
 
     public function products()

@@ -158,7 +158,7 @@
                         'Ver Facturas', 'Ver Reportes'
                     ])
                     @php
-                        $isFarmaciaSection = request()->routeIs('suppliers*') || request()->routeIs('laboratories*')
+                        $isFarmaciaSection = request()->routeIs('suppliers*') || request()->routeIs('laboratorios*')
                             || request()->routeIs('categorias*') || request()->routeIs('presentaciones*')
                             || request()->routeIs('lots*')
                             || request()->routeIs('inventory-adjustments*') || request()->routeIs('invoices*')
@@ -179,7 +179,7 @@
                             </a>
                             @endcan
                             @can('Ver Laboratorios')
-                            <a href="{{ route('laboratories') }}" wire:navigate title="{{ __('Laboratorios') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('laboratories*') ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-white' : 'text-zinc-700 dark:text-zinc-300' }}">
+                            <a href="{{ route('laboratorios') }}" wire:navigate title="{{ __('Laboratorios') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('laboratorios*') ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-white' : 'text-zinc-700 dark:text-zinc-300' }}">
                                 <i class="bi bi-building text-base"></i>
                             </a>
                             @endcan
@@ -250,7 +250,7 @@
                                     </a>
                                     @endcan
                                     @can('Ver Laboratorios')
-                                    <a href="{{ route('laboratories') }}" wire:navigate class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition {{ request()->routeIs('laboratories*') ? 'bg-zinc-200 font-semibold text-zinc-900 dark:bg-zinc-800 dark:text-white' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
+                                    <a href="{{ route('laboratorios') }}" wire:navigate class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition {{ request()->routeIs('laboratorios*') ? 'bg-zinc-200 font-semibold text-zinc-900 dark:bg-zinc-800 dark:text-white' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                         <i class="bi bi-building text-base"></i> {{ __('Laboratorios') }}
                                     </a>
                                     @endcan
@@ -587,7 +587,7 @@
                                     </flux:navlist.item>
                                     @endcan
                                     @can('Ver Laboratorios')
-                                    <flux:navlist.item :href="route('laboratories')" :current="request()->routeIs('laboratories*')" wire:navigate class="rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                                    <flux:navlist.item :href="route('laboratorios')" :current="request()->routeIs('laboratorios*')" wire:navigate class="rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800">
                                         <i class="bi bi-building me-2"></i> {{ __('Laboratorios') }}
                                     </flux:navlist.item>
                                     @endcan

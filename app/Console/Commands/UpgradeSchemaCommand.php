@@ -231,7 +231,7 @@ class UpgradeSchemaCommand extends Command
             ['suppliers', 'id_person', 'person', 'id', 'RESTRICT'],
             ['users', 'id_person', 'person', 'id', 'SET NULL'],
             ['products', 'id_category', 'categorias', 'id', 'RESTRICT'],
-            ['products', 'id_laboratory', 'laboratories', 'id', 'RESTRICT'],
+            ['products', 'id_laboratory', 'laboratorios', 'id', 'RESTRICT'],
             ['products', 'id_presentation', 'presentaciones', 'id', 'RESTRICT'],
             ['lots', 'id_product', 'products', 'id', 'RESTRICT'],
             ['purchases', 'id_supplier', 'suppliers', 'id', 'RESTRICT'],

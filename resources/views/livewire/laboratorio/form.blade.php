@@ -1,6 +1,6 @@
 <div class="mx-auto max-w-xl p-6">
     <div class="mb-6">
-        <a href="{{ route('laboratories') }}" wire:navigate class="mb-2 inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
+        <a href="{{ route('laboratorios') }}" wire:navigate class="mb-2 inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
             <i class="bi bi-arrow-left"></i> Volver a laboratorios
         </a>
         <h1 class="text-xl font-semibold text-zinc-800 dark:text-zinc-100">
@@ -14,10 +14,10 @@
                 <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Nombre <span class="text-red-600">*</span></label>
                 <input
                     type="text"
-                    wire:model="form.name"
+                    wire:model="form.nombre"
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
                 >
-                @error('form.name')
+                @error('form.nombre')
                     <span class="text-sm text-red-500">{{ $message }}</span>
                 @enderror
             </div>
@@ -25,11 +25,11 @@
             <div>
                 <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Descripción <span class="text-xs font-normal text-gray-400 dark:text-zinc-500">(Opcional)</span></label>
                 <textarea
-                    wire:model="form.description"
+                    wire:model="form.descripcion"
                     rows="3"
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
                 ></textarea>
-                @error('form.description')
+                @error('form.descripcion')
                     <span class="text-sm text-red-500">{{ $message }}</span>
                 @enderror
             </div>

@@ -42,7 +42,7 @@ class Product extends Model
 
     public function laboratory()
     {
-        return $this->belongsTo(Laboratory::class, 'id_laboratory');
+        return $this->belongsTo(Laboratorio::class, 'id_laboratory');
     }
 
     public function presentation()

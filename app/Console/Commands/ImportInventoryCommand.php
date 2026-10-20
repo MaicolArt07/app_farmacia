@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Categoria;
 use App\Models\InventoryMovement;
-use App\Models\Laboratory;
+use App\Models\Laboratorio;
 use App\Models\Lot;
 use App\Models\Presentacion;
 use App\Models\Product;
@@ -196,7 +196,7 @@ class ImportInventoryCommand extends Command
 
         $laboratory = null;
         if ($laboratorioNombre !== '') {
-            $laboratory = $this->firstOrCreateCached(Laboratory::class, $laboratorioNombre, $summary['laboratories_created']);
+            $laboratory = $this->firstOrCreateCached(Laboratorio::class, $laboratorioNombre, $summary['laboratories_created'], 'nombre', 'estado');
         }
 
         $quantity = max($cantidad, 0);
