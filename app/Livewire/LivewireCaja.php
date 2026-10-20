@@ -2,14 +2,14 @@
 
 namespace App\Livewire;
 
-use App\Models\CashRegister;
-use App\Models\CashMovement;
+use App\Models\Caja;
+use App\Models\MovimientoCaja;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
-class LivewireCashRegister extends Component
+class LivewireCaja extends Component
 {
     use WithPagination;
 
@@ -43,11 +43,11 @@ class LivewireCashRegister extends Component
 
     public function render()
     {
-        $query = CashRegister::with('user');
+        $query = Caja::with('user');
 
         if (!empty($this->search)) {
             $query->where(function ($q) {
-                $q->where('opening_date', 'like', "%{$this->search}%")
+                $q->where('fecha_apertura', 'like', "%{$this->search}%")
                   ->orWhere('status', 'like', "%{$this->search}%")
                   ->orWhereHas('user', function ($sub) {
                       $sub->where('name', 'like', "%{$this->search}%");
@@ -62,7 +62,7 @@ class LivewireCashRegister extends Component
 
     public function openMovementModal($id)
     {
-        $cash = CashRegister::findOrFail($id);
+        $cash = Caja::findOrFail($id);
 
         if ($cash->status !== 'OPEN') {
             $this->dispatch('toast', type: 'warning', message: 'Solo puede registrar movimientos en una caja abierta.');
@@ -96,24 +96,24 @@ class LivewireCashRegister extends Component
         DB::beginTransaction();
 
         try {
-            $cash = CashRegister::where('id', $this->selectedCashRegisterId)
+            $cash = Caja::where('id', $this->selectedCashRegisterId)
                 ->where('status', 'OPEN')
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            CashMovement::create([
+            MovimientoCaja::create([
                 'id_cash_register' => $cash->id,
                 'id_user' => Auth::id(),
                 'type' => $this->movement_type,
-                'concept' => $this->movement_concept,
-                'amount' => $this->movement_amount,
-                'observation' => $this->movement_observation ?: null,
+                'concepto' => $this->movement_concept,
+                'monto' => $this->movement_amount,
+                'observacion' => $this->movement_observation ?: null,
             ]);
 
             if ($this->movement_type === 'INCOME') {
-                $cash->expected_amount += $this->movement_amount;
+                $cash->monto_esperado += $this->movement_amount;
             } else {
-                $cash->expected_amount -= $this->movement_amount;
+                $cash->monto_esperado -= $this->movement_amount;
             }
 
             $cash->save();
@@ -145,7 +145,7 @@ class LivewireCashRegister extends Component
 
     protected function loadCashWithDetails($id)
     {
-        return CashRegister::with([
+        return Caja::with([
             'user',
             'sales' => fn ($q) => $q->orderByDesc('id'),
             'movements' => fn ($q) => $q->orderByDesc('id'),
@@ -166,7 +166,7 @@ class LivewireCashRegister extends Component
 
     public function openCloseCashModal($id)
     {
-        $cash = CashRegister::findOrFail($id);
+        $cash = Caja::findOrFail($id);
 
         if ($cash->status !== 'OPEN') {
             $this->dispatch('toast', type: 'warning', message: 'La caja ya está cerrada.');
@@ -175,7 +175,7 @@ class LivewireCashRegister extends Component
 
         $this->selectedCashRegisterId = $id;
         $this->closing_amount = '';
-        $this->projectedDifference = 0 - (float) $cash->expected_amount;
+        $this->projectedDifference = 0 - (float) $cash->monto_esperado;
         $this->closingCash = $this->loadCashWithDetails($id);
 
         $this->closeModalVisible = true;
@@ -183,7 +183,7 @@ class LivewireCashRegister extends Component
 
     public function updatedClosingAmount($value)
     {
-        $expected = (float) ($this->closingCash?->expected_amount ?? 0);
+        $expected = (float) ($this->closingCash?->monto_esperado ?? 0);
         $this->projectedDifference = ($value === '' ? 0 : (float) $value) - $expected;
     }
 
@@ -199,13 +199,13 @@ class LivewireCashRegister extends Component
         DB::beginTransaction();
 
         try {
-            $cash = CashRegister::where('id', $this->selectedCashRegisterId)
+            $cash = Caja::where('id', $this->selectedCashRegisterId)
                 ->where('status', 'OPEN')
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            $cash->closing_amount = $this->closing_amount;
-            $cash->difference = $this->closing_amount - $cash->expected_amount;
+            $cash->monto_cierre = $this->closing_amount;
+            $cash->diferencia = $this->closing_amount - $cash->monto_esperado;
             $cash->status = 'CLOSED';
             $cash->save();
 
@@ -235,7 +235,7 @@ class LivewireCashRegister extends Component
 
     public function openExtendModal($id)
     {
-        $cash = CashRegister::findOrFail($id);
+        $cash = Caja::findOrFail($id);
 
         if ($cash->status !== 'OPEN') {
             $this->dispatch('toast', type: 'warning', message: 'Solo puede ampliar la vigencia de una caja abierta.');
@@ -245,14 +245,14 @@ class LivewireCashRegister extends Component
         $this->extendingCashRegisterId = $id;
         $this->extendingCash = $cash;
         $this->extendUntil = optional($cash->expires_at)->format('Y-m-d\TH:i')
-            ?? CashRegister::calculateExpiration($cash->validity_period ?: 'DAILY')->format('Y-m-d\TH:i');
+            ?? Caja::calculateExpiration($cash->periodo_validez ?: 'DAILY')->format('Y-m-d\TH:i');
 
         $this->extendModalVisible = true;
     }
 
     public function setExtendPreset($period)
     {
-        $this->extendUntil = CashRegister::calculateExpiration($period)->format('Y-m-d\TH:i');
+        $this->extendUntil = Caja::calculateExpiration($period)->format('Y-m-d\TH:i');
     }
 
     public function confirmExtend()
@@ -265,7 +265,7 @@ class LivewireCashRegister extends Component
         ]);
 
         try {
-            $cash = CashRegister::where('id', $this->extendingCashRegisterId)
+            $cash = Caja::where('id', $this->extendingCashRegisterId)
                 ->where('status', 'OPEN')
                 ->firstOrFail();
 
@@ -293,20 +293,20 @@ class LivewireCashRegister extends Component
     public function delete($id)
     {
         try {
-            $cash = CashRegister::findOrFail($id);
+            $cash = Caja::findOrFail($id);
 
             if ($cash->status === 'OPEN') {
                 $this->dispatch('toast', type: 'warning', message: 'No puede desactivar una caja abierta.');
                 return;
             }
 
-            $cash->state = $cash->state ? 0 : 1;
+            $cash->estado = $cash->estado ? 0 : 1;
             $cash->save();
 
             $this->dispatch(
                 'toast',
-                type: $cash->state ? 'success' : 'warning',
-                message: $cash->state
+                type: $cash->estado ? 'success' : 'warning',
+                message: $cash->estado
                     ? 'Caja activada correctamente.'
                     : 'Caja desactivada correctamente.'
             );

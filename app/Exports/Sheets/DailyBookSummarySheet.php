@@ -2,8 +2,8 @@
 
 namespace App\Exports\Sheets;
 
-use App\Models\CashMovement;
-use App\Models\CashRegister;
+use App\Models\MovimientoCaja;
+use App\Models\Caja;
 use App\Models\Compra;
 use App\Models\Venta;
 use Maatwebsite\Excel\Concerns\FromArray;
@@ -26,16 +26,16 @@ class DailyBookSummarySheet implements FromArray, WithTitle, ShouldAutoSize
             ->whereBetween('fecha_compra', [$this->from, $this->to])
             ->get();
 
-        $movements = CashMovement::whereHas('cashRegister', function ($q) {
-            $q->whereBetween('opening_date', [$this->from, $this->to]);
+        $movements = MovimientoCaja::whereHas('cashRegister', function ($q) {
+            $q->whereBetween('fecha_apertura', [$this->from, $this->to]);
         })->get();
 
-        $income = $movements->where('type', 'INCOME')->sum('amount');
-        $expense = $movements->where('type', 'EXPENSE')->sum('amount');
+        $income = $movements->where('type', 'INCOME')->sum('monto');
+        $expense = $movements->where('type', 'EXPENSE')->sum('monto');
 
-        $registers = CashRegister::with('user')
-            ->whereBetween('opening_date', [$this->from, $this->to])
-            ->orderBy('opening_date')
+        $registers = Caja::with('user')
+            ->whereBetween('fecha_apertura', [$this->from, $this->to])
+            ->orderBy('fecha_apertura')
             ->get();
 
         // Todos los montos se envían como string: PhpSpreadsheet trata un
@@ -58,11 +58,11 @@ class DailyBookSummarySheet implements FromArray, WithTitle, ShouldAutoSize
         foreach ($registers as $register) {
             $rows[] = [
                 $register->user?->name,
-                optional($register->opening_date)->format('d/m/Y'),
-                (string) $register->opening_amount,
-                (string) $register->expected_amount,
-                $register->closing_amount !== null ? (string) $register->closing_amount : null,
-                $register->difference !== null ? (string) $register->difference : null,
+                optional($register->fecha_apertura)->format('d/m/Y'),
+                (string) $register->monto_apertura,
+                (string) $register->monto_esperado,
+                $register->monto_cierre !== null ? (string) $register->monto_cierre : null,
+                $register->diferencia !== null ? (string) $register->diferencia : null,
                 $register->status === 'OPEN' ? 'Abierta' : 'Cerrada',
             ];
         }

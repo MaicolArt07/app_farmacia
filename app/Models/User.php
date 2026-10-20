@@ -63,12 +63,12 @@ class User extends Authenticatable
 
     public function cashRegisters()
     {
-        return $this->hasMany(CashRegister::class, 'id_user');
+        return $this->hasMany(Caja::class, 'id_user');
     }
 
     public function cashMovements()
     {
-        return $this->hasMany(CashMovement::class, 'id_user');
+        return $this->hasMany(MovimientoCaja::class, 'id_user');
     }
 
     public function person()

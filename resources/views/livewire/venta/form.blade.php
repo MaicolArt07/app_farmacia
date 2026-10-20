@@ -23,7 +23,7 @@
             <div class="mb-4 flex flex-col gap-2 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-300 md:flex-row md:items-center md:justify-between">
                 <span>
                     <i class="bi bi-exclamation-triangle-fill mr-1"></i>
-                    Tienes una caja abierta desde el {{ $openCash->opening_date?->format('d/m/Y') }} que ya venció su vigencia.
+                    Tienes una caja abierta desde el {{ $openCash->fecha_apertura?->format('d/m/Y') }} que ya venció su vigencia.
                     Ciérrala o amplía su tiempo de vida para poder seguir vendiendo.
                 </span>
                 <div class="flex shrink-0 gap-2">

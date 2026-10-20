@@ -5,31 +5,31 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class CashMovement extends Model
+class MovimientoCaja extends Model
 {
     use HasFactory;
 
-    protected $table = 'cash_movements';
+    protected $table = 'movimientos_caja';
 
     protected $fillable = [
         'id_cash_register',
         'id_user',
         'type',
         'origin',
-        'concept',
-        'amount',
+        'concepto',
+        'monto',
         'reference_type',
         'reference_id',
-        'observation',
+        'observacion',
     ];
 
     protected $casts = [
-        'amount' => 'decimal:2',
+        'monto' => 'decimal:2',
     ];
 
     public function cashRegister()
     {
-        return $this->belongsTo(CashRegister::class, 'id_cash_register');
+        return $this->belongsTo(Caja::class, 'id_cash_register');
     }
 
     public function user()

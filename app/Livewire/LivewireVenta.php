@@ -4,8 +4,8 @@ namespace App\Livewire;
 
 use App\Models\Venta;
 use App\Models\Lote;
-use App\Models\CashRegister;
-use App\Models\CashMovement;
+use App\Models\Caja;
+use App\Models\MovimientoCaja;
 use App\Models\InventoryMovement;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -42,9 +42,9 @@ class LivewireVenta extends Component
             });
         }
 
-        $openCash = CashRegister::where('id_user', Auth::id())
+        $openCash = Caja::where('id_user', Auth::id())
             ->where('status', 'OPEN')
-            ->where('state', 1)
+            ->where('estado', 1)
             ->first();
 
         return view('livewire.venta.index', [
@@ -56,9 +56,9 @@ class LivewireVenta extends Component
 
     public function extendCash()
     {
-        $openCash = CashRegister::where('id_user', Auth::id())
+        $openCash = Caja::where('id_user', Auth::id())
             ->where('status', 'OPEN')
-            ->where('state', 1)
+            ->where('estado', 1)
             ->first();
 
         if (!$openCash) {
@@ -143,23 +143,23 @@ class LivewireVenta extends Component
                 ]);
             }
 
-            $cash = CashRegister::where('id_user', Auth::id())
+            $cash = Caja::where('id_user', Auth::id())
                 ->where('status', 'OPEN')
-                ->where('state', 1)
+                ->where('estado', 1)
                 ->lockForUpdate()
                 ->first();
 
             if ($cash) {
-                CashMovement::create([
+                MovimientoCaja::create([
                     'id_cash_register' => $cash->id,
                     'id_user' => Auth::id(),
                     'type' => 'EXPENSE',
-                    'concept' => 'Anulación venta #' . $sale->id,
-                    'amount' => $sale->total,
-                    'observation' => 'Reversión automática por anulación de venta.',
+                    'concepto' => 'Anulación venta #' . $sale->id,
+                    'monto' => $sale->total,
+                    'observacion' => 'Reversión automática por anulación de venta.',
                 ]);
 
-                $cash->expected_amount -= $sale->total;
+                $cash->monto_esperado -= $sale->total;
                 $cash->save();
             }
 

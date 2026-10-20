@@ -14,7 +14,7 @@
         </div>
         <div class="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-zinc-700 dark:bg-zinc-800/50">
             <div class="text-xs text-zinc-500 dark:text-zinc-400">Monto inicial</div>
-            <div class="font-semibold text-zinc-800 dark:text-zinc-100">{{ number_format($cash->opening_amount, 2) }}</div>
+            <div class="font-semibold text-zinc-800 dark:text-zinc-100">{{ number_format($cash->monto_apertura, 2) }}</div>
         </div>
         <div class="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-zinc-700 dark:bg-zinc-800/50">
             <div class="text-xs text-zinc-500 dark:text-zinc-400">Ventas registradas</div>
@@ -22,7 +22,7 @@
         </div>
         <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-800 dark:bg-emerald-900/20">
             <div class="text-xs text-emerald-700 dark:text-emerald-300">Esperado</div>
-            <div class="font-bold text-emerald-700 dark:text-emerald-300">{{ number_format($cash->expected_amount, 2) }}</div>
+            <div class="font-bold text-emerald-700 dark:text-emerald-300">{{ number_format($cash->monto_esperado, 2) }}</div>
         </div>
     </div>
 
@@ -58,13 +58,13 @@
                     <tbody class="divide-y divide-gray-200 dark:divide-zinc-700">
                         @foreach($cash->movements as $movement)
                             <tr class="bg-white dark:bg-zinc-900">
-                                <td class="px-3 py-1.5 text-zinc-700 dark:text-zinc-300">{{ $movement->concept }}</td>
+                                <td class="px-3 py-1.5 text-zinc-700 dark:text-zinc-300">{{ $movement->concepto }}</td>
                                 <td class="px-3 py-1.5 text-center">
                                     <span class="rounded-full px-2 py-0.5 text-xs {{ $movement->type === 'INCOME' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' }}">
                                         {{ $movement->type === 'INCOME' ? 'Ingreso' : 'Egreso' }}
                                     </span>
                                 </td>
-                                <td class="px-3 py-1.5 text-right font-medium text-zinc-800 dark:text-zinc-100">{{ number_format($movement->amount, 2) }}</td>
+                                <td class="px-3 py-1.5 text-right font-medium text-zinc-800 dark:text-zinc-100">{{ number_format($movement->monto, 2) }}</td>
                             </tr>
                         @endforeach
                     </tbody>

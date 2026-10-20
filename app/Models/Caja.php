@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class CashRegister extends Model
+class Caja extends Model
 {
     use HasFactory;
 
-    protected $table = 'cash_registers';
+    protected $table = 'cajas';
 
     public const VALIDITY_PERIODS = [
         'DAILY' => 'Diario',
@@ -19,28 +19,28 @@ class CashRegister extends Model
 
     protected $fillable = [
         'id_user',
-        'opening_date',
-        'opening_amount',
-        'validity_period',
+        'fecha_apertura',
+        'monto_apertura',
+        'periodo_validez',
         'expires_at',
         'last_extended_at',
-        'closing_amount',
-        'expected_amount',
-        'difference',
+        'monto_cierre',
+        'monto_esperado',
+        'diferencia',
         'status',
-        'observation',
-        'state',
+        'observacion',
+        'estado',
     ];
 
     protected $casts = [
-        'opening_date' => 'datetime',
+        'fecha_apertura' => 'datetime',
         'expires_at' => 'datetime',
         'last_extended_at' => 'datetime',
-        'opening_amount' => 'decimal:2',
-        'expected_amount' => 'decimal:2',
-        'closing_amount' => 'decimal:2',
-        'difference' => 'decimal:2',
-        'state' => 'integer',
+        'monto_apertura' => 'decimal:2',
+        'monto_esperado' => 'decimal:2',
+        'monto_cierre' => 'decimal:2',
+        'diferencia' => 'decimal:2',
+        'estado' => 'integer',
     ];
 
     public function user()
@@ -50,7 +50,7 @@ class CashRegister extends Model
 
     public function movements()
     {
-        return $this->hasMany(CashMovement::class, 'id_cash_register');
+        return $this->hasMany(MovimientoCaja::class, 'id_cash_register');
     }
 
     public function sales()
@@ -60,13 +60,13 @@ class CashRegister extends Model
 
     public function incomes()
     {
-        return $this->hasMany(CashMovement::class, 'id_cash_register')
+        return $this->hasMany(MovimientoCaja::class, 'id_cash_register')
             ->where('type', 'INCOME');
     }
 
     public function expenses()
     {
-        return $this->hasMany(CashMovement::class, 'id_cash_register')
+        return $this->hasMany(MovimientoCaja::class, 'id_cash_register')
             ->where('type', 'EXPENSE');
     }
 
@@ -97,8 +97,8 @@ class CashRegister extends Model
 
     public function extend(?string $period = null)
     {
-        $this->validity_period = $period ?: ($this->validity_period ?: 'DAILY');
-        $this->expires_at = self::calculateExpiration($this->validity_period);
+        $this->periodo_validez = $period ?: ($this->periodo_validez ?: 'DAILY');
+        $this->expires_at = self::calculateExpiration($this->periodo_validez);
         $this->last_extended_at = now();
         $this->save();
 

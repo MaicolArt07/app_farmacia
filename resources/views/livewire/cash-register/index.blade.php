@@ -36,7 +36,7 @@
                 @forelse ($cashRegisters as $item)
                     <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/70">
                         <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
-                            {{ \Carbon\Carbon::parse($item->opening_date)->format('d/m/Y') }}
+                            {{ \Carbon\Carbon::parse($item->fecha_apertura)->format('d/m/Y') }}
                         </td>
 
                         <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
@@ -44,23 +44,23 @@
                         </td>
 
                         <td class="px-4 py-3 text-right text-zinc-800 dark:text-zinc-100">
-                            {{ number_format($item->opening_amount, 2) }}
+                            {{ number_format($item->monto_apertura, 2) }}
                         </td>
 
                         <td class="px-4 py-3 text-right text-zinc-800 dark:text-zinc-100">
-                            {{ number_format($item->expected_amount, 2) }}
+                            {{ number_format($item->monto_esperado, 2) }}
                         </td>
 
                         <td class="px-4 py-3 text-right text-zinc-800 dark:text-zinc-100">
-                            {{ $item->closing_amount !== null ? number_format($item->closing_amount, 2) : '-' }}
+                            {{ $item->monto_cierre !== null ? number_format($item->monto_cierre, 2) : '-' }}
                         </td>
 
                         <td class="px-4 py-3 text-right">
-                            @if($item->difference === null)
+                            @if($item->diferencia === null)
                                 <span class="text-zinc-500 dark:text-zinc-400">-</span>
                             @else
-                                <span class="{{ $item->difference == 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400' }}">
-                                    {{ number_format($item->difference, 2) }}
+                                <span class="{{ $item->diferencia == 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400' }}">
+                                    {{ number_format($item->diferencia, 2) }}
                                 </span>
                             @endif
                         </td>
@@ -136,12 +136,12 @@
                                 @can('Cambiar Estado Caja')
                                     <button type="button"
                                         x-on:click.prevent="confirmAction({
-                                            text: '¿Deseas {{ $item->state ? 'desactivar' : 'activar' }} este registro?',
-                                            confirmText: 'Sí, {{ $item->state ? 'desactivar' : 'activar' }}',
+                                            text: '¿Deseas {{ $item->estado ? 'desactivar' : 'activar' }} este registro?',
+                                            confirmText: 'Sí, {{ $item->estado ? 'desactivar' : 'activar' }}',
                                         }).then((ok) => { if (ok) $wire.delete({{ $item->id }}) })"
-                                        class="{{ $item->state ? 'text-red-600 hover:text-red-800 dark:text-red-400' : 'text-gray-400 dark:text-zinc-500' }} cursor-pointer"
+                                        class="{{ $item->estado ? 'text-red-600 hover:text-red-800 dark:text-red-400' : 'text-gray-400 dark:text-zinc-500' }} cursor-pointer"
                                         title="Activar / Desactivar">
-                                        <i class="bi {{ $item->state ? 'bi-trash' : 'bi-arrow-clockwise' }} text-lg"></i>
+                                        <i class="bi {{ $item->estado ? 'bi-trash' : 'bi-arrow-clockwise' }} text-lg"></i>
                                     </button>
                                 @endcan
 

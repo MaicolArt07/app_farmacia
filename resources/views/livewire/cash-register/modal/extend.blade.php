@@ -17,7 +17,7 @@
                     <div class="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-zinc-700 dark:bg-zinc-800/50">
                         <div class="text-xs text-zinc-500 dark:text-zinc-400">Fecha de inicio</div>
                         <div class="mt-1 font-semibold text-zinc-800 dark:text-zinc-100">
-                            {{ $extendingCash->opening_date?->format('d/m/Y') }}
+                            {{ $extendingCash->fecha_apertura?->format('d/m/Y') }}
                         </div>
                     </div>
 

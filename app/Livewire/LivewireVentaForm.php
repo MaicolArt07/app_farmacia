@@ -6,8 +6,8 @@ use App\Models\Lote;
 use App\Models\Venta;
 use App\Models\Cliente;
 use App\Models\Producto;
-use App\Models\CashRegister;
-use App\Models\CashMovement;
+use App\Models\Caja;
+use App\Models\MovimientoCaja;
 use App\Models\PaymentMethod;
 use App\Models\InventoryMovement;
 use Livewire\Component;
@@ -315,7 +315,7 @@ class LivewireVentaForm extends Component
         try {
             $this->calculateTotals();
 
-            $cash = CashRegister::where('id', $cash->id)
+            $cash = Caja::where('id', $cash->id)
                 ->where('status', 'OPEN')
                 ->lockForUpdate()
                 ->firstOrFail();
@@ -380,18 +380,18 @@ class LivewireVentaForm extends Component
                 ]);
             }
 
-            CashMovement::create([
+            MovimientoCaja::create([
                 'id_cash_register' => $cash->id,
                 'id_user' => Auth::id(),
                 'type' => 'INCOME',
-                'concept' => 'Venta #' . $sale->id,
-                'amount' => $sale->total,
+                'concepto' => 'Venta #' . $sale->id,
+                'monto' => $sale->total,
                 'reference_type' => 'SALE',
                 'reference_id' => $sale->id,
-                'observation' => 'Ingreso automático por venta.',
+                'observacion' => 'Ingreso automático por venta.',
             ]);
 
-            $cash->expected_amount += $sale->total;
+            $cash->monto_esperado += $sale->total;
             $cash->save();
 
             DB::commit();
@@ -412,9 +412,9 @@ class LivewireVentaForm extends Component
 
     public function refreshCashStatus()
     {
-        $this->openCash = CashRegister::where('id_user', Auth::id())
+        $this->openCash = Caja::where('id_user', Auth::id())
             ->where('status', 'OPEN')
-            ->where('state', 1)
+            ->where('estado', 1)
             ->first();
 
         $this->cashExpired = $this->openCash ? $this->openCash->isExpired() : false;

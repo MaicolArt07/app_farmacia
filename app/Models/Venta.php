@@ -64,7 +64,7 @@ class Venta extends Model
 
     public function cashRegister()
     {
-        return $this->belongsTo(CashRegister::class, 'id_cash_register');
+        return $this->belongsTo(Caja::class, 'id_cash_register');
     }
 
     public function paymentMethod()

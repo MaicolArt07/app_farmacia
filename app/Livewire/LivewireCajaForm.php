@@ -2,14 +2,14 @@
 
 namespace App\Livewire;
 
-use App\Models\CashRegister;
+use App\Models\Caja;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
-use App\Livewire\Form\CashRegisterForm;
+use App\Livewire\Form\CajaForm;
 
-class LivewireCashRegisterForm extends Component
+class LivewireCajaForm extends Component
 {
-    public CashRegisterForm $form;
+    public CajaForm $form;
 
     public function mount()
     {
@@ -20,7 +20,7 @@ class LivewireCashRegisterForm extends Component
     {
         $this->validate($this->form->rulesOpen(), $this->form->messages());
 
-        $hasOpenCash = CashRegister::where('id_user', Auth::id())
+        $hasOpenCash = Caja::where('id_user', Auth::id())
             ->where('status', 'OPEN')
             ->exists();
 
@@ -30,17 +30,17 @@ class LivewireCashRegisterForm extends Component
         }
 
         try {
-            CashRegister::create([
+            Caja::create([
                 'id_user' => Auth::id(),
-                'opening_date' => now()->toDateString(),
-                'opening_amount' => $this->form->opening_amount,
-                'validity_period' => $this->form->validity_period,
-                'expires_at' => CashRegister::calculateExpiration($this->form->validity_period),
-                'closing_amount' => null,
-                'expected_amount' => $this->form->opening_amount,
-                'difference' => null,
+                'fecha_apertura' => now()->toDateString(),
+                'monto_apertura' => $this->form->opening_amount,
+                'periodo_validez' => $this->form->validity_period,
+                'expires_at' => Caja::calculateExpiration($this->form->validity_period),
+                'monto_cierre' => null,
+                'monto_esperado' => $this->form->opening_amount,
+                'diferencia' => null,
                 'status' => 'OPEN',
-                'state' => 1,
+                'estado' => 1,
             ]);
 
             $this->dispatch('toast', type: 'success', message: 'Caja abierta correctamente.');

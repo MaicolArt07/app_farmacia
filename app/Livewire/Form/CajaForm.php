@@ -4,7 +4,7 @@ namespace App\Livewire\Form;
 
 use Livewire\Form;
 
-class CashRegisterForm extends Form
+class CajaForm extends Form
 {
     public $id = null;
     public $opening_date = '';
