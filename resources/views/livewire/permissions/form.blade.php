@@ -5,7 +5,7 @@
         </a>
         <h1 class="flex items-center gap-2 text-xl font-semibold text-zinc-800 dark:text-zinc-100">
             <i class="bi bi-key-fill text-blue-600 dark:text-blue-400"></i>
-            {{ $permissionId ? 'Editar Permiso' : 'Crear Permiso' }}
+            {{ $form->permissionId ? 'Editar Permiso' : 'Crear Permiso' }}
         </h1>
     </div>
 
@@ -19,11 +19,11 @@
 
                 <input
                     type="text"
-                    wire:model.defer="name"
+                    wire:model.defer="form.name"
                     class="w-full rounded border border-gray-300 bg-white px-3 py-2 text-zinc-800 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-400"
                 />
 
-                @error('name')
+                @error('form.name')
                     <span class="text-sm text-red-600">{{ $message }}</span>
                 @enderror
             </div>
@@ -41,7 +41,7 @@
                     type="submit"
                     class="cursor-pointer rounded bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
                 >
-                    {{ $permissionId ? 'Actualizar' : 'Guardar' }}
+                    {{ $form->permissionId ? 'Actualizar' : 'Guardar' }}
                 </button>
             </div>
         </form>

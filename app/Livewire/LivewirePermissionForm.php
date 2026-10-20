@@ -4,34 +4,34 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Spatie\Permission\Models\Permission;
-use App\Traits\PermissionsFormTrait;
+use App\Livewire\Form\PermissionForm;
 
 class LivewirePermissionForm extends Component
 {
-    use PermissionsFormTrait;
+    public PermissionForm $form;
 
     public function mount($permission = null)
     {
-        $this->resetForm();
+        $this->form->resetForm();
 
         if ($permission) {
             $permission = Permission::findOrFail($permission);
-            $this->permissionId = $permission->id;
-            $this->name = $permission->name;
-            $this->updateMode = true;
+            $this->form->permissionId = $permission->id;
+            $this->form->name = $permission->name;
+            $this->form->updateMode = true;
         }
     }
 
     public function save()
     {
-        $this->validate($this->rules(), $this->messages());
+        $this->validate($this->form->rules(), $this->form->messages());
 
-        if ($this->updateMode) {
-            $permission = Permission::findOrFail($this->permissionId);
-            $permission->update(['name' => $this->name]);
+        if ($this->form->updateMode) {
+            $permission = Permission::findOrFail($this->form->permissionId);
+            $permission->update(['name' => $this->form->name]);
             $this->dispatch('toast', type: 'success', message: 'Permiso actualizado correctamente.');
         } else {
-            Permission::create(['name' => $this->name]);
+            Permission::create(['name' => $this->form->name]);
             $this->dispatch('toast', type: 'success', message: 'Permiso creado correctamente.');
         }
 
