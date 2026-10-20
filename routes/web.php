@@ -14,7 +14,6 @@ use App\Livewire\LivewireMetodoPago;
 use App\Livewire\LivewireCategoria;
 use App\Livewire\LivewirePresentacion;
 use App\Livewire\LivewireProducto;
-use App\Livewire\LivewireProductoForm;
 use App\Livewire\LivewireLote;
 use App\Livewire\LivewireCompra;
 use App\Livewire\LivewireCompraForm;
@@ -95,13 +94,6 @@ Route::middleware(['auth'])->group(function () {
     ->middleware('can:Ver Productos')
     ->name('productos');
 
-    Route::get('/productos/create', LivewireProductoForm::class)
-    ->middleware('can:Ver Productos')
-    ->name('productos.create');
-
-    Route::get('/productos/{product}/edit', LivewireProductoForm::class)
-    ->middleware('can:Ver Productos')
-    ->name('productos.edit');
 
     Route::get('/lotes', LivewireLote::class)
     ->middleware('can:Ver Lotes')
