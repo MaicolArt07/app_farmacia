@@ -13,7 +13,6 @@ use App\Livewire\LivewireEmpresaForm;
 use App\Livewire\LivewireSucursal;
 use App\Livewire\LivewireSucursalForm;
 use App\Livewire\LivewireMetodoPago;
-use App\Livewire\LivewireMetodoPagoForm;
 use App\Livewire\LivewireCategoria;
 use App\Livewire\LivewirePresentacion;
 use App\Livewire\LivewireProducto;
@@ -93,13 +92,6 @@ Route::middleware(['auth'])->group(function () {
     ->middleware('can:Ver Metodos Pago')
     ->name('payment-methods');
 
-    Route::get('/payment-methods/create', LivewireMetodoPagoForm::class)
-    ->middleware('can:Ver Metodos Pago')
-    ->name('payment-methods.create');
-
-    Route::get('/payment-methods/{paymentMethod}/edit', LivewireMetodoPagoForm::class)
-    ->middleware('can:Ver Metodos Pago')
-    ->name('payment-methods.edit');
 
     Route::get('/categorias', LivewireCategoria::class)
     ->middleware('can:Ver Categorias')

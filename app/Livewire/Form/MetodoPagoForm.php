@@ -7,14 +7,14 @@ use Livewire\Form;
 class MetodoPagoForm extends Form
 {
     public $id = null;
-    public $name = '';
+    public $nombre = '';
     public $codigo_sin = '';
-    public $state = 1;
+    public $estado = 1;
 
     public function rules()
     {
         return [
-            'form.name' => 'required|string|max:100',
+            'form.nombre' => 'required|string|max:100',
             'form.codigo_sin' => 'nullable|integer',
         ];
     }
@@ -22,23 +22,23 @@ class MetodoPagoForm extends Form
     public function messages()
     {
         return [
-            'form.name.required' => 'El nombre del método de pago es obligatorio.',
+            'form.nombre.required' => 'El nombre del método de pago es obligatorio.',
         ];
     }
 
     public function resetForm()
     {
         $this->id = null;
-        $this->name = '';
+        $this->nombre = '';
         $this->codigo_sin = '';
-        $this->state = 1;
+        $this->estado = 1;
     }
 
     public function fillForm($paymentMethod)
     {
         $this->id = $paymentMethod->id;
-        $this->name = $paymentMethod->nombre;
+        $this->nombre = $paymentMethod->nombre;
         $this->codigo_sin = $paymentMethod->codigo_sin;
-        $this->state = $paymentMethod->estado;
+        $this->estado = $paymentMethod->estado;
     }
 }
