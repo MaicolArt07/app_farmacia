@@ -54,6 +54,20 @@
     ::file-selector-button {
         border-color: var(--color-gray-200, currentColor);
     }
+
+    button,
+    [type='button'],
+    [type='submit'],
+    [role='button'] {
+        cursor: pointer;
+    }
+
+    button:disabled,
+    [type='button']:disabled,
+    [type='submit']:disabled,
+    [role='button'][aria-disabled='true'] {
+        cursor: not-allowed;
+    }
 }
 
 [data-flux-field]:not(ui-radio, ui-checkbox) {
