@@ -1,15 +1,15 @@
-<div class="mx-auto max-w-6xl p-6">
-    <div class="mb-6">
-        <a href="{{ route('users') }}" wire:navigate class="mb-2 inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
+<div class="mx-auto max-w-6xl bg-zinc-200 p-4 dark:bg-zinc-950">
+    <div class="mb-3 rounded border border-zinc-300 bg-zinc-100 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900">
+        <a href="{{ route('users') }}" wire:navigate class="mb-2 inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-primary dark:text-zinc-400 dark:hover:text-zinc-200">
             <i class="bi bi-arrow-left"></i> Volver a usuarios
         </a>
         <h1 class="flex items-center gap-2 text-xl font-semibold text-zinc-800 dark:text-zinc-100">
-            <i class="bi bi-person-circle text-blue-600 dark:text-blue-400"></i>
+            <i class="bi bi-person-circle text-primary"></i>
             {{ $form->id ? 'Editar Usuario' : 'Crear Usuario' }}
         </h1>
     </div>
 
-    <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+    <div class="rounded border border-zinc-300 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
         <form wire:submit.prevent="save" autocomplete="off">
 
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -28,7 +28,7 @@
                                 <span class="text-sm text-emerald-700 dark:text-emerald-300">
                                     {{ $selectedPersonLabel }}
                                 </span>
-                                <button wire:click="clearPerson" type="button" class="text-red-500 hover:text-red-700">
+                                <button wire:click="clearPerson" type="button" class="cursor-pointer text-zinc-500 hover:text-red-600 dark:text-zinc-400">
                                     <i class="bi bi-x-circle"></i>
                                 </button>
                             </div>
@@ -38,16 +38,16 @@
                                     type="text"
                                     wire:model.live="personSearch"
                                     placeholder="Buscar por nombre, apellido o CI..."
-                                    class="w-full rounded border border-gray-300 bg-white px-3 py-2 text-zinc-800 focus:border-blue-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
+                                    class="w-full rounded border border-zinc-400 bg-white px-3 py-1.5 text-sm text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
                                 >
 
                                 @if (!empty($personResults))
-                                    <div class="absolute z-10 mt-1 max-h-56 w-full overflow-y-auto rounded border border-gray-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
+                                    <div class="absolute z-10 mt-1 max-h-56 w-full overflow-y-auto rounded border border-zinc-300 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
                                         @foreach ($personResults as $person)
                                             <button
                                                 type="button"
                                                 wire:click="selectPerson({{ $person['id'] }})"
-                                                class="block w-full border-b border-gray-100 px-3 py-2 text-left text-sm hover:bg-gray-100 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-700"
+                                                class="block w-full cursor-pointer border-b border-zinc-200 px-3 py-2 text-left text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-700"
                                             >
                                                 {{ $person['label'] }}
                                             </button>
@@ -72,7 +72,7 @@
                         <input
                             type="text"
                             wire:model.defer="form.name"
-                            class="w-full rounded border border-gray-300 bg-white px-3 py-2 text-zinc-800 focus:border-blue-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
+                            class="w-full rounded border border-zinc-400 bg-white px-3 py-1.5 text-sm text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
                         />
 
                         @error('form.name')
@@ -90,7 +90,7 @@
                         <input
                             type="email"
                             wire:model.defer="form.email"
-                            class="w-full rounded border border-gray-300 bg-white px-3 py-2 text-zinc-800 focus:border-blue-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
+                            class="w-full rounded border border-zinc-400 bg-white px-3 py-1.5 text-sm text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
                         />
 
                         @error('form.email')
@@ -114,7 +114,7 @@
                             type="password"
                             wire:model.defer="form.password"
                             autocomplete="new-password"
-                            class="w-full rounded border border-gray-300 bg-white px-3 py-2 text-zinc-800 focus:border-blue-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
+                            class="w-full rounded border border-zinc-400 bg-white px-3 py-1.5 text-sm text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
                         />
 
                         @error('form.password')
@@ -136,7 +136,7 @@
                             type="password"
                             wire:model.defer="form.password_confirmation"
                             autocomplete="new-password"
-                            class="w-full rounded border border-gray-300 bg-white px-3 py-2 text-zinc-800 focus:border-blue-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
+                            class="w-full rounded border border-zinc-400 bg-white px-3 py-1.5 text-sm text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
                         />
                     </div>
                 </div>
@@ -148,20 +148,20 @@
                         Permisos <span class="text-red-600">*</span>
                     </label>
 
-                    <div class="max-h-[28rem] space-y-2 overflow-y-auto rounded border border-gray-200 p-3 dark:border-zinc-700 dark:bg-zinc-800/40 lg:max-h-[32rem]">
+                    <div class="max-h-[28rem] space-y-2 overflow-y-auto rounded border border-zinc-300 p-3 dark:border-zinc-700 dark:bg-zinc-800/40 lg:max-h-[32rem]">
                         @foreach ($permissionGroups as $group => $permissions)
                             @php
                                 $groupNames = collect($permissions)->pluck('name');
                                 $allChecked = $groupNames->diff($form->selectedPermissions)->isEmpty();
                             @endphp
-                            <details class="group rounded border border-gray-100 dark:border-zinc-700">
+                            <details class="group rounded border border-zinc-200 dark:border-zinc-700">
                                 <summary class="flex cursor-pointer items-center justify-between px-2 py-1.5 text-sm font-semibold text-zinc-700 dark:text-zinc-200">
                                     <span class="flex items-center gap-2">
                                         <input
                                             type="checkbox"
                                             wire:click.stop="toggleGroup('{{ $group }}')"
                                             @checked($allChecked)
-                                            class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800"
+                                            class="rounded border-zinc-400 text-primary focus:ring-primary dark:border-zinc-600 dark:bg-zinc-800"
                                             title="Marcar todo el grupo"
                                         >
                                         <span>{{ $group }}</span>
@@ -176,7 +176,7 @@
                                                 type="checkbox"
                                                 wire:model.defer="form.selectedPermissions"
                                                 value="{{ $permission['name'] }}"
-                                                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800"
+                                                class="rounded border-zinc-400 text-primary focus:ring-primary dark:border-zinc-600 dark:bg-zinc-800"
                                             >
                                             {{ $permission['name'] }}
                                         </label>
@@ -193,20 +193,20 @@
             </div>
 
             <!-- Botones -->
-            <div class="mt-6 flex justify-end gap-2 border-t border-gray-200 pt-4 dark:border-zinc-800">
+            <div class="mt-6 flex justify-end gap-3 border-t border-zinc-300 pt-4 dark:border-zinc-800">
                 <button
                     type="button"
                     wire:click="cancel"
-                    class="cursor-pointer rounded bg-gray-500 px-4 py-2 text-white transition hover:bg-gray-600 dark:bg-zinc-700 dark:hover:bg-zinc-600"
+                    class="rounded border border-zinc-400 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700 cursor-pointer"
                 >
                     Cancelar
                 </button>
 
                 <button
                     type="submit"
-                    class="cursor-pointer rounded bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+                    class="rounded border border-zinc-400 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 shadow-sm transition hover:bg-zinc-100 cursor-pointer dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
                 >
-                    {{ $form->id ? 'Actualizar' : 'Guardar' }}
+                    <i class="bi bi-check-lg text-primary"></i> {{ $form->id ? 'Actualizar' : 'Guardar' }}
                 </button>
             </div>
         </form>
