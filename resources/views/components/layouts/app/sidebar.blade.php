@@ -688,7 +688,9 @@
                     </div>
                 </div>
 
-                {{ $slot }}
+                <div class="flex flex-1 flex-col min-w-0">
+                    {{ $slot }}
+                </div>
             </div>
         </div>
 
