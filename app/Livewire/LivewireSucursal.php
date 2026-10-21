@@ -18,6 +18,8 @@ class LivewireSucursal extends Component
 
     public $modalVisible = false;
 
+    public $viewingId = null;
+
     protected $paginationTheme = 'tailwind';
 
     public function updatingSearch()
@@ -38,6 +40,7 @@ class LivewireSucursal extends Component
 
         return view('livewire.sucursal.index', [
             'branches' => $query->orderBy('numero_sucursal')->paginate(10),
+            'viewing' => $this->viewingId ? Sucursal::find($this->viewingId) : null,
         ]);
     }
 
@@ -99,6 +102,16 @@ class LivewireSucursal extends Component
     {
         $this->modalVisible = false;
         $this->form->resetForm();
+    }
+
+    public function view($id)
+    {
+        $this->viewingId = $id;
+    }
+
+    public function closeView()
+    {
+        $this->viewingId = null;
     }
 
     public function delete($id)
