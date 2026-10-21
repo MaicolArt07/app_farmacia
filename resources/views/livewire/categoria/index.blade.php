@@ -1,4 +1,4 @@
-<div class="flex h-full flex-col bg-zinc-200 p-4 dark:bg-zinc-950">
+<div class="flex flex-col bg-zinc-200 p-4 dark:bg-zinc-950">
     <div class="mb-3 flex flex-wrap items-center justify-between gap-3 rounded border border-zinc-300 bg-zinc-100 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900">
         <button type="button" wire:click="create"
             class="flex items-center gap-2 rounded border border-zinc-400 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-100 cursor-pointer dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700">
