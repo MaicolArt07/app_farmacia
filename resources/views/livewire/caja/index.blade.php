@@ -1,4 +1,4 @@
-﻿<div class="bg-zinc-200 p-4 dark:bg-zinc-950">
+<div class="bg-zinc-200 p-4 dark:bg-zinc-950">
 
     <div class="mb-3 flex flex-col gap-3 rounded border border-zinc-300 bg-zinc-100 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900 md:flex-row md:items-center md:justify-between">
         @can('Crear Caja')
