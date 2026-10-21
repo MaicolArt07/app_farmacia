@@ -1,5 +1,5 @@
-<div class="p-6">
-    <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+<div class="bg-zinc-200 p-4 dark:bg-zinc-950">
+    <div class="mb-3 flex flex-col gap-3 rounded border border-zinc-300 bg-zinc-100 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900 md:flex-row md:items-center md:justify-between">
         <h1 class="text-xl font-bold text-zinc-800 dark:text-zinc-100">
             Facturación
         </h1>
@@ -8,48 +8,48 @@
             type="text"
             wire:model.live="search"
             placeholder="Buscar por N° factura, NIT, razón social o CUF..."
-            class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-zinc-800 md:w-96 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+            class="w-full rounded border border-zinc-400 bg-white px-3 py-1.5 text-sm text-zinc-800 focus:border-primary focus:outline-none md:w-96 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
         >
     </div>
 
-    <div class="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-        <table class="min-w-full text-sm">
-            <thead class="bg-gray-100 dark:bg-zinc-800">
+    <div class="overflow-auto rounded border border-zinc-300 dark:border-zinc-700">
+        <table class="min-w-full border-collapse text-sm">
+            <thead class="sticky top-0 bg-zinc-300 dark:bg-zinc-800">
                 <tr>
-                    <th class="px-4 py-3 text-left text-zinc-700 dark:text-zinc-200">N° FACTURA</th>
-                    <th class="px-4 py-3 text-left text-zinc-700 dark:text-zinc-200">VENTA</th>
-                    <th class="px-4 py-3 text-left text-zinc-700 dark:text-zinc-200">CLIENTE / NIT</th>
-                    <th class="px-4 py-3 text-right text-zinc-700 dark:text-zinc-200">TOTAL</th>
-                    <th class="px-4 py-3 text-center text-zinc-700 dark:text-zinc-200">MODO</th>
-                    <th class="px-4 py-3 text-center text-zinc-700 dark:text-zinc-200">ESTADO</th>
-                    <th class="px-4 py-3 text-center text-zinc-700 dark:text-zinc-200">OPCIONES</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-left font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">N° FACTURA</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-left font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">VENTA</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-left font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">CLIENTE / NIT</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-right font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">TOTAL</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-center font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">MODO</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-center font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">ESTADO</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-center font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">OPCIONES</th>
                 </tr>
             </thead>
 
-            <tbody class="divide-y divide-gray-200 dark:divide-zinc-800">
+            <tbody class="bg-white dark:bg-zinc-900">
                 @forelse ($invoices as $invoice)
-                    <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/70">
-                        <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
+                    <tr class="border-b border-zinc-200 hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-800">
+                        <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
                             {{ $invoice->numero_factura ?? '-' }}
                         </td>
-                        <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
+                        <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
                             Venta #{{ $invoice->id_sale }}
                         </td>
-                        <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
+                        <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
                             {{ $invoice->razon_social }}
-                            <div class="text-xs text-gray-500 dark:text-zinc-400">NIT/CI: {{ $invoice->nit_cliente }}</div>
+                            <div class="text-xs text-zinc-500 dark:text-zinc-400">NIT/CI: {{ $invoice->nit_cliente }}</div>
                         </td>
-                        <td class="px-4 py-3 text-right text-zinc-800 dark:text-zinc-100">
+                        <td class="px-3 py-1.5 text-right text-zinc-800 dark:text-zinc-100">
                             {{ number_format($invoice->total, 2) }}
                         </td>
-                        <td class="px-4 py-3 text-center">
+                        <td class="px-3 py-1.5 text-center">
                             @if ($invoice->isSimulado())
                                 <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">Simulado</span>
                             @else
                                 <span class="rounded-full bg-sky-100 px-3 py-1 text-xs font-medium text-sky-700 dark:bg-sky-900/30 dark:text-sky-300">Real</span>
                             @endif
                         </td>
-                        <td class="px-4 py-3 text-center">
+                        <td class="px-3 py-1.5 text-center">
                             @php
                                 $invoiceBadgeClasses = match ($invoice->estado) {
                                     'ENVIADA' => 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300',
@@ -63,20 +63,20 @@
                                 {{ $invoice->estado_label }}
                             </span>
                         </td>
-                        <td class="px-4 py-3">
+                        <td class="px-3 py-1.5">
                             <div class="flex justify-center gap-3">
                                 <a href="{{ route('invoices.pdf', $invoice->id) }}" target="_blank"
-                                    class="cursor-pointer text-sky-500 transition hover:text-sky-600 dark:text-sky-400"
+                                    class="cursor-pointer text-zinc-500 transition hover:text-primary dark:text-zinc-400"
                                     title="Ver / reimprimir">
-                                    <i class="bi bi-printer text-lg"></i>
+                                    <i class="bi bi-printer text-base"></i>
                                 </a>
 
                                 @can('Cambiar Estado Facturas')
                                     @if ($invoice->estado !== 'ANULADA')
                                         <button wire:click="openAnularModal({{ $invoice->id }})"
-                                            class="cursor-pointer text-red-600 transition hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                                            class="cursor-pointer text-zinc-500 transition hover:text-red-600 dark:text-zinc-400"
                                             title="Anular factura">
-                                            <i class="bi bi-x-circle text-lg"></i>
+                                            <i class="bi bi-x-circle text-base"></i>
                                         </button>
                                     @endif
                                 @endcan
@@ -85,7 +85,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-4 py-4 text-center text-gray-500 dark:text-zinc-400">
+                        <td colspan="7" class="px-3 py-4 text-center text-zinc-500 dark:text-zinc-400">
                             No hay facturas generadas todavía.
                         </td>
                     </tr>
