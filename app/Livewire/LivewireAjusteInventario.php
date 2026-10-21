@@ -29,6 +29,8 @@ class LivewireAjusteInventario extends Component
     public $lotResults = [];
     public $selectedLotLabel = '';
 
+    public $viewingId = null;
+
     protected $paginationTheme = 'tailwind';
 
     public function updatingSearch()
@@ -51,7 +53,18 @@ class LivewireAjusteInventario extends Component
 
         return view('livewire.ajuste-inventario.index', [
             'adjustments' => $query->orderBy('id', 'desc')->paginate(10),
+            'viewing' => $this->viewingId ? AjusteInventario::with(['product', 'lot', 'user'])->find($this->viewingId) : null,
         ]);
+    }
+
+    public function view($id)
+    {
+        $this->viewingId = $id;
+    }
+
+    public function closeView()
+    {
+        $this->viewingId = null;
     }
 
     public function create()

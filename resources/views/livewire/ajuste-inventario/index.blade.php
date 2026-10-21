@@ -34,7 +34,7 @@
 
             <tbody class="bg-white dark:bg-zinc-900">
                 @forelse ($adjustments as $item)
-                    <tr class="border-b border-zinc-200 hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-800">
+                    <tr wire:click="view({{ $item->id }})" class="cursor-pointer border-b border-zinc-200 hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-800">
                         <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
                             {{ $item->created_at?->format('d/m/Y H:i') }}
                         </td>
@@ -232,5 +232,93 @@
             </div>
         </div>
     </flux:modal>
+
+    <div x-data="{ open: false }" x-init="$watch('$wire.viewingId', value => open = !!value)" x-show="!!$wire.viewingId" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div x-show="open" x-transition.opacity class="absolute inset-0 bg-zinc-900/30" wire:click="closeView"></div>
+
+        <div x-show="open"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+            class="relative flex w-full max-w-lg flex-col rounded border border-zinc-300 bg-white shadow-xl dark:border-zinc-700 dark:bg-zinc-900 max-h-[90vh]">
+
+            @if ($viewing)
+                <div class="flex items-center justify-between border-b border-zinc-300 bg-zinc-200 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800">
+                    <h2 class="text-sm font-semibold text-zinc-800 dark:text-zinc-100">Detalle del ajuste</h2>
+                    <button wire:click="closeView" class="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 cursor-pointer">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+
+                <div class="space-y-4 overflow-y-auto px-4 py-5">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Producto</span>
+                            <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->product?->nombre ?? '-' }}</p>
+                        </div>
+                        <div class="space-y-1">
+                            <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Código</span>
+                            <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->product?->code ?? '-' }}</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Lote</span>
+                            <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->lot?->codigo_lote ?? '-' }}</p>
+                        </div>
+                        <div class="space-y-1">
+                            <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Vence</span>
+                            <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->lot?->fecha_vencimiento ? $viewing->lot->fecha_vencimiento->format('d/m/Y') : '-' }}</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Tipo</span>
+                            <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->type === 'INCREASE' ? 'Aumento' : 'Disminución' }}</p>
+                        </div>
+                        <div class="space-y-1">
+                            <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Cantidad</span>
+                            <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->quantity }}</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Stock antes</span>
+                            <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->stock_before }}</p>
+                        </div>
+                        <div class="space-y-1">
+                            <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Stock después</span>
+                            <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->stock_after }}</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Usuario</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->user?->name ?? '-' }}</p>
+                    </div>
+
+                    <div class="space-y-1">
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Motivo</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100 whitespace-pre-line">{{ $viewing->motivo }}</p>
+                    </div>
+
+                    <div class="space-y-1">
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Fecha</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->created_at?->format('d/m/Y H:i') ?? '-' }}</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 border-t border-zinc-300 bg-zinc-100 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-900">
+                    <button wire:click="closeView" class="rounded border border-zinc-400 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700 cursor-pointer">
+                        Cerrar
+                    </button>
+                </div>
+            @endif
+        </div>
+    </div>
 
 </div>
