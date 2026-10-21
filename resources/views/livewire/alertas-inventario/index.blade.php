@@ -1,10 +1,10 @@
-<div class="p-6 space-y-6">
+<div class="space-y-4 bg-zinc-200 p-4 dark:bg-zinc-950">
 
     <h1 class="text-xl font-bold text-zinc-800 dark:text-zinc-100">
         Alertas de Inventario
     </h1>
 
-    <div class="rounded-xl border border-red-200 bg-white p-4 dark:border-red-900/40 dark:bg-zinc-900">
+    <div class="rounded border border-zinc-300 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
         <h2 class="mb-3 font-semibold text-red-700 dark:text-red-300">
             Productos vencidos
         </h2>
@@ -21,7 +21,7 @@
         @endforelse
     </div>
 
-    <div class="rounded-xl border border-amber-200 bg-white p-4 dark:border-amber-900/40 dark:bg-zinc-900">
+    <div class="rounded border border-zinc-300 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
         <h2 class="mb-3 font-semibold text-amber-700 dark:text-amber-300">
             Productos por vencer en 30 días
         </h2>
@@ -38,7 +38,7 @@
         @endforelse
     </div>
 
-    <div class="rounded-xl border border-sky-200 bg-white p-4 dark:border-sky-900/40 dark:bg-zinc-900">
+    <div class="rounded border border-zinc-300 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
         <h2 class="mb-3 font-semibold text-sky-700 dark:text-sky-300">
             Productos con stock bajo
         </h2>
