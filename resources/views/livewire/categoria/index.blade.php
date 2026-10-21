@@ -72,15 +72,15 @@
         {{ $categorias->links() }}
     </div>
 
-    <div x-data="{ open: false }" x-init="$watch('$wire.modalVisible', value => open = value)" x-show="$wire.modalVisible" x-cloak class="fixed inset-0 z-50">
+    <div x-data="{ open: false }" x-init="$watch('$wire.modalVisible', value => open = value)" x-show="$wire.modalVisible" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div x-show="open" x-transition.opacity class="absolute inset-0 bg-zinc-900/30" wire:click="cancel"></div>
 
         <div x-show="open"
             x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
+            x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
             x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full"
-            class="absolute inset-y-0 right-0 flex w-full max-w-md flex-col border-l border-zinc-300 bg-white shadow-xl dark:border-zinc-700 dark:bg-zinc-900">
+            x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+            class="relative flex w-full max-w-md flex-col rounded border border-zinc-300 bg-white shadow-xl dark:border-zinc-700 dark:bg-zinc-900">
 
             <div class="flex items-center justify-between border-b border-zinc-300 bg-zinc-200 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800">
                 <h2 class="text-sm font-semibold text-zinc-800 dark:text-zinc-100">
@@ -91,7 +91,7 @@
                 </button>
             </div>
 
-            <div class="flex-1 space-y-5 overflow-y-auto px-4 py-5">
+            <div class="space-y-5 px-4 py-5">
                 <div class="space-y-1">
                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Nombre</label>
                     <input type="text" wire:model="form.nombre"
