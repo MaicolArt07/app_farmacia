@@ -18,6 +18,8 @@ class LivewireCliente extends Component
 
     public $modalVisible = false;
 
+    public $viewingId = null;
+
     public $personSearch = '';
     public $personResults = [];
     public $selectedPersonLabel = '';
@@ -48,6 +50,7 @@ class LivewireCliente extends Component
 
         return view('livewire.cliente.index', [
             'clients' => $query->orderBy('id', 'desc')->paginate(10),
+            'viewing' => $this->viewingId ? Cliente::with('person')->find($this->viewingId) : null,
         ]);
     }
 
@@ -166,6 +169,16 @@ class LivewireCliente extends Component
     {
         $this->modalVisible = false;
         $this->form->resetForm();
+    }
+
+    public function view($id)
+    {
+        $this->viewingId = $id;
+    }
+
+    public function closeView()
+    {
+        $this->viewingId = null;
     }
 
     public function delete($id)
