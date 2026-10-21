@@ -1,49 +1,49 @@
-<div class="p-6">
-    <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+<div class="flex flex-col bg-zinc-200 p-4 dark:bg-zinc-950">
+    <div class="mb-3 flex flex-wrap items-center justify-between gap-3 rounded border border-zinc-300 bg-zinc-100 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900">
         <a href="{{ route('compras.create') }}" wire:navigate
-            class="cursor-pointer rounded-lg bg-emerald-600 px-4 py-2 text-center text-white transition hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600">
-            <i class="bi bi-bag-plus mr-1"></i> Nueva compra
+            class="flex items-center gap-2 rounded border border-zinc-400 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-100 cursor-pointer dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700">
+            <i class="bi bi-bag-plus text-primary"></i> Nueva compra
         </a>
 
         <input
             type="text"
             wire:model.live="search"
             placeholder="Buscar por factura, fecha o proveedor..."
-            class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-zinc-800 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none md:w-[28rem] dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
+            class="w-full rounded border border-zinc-400 bg-white px-3 py-1.5 text-sm text-zinc-800 placeholder:text-zinc-400 focus:border-primary focus:outline-none md:w-80 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500"
         >
     </div>
 
-    <div class="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-        <table class="min-w-full text-sm">
-            <thead class="bg-gray-100 dark:bg-zinc-800">
+    <div class="overflow-auto rounded border border-zinc-300 dark:border-zinc-700">
+        <table class="min-w-full border-collapse text-sm">
+            <thead class="sticky top-0 bg-zinc-300 dark:bg-zinc-800">
                 <tr>
-                    <th class="px-4 py-3 text-left text-zinc-700 dark:text-zinc-200">FECHA</th>
-                    <th class="px-4 py-3 text-left text-zinc-700 dark:text-zinc-200">PROVEEDOR</th>
-                    <th class="px-4 py-3 text-left text-zinc-700 dark:text-zinc-200">FACTURA</th>
-                    <th class="px-4 py-3 text-left text-zinc-700 dark:text-zinc-200">TOTAL</th>
-                    <th class="px-4 py-3 text-center text-zinc-700 dark:text-zinc-200">ESTADO</th>
-                    <th class="px-4 py-3 text-center text-zinc-700 dark:text-zinc-200">OPCIONES</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-left font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">Fecha</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-left font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">Proveedor</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-left font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">Factura</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-left font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">Total</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-center font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">Estado</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-center font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">Opciones</th>
                 </tr>
             </thead>
 
-            <tbody class="divide-y divide-gray-200 dark:divide-zinc-800">
+            <tbody class="bg-white dark:bg-zinc-900">
                 @forelse ($purchases as $item)
-                    <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/70">
-                        <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
+                    <tr class="border-b border-zinc-200 hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-800">
+                        <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
                             {{ \Carbon\Carbon::parse($item->fecha_compra)->format('d/m/Y') }}
                         </td>
-                        <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
+                        <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
                             {{ $item->supplier?->razon_social ?? '-' }}
                         </td>
-                        <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
+                        <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
                             {{ $item->numero_factura ?: '-' }}
                         </td>
-                        <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
+                        <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
                             {{ number_format($item->total, 2) }}
                         </td>
-                        <td class="px-4 py-3 text-center">
+                        <td class="px-3 py-1.5 text-center">
                             @if($item->status === 'CANCELLED')
-                                <span class="rounded-full bg-red-100 px-3 py-1 text-xs font-m1edium text-red-700 dark:bg-red-900/30 dark:text-red-300">
+                                <span class="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-300">
                                     Anulada
                                 </span>
                             @else
@@ -52,16 +52,16 @@
                                 </span>
                             @endif
                         </td>
-                        <td class="px-4 py-3">
+                        <td class="px-3 py-1.5">
                             <div class="flex justify-center gap-3">
                                 <a href="{{ route('compras.view', $item->id) }}" wire:navigate
-                                    class="cursor-pointer text-sky-500 transition hover:text-sky-600 dark:text-sky-400">
-                                    <i class="bi bi-eye text-lg"></i>
+                                    class="cursor-pointer text-zinc-500 transition hover:text-primary dark:text-zinc-400">
+                                    <i class="bi bi-eye text-base"></i>
                                 </a>
 
                                 <a href="{{ route('compras.edit', $item->id) }}" wire:navigate
-                                    class="cursor-pointer text-yellow-500 transition hover:text-yellow-600 dark:text-yellow-400">
-                                    <i class="bi bi-pencil-square text-lg"></i>
+                                    class="cursor-pointer text-zinc-500 transition hover:text-primary dark:text-zinc-400">
+                                    <i class="bi bi-pencil-square text-base"></i>
                                 </a>
 
                                 <button type="button"
@@ -69,8 +69,8 @@
                                         text: '¿Deseas {{ $item->estado ? 'desactivar' : 'activar' }} este registro?',
                                         confirmText: 'Sí, {{ $item->estado ? 'desactivar' : 'activar' }}',
                                     }).then((ok) => { if (ok) $wire.delete({{ $item->id }}) })"
-                                    class="{{ $item->estado ? 'text-red-600 hover:text-red-800 dark:text-red-400' : 'text-gray-400 dark:text-zinc-500' }} cursor-pointer">
-                                    <i class="bi {{ $item->estado ? 'bi-trash' : 'bi-arrow-clockwise' }} text-lg"></i>
+                                    class="{{ $item->estado ? 'text-zinc-500 hover:text-red-600 dark:text-zinc-400' : 'text-zinc-400 dark:text-zinc-600' }} cursor-pointer transition">
+                                    <i class="bi {{ $item->estado ? 'bi-trash' : 'bi-arrow-clockwise' }} text-base"></i>
                                 </button>
 
                                 @can('Cambiar Estado Compras')
@@ -82,9 +82,9 @@
                                                 text: 'Se revertirá el stock ingresado.',
                                                 confirmText: 'Sí, anular',
                                             }).then((ok) => { if (ok) $wire.cancelPurchase({{ $item->id }}) })"
-                                            class="cursor-pointer text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                                            class="cursor-pointer text-zinc-500 transition hover:text-red-600 dark:text-zinc-400"
                                             title="Anular compra">
-                                            <i class="bi bi-arrow-counterclockwise text-lg"></i>
+                                            <i class="bi bi-arrow-counterclockwise text-base"></i>
                                         </button>
                                     @else
                                         <span class="text-xs font-semibold text-red-500">
@@ -97,7 +97,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-4 text-center text-gray-500 dark:text-zinc-400">
+                        <td colspan="6" class="px-3 py-4 text-center text-zinc-500 dark:text-zinc-400">
                             No hay compras registradas.
                         </td>
                     </tr>
