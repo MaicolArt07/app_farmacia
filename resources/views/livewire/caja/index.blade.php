@@ -1,10 +1,10 @@
-<div class="p-6">
+﻿<div class="bg-zinc-200 p-4 dark:bg-zinc-950">
 
-    <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+    <div class="mb-3 flex flex-col gap-3 rounded border border-zinc-300 bg-zinc-100 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900 md:flex-row md:items-center md:justify-between">
         @can('Crear Caja')
             <button type="button" wire:click="openOpenModal"
-                class="cursor-pointer rounded-lg bg-emerald-600 px-4 py-2 text-center text-white transition hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600">
-                <i class="bi bi-cash-coin mr-1"></i> Abrir caja
+                class="flex items-center gap-2 rounded border border-zinc-400 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-100 cursor-pointer dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700">
+                <i class="bi bi-cash-coin text-primary"></i> Abrir caja
             </button>
         @endcan
 
@@ -12,50 +12,50 @@
             type="text"
             wire:model.live="search"
             placeholder="Buscar por fecha, usuario o estado..."
-            class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-zinc-800 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none md:w-[28rem] dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
+            class="w-full rounded border border-zinc-400 bg-white px-3 py-1.5 text-sm text-zinc-800 placeholder:text-zinc-400 focus:border-primary focus:outline-none md:w-[28rem] dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500"
         >
     </div>
 
-    <div class="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-        <table class="min-w-full text-sm">
-            <thead class="bg-gray-100 dark:bg-zinc-800">
+    <div class="overflow-auto rounded border border-zinc-300 dark:border-zinc-700">
+        <table class="min-w-full border-collapse text-sm">
+            <thead class="sticky top-0 bg-zinc-300 dark:bg-zinc-800">
                 <tr>
-                    <th class="px-4 py-3 text-left text-zinc-700 dark:text-zinc-200">INICIO</th>
-                    <th class="px-4 py-3 text-left text-zinc-700 dark:text-zinc-200">USUARIO</th>
-                    <th class="px-4 py-3 text-right text-zinc-700 dark:text-zinc-200">INICIAL</th>
-                    <th class="px-4 py-3 text-right text-zinc-700 dark:text-zinc-200">ESPERADO</th>
-                    <th class="px-4 py-3 text-right text-zinc-700 dark:text-zinc-200">CONTADO</th>
-                    <th class="px-4 py-3 text-right text-zinc-700 dark:text-zinc-200">DIF.</th>
-                    <th class="px-4 py-3 text-center text-zinc-700 dark:text-zinc-200">ESTADO</th>
-                    <th class="px-4 py-3 text-center text-zinc-700 dark:text-zinc-200">FIN</th>
-                    <th class="px-4 py-3 text-center text-zinc-700 dark:text-zinc-200">OPCIONES</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-left font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">INICIO</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-left font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">USUARIO</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-right font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">INICIAL</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-right font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">ESPERADO</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-right font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">CONTADO</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-right font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">DIF.</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-center font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">ESTADO</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-center font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">FIN</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-center font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">OPCIONES</th>
                 </tr>
             </thead>
 
-            <tbody class="divide-y divide-gray-200 dark:divide-zinc-800">
+            <tbody class="bg-white dark:bg-zinc-900">
                 @forelse ($cashRegisters as $item)
-                    <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/70">
-                        <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
+                    <tr class="border-b border-zinc-200 hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-800">
+                        <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
                             {{ \Carbon\Carbon::parse($item->fecha_apertura)->format('d/m/Y') }}
                         </td>
 
-                        <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
+                        <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
                             {{ $item->user?->name ?? '-' }}
                         </td>
 
-                        <td class="px-4 py-3 text-right text-zinc-800 dark:text-zinc-100">
+                        <td class="px-3 py-1.5 text-right text-zinc-800 dark:text-zinc-100">
                             {{ number_format($item->monto_apertura, 2) }}
                         </td>
 
-                        <td class="px-4 py-3 text-right text-zinc-800 dark:text-zinc-100">
+                        <td class="px-3 py-1.5 text-right text-zinc-800 dark:text-zinc-100">
                             {{ number_format($item->monto_esperado, 2) }}
                         </td>
 
-                        <td class="px-4 py-3 text-right text-zinc-800 dark:text-zinc-100">
+                        <td class="px-3 py-1.5 text-right text-zinc-800 dark:text-zinc-100">
                             {{ $item->monto_cierre !== null ? number_format($item->monto_cierre, 2) : '-' }}
                         </td>
 
-                        <td class="px-4 py-3 text-right">
+                        <td class="px-3 py-1.5 text-right">
                             @if($item->diferencia === null)
                                 <span class="text-zinc-500 dark:text-zinc-400">-</span>
                             @else
@@ -65,7 +65,7 @@
                             @endif
                         </td>
 
-                        <td class="px-4 py-3 text-center">
+                        <td class="px-3 py-1.5 text-center">
                             @if($item->status === 'OPEN')
                                 <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
                                     Abierta
@@ -77,7 +77,7 @@
                             @endif
                         </td>
 
-                        <td class="px-4 py-3 text-center">
+                        <td class="px-3 py-1.5 text-center">
                             @if($item->status === 'OPEN')
                                 @if($item->expires_at)
                                     <div class="text-xs text-zinc-600 dark:text-zinc-300">
@@ -100,7 +100,7 @@
                             @endif
                         </td>
 
-                        <td class="px-4 py-3">
+                        <td class="px-3 py-1.5">
                             <div class="flex justify-center gap-3">
 
                                 <button wire:click="openDetailModal({{ $item->id }})"
@@ -139,7 +139,7 @@
                                             text: '¿Deseas {{ $item->estado ? 'desactivar' : 'activar' }} este registro?',
                                             confirmText: 'Sí, {{ $item->estado ? 'desactivar' : 'activar' }}',
                                         }).then((ok) => { if (ok) $wire.delete({{ $item->id }}) })"
-                                        class="{{ $item->estado ? 'text-red-600 hover:text-red-800 dark:text-red-400' : 'text-gray-400 dark:text-zinc-500' }} cursor-pointer"
+                                        class="{{ $item->estado ? 'text-red-600 hover:text-red-800 dark:text-red-400' : 'text-zinc-400 dark:text-zinc-500' }} cursor-pointer"
                                         title="Activar / Desactivar">
                                         <i class="bi {{ $item->estado ? 'bi-trash' : 'bi-arrow-clockwise' }} text-lg"></i>
                                     </button>
@@ -150,7 +150,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="9" class="px-4 py-4 text-center text-gray-500 dark:text-zinc-400">
+                        <td colspan="9" class="px-3 py-4 text-center text-zinc-500 dark:text-zinc-400">
                             No hay cajas registradas.
                         </td>
                     </tr>
