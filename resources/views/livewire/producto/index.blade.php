@@ -1,46 +1,46 @@
-<div class="p-6">
-    <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+<div class="flex flex-col bg-zinc-200 p-4 dark:bg-zinc-950">
+    <div class="mb-3 flex flex-wrap items-center justify-between gap-3 rounded border border-zinc-300 bg-zinc-100 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900">
         <button type="button" wire:click="create"
-            class="cursor-pointer rounded-lg bg-emerald-600 px-4 py-2 text-center text-white transition hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600">
-            <i class="bi bi-capsule-pill mr-1"></i> Nuevo producto
+            class="flex items-center gap-2 rounded border border-zinc-400 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-100 cursor-pointer dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700">
+            <i class="bi bi-capsule-pill text-primary"></i> Nuevo producto
         </button>
 
         <input
             type="text"
             wire:model.live="search"
             placeholder="Buscar por código, barra, nombre, genérico, categoría..."
-            class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-zinc-800 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none md:w-[28rem] dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
+            class="w-full rounded border border-zinc-400 bg-white px-3 py-1.5 text-sm text-zinc-800 placeholder:text-zinc-400 focus:border-primary focus:outline-none md:w-80 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500"
         >
     </div>
 
-    <div class="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-        <table class="min-w-full text-sm">
-            <thead class="bg-gray-100 dark:bg-zinc-800">
+    <div class="overflow-auto rounded border border-zinc-300 dark:border-zinc-700">
+        <table class="min-w-full border-collapse text-sm">
+            <thead class="sticky top-0 bg-zinc-300 dark:bg-zinc-800">
                 <tr>
-                    <th class="px-4 py-3 text-left text-zinc-700 dark:text-zinc-200">CÓDIGO</th>
-                    <th class="px-4 py-3 text-left text-zinc-700 dark:text-zinc-200">PRODUCTO</th>
-                    <th class="px-4 py-3 text-left text-zinc-700 dark:text-zinc-200">CATEGORÍA</th>
-                    <th class="px-4 py-3 text-left text-zinc-700 dark:text-zinc-200">PRESENTACIÓN</th>
-                    <th class="px-4 py-3 text-left text-zinc-700 dark:text-zinc-200">PRECIO</th>
-                    <th class="px-4 py-3 text-center text-zinc-700 dark:text-zinc-200">RECETA</th>
-                    <th class="px-4 py-3 text-center text-zinc-700 dark:text-zinc-200">ESTADO</th>
-                    <th class="px-4 py-3 text-center text-zinc-700 dark:text-zinc-200">OPCIONES</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-left font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">Código</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-left font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">Producto</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-left font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">Categoría</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-left font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">Presentación</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-left font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">Precio</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-center font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">Receta</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-center font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">Estado</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-center font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">Opciones</th>
                 </tr>
             </thead>
 
-            <tbody class="divide-y divide-gray-200 dark:divide-zinc-800">
+            <tbody class="bg-white dark:bg-zinc-900">
                 @forelse ($products as $item)
-                    <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/70">
-                        <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
+                    <tr class="border-b border-zinc-200 hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-800">
+                        <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
                             {{ $item->code }}
-                            <div class="text-xs text-gray-500 dark:text-zinc-400">
+                            <div class="text-xs text-zinc-500 dark:text-zinc-400">
                                 {{ $item->barcode ?: 'Sin código de barras' }}
                             </div>
                         </td>
 
-                        <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
+                        <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
                             <div class="font-medium">{{ $item->nombre }}</div>
-                            <div class="text-xs text-gray-500 dark:text-zinc-400">
+                            <div class="text-xs text-zinc-500 dark:text-zinc-400">
                                 {{ $item->nombre_generico ?: '-' }}
                                 @if($item->concentracion)
                                     | {{ $item->concentracion }}
@@ -48,35 +48,35 @@
                             </div>
                         </td>
 
-                        <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
+                        <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
                             {{ $item->category?->nombre ?? '-' }}
                         </td>
 
-                        <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
+                        <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
                             {{ $item->presentation?->nombre ?? '-' }}
                         </td>
 
-                        <td class="px-4 py-3 text-zinc-800 dark:text-zinc-100">
+                        <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
                             {{ number_format($item->precio_venta, 2) }}
                         </td>
 
-                        <td class="px-4 py-3 text-center">
+                        <td class="px-3 py-1.5 text-center">
                             <span class="rounded-full px-3 py-1 text-xs font-medium {{ $item->requiere_receta ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300' }}">
                                 {{ $item->requiere_receta ? 'Sí' : 'No' }}
                             </span>
                         </td>
 
-                        <td class="px-4 py-3 text-center">
+                        <td class="px-3 py-1.5 text-center">
                             <span class="rounded-full px-3 py-1 text-xs font-medium {{ $item->estado ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' }}">
                                 {{ $item->estado ? 'Activo' : 'Inactivo' }}
                             </span>
                         </td>
 
-                        <td class="px-4 py-3">
+                        <td class="px-3 py-1.5">
                             <div class="flex justify-center gap-3">
                                 <button type="button" wire:click="edit({{ $item->id }})"
-                                    class="cursor-pointer text-yellow-500 transition hover:text-yellow-600 dark:text-yellow-400 dark:hover:text-yellow-300">
-                                    <i class="bi bi-pencil-square text-lg"></i>
+                                    class="cursor-pointer text-zinc-500 transition hover:text-primary dark:text-zinc-400">
+                                    <i class="bi bi-pencil-square text-base"></i>
                                 </button>
 
                                 <button
@@ -85,15 +85,15 @@
                                         text: '¿Deseas {{ $item->estado ? 'desactivar' : 'activar' }} este registro?',
                                         confirmText: 'Sí, {{ $item->estado ? 'desactivar' : 'activar' }}',
                                     }).then((ok) => { if (ok) $wire.delete({{ $item->id }}) })"
-                                    class="{{ $item->estado ? 'text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300' : 'text-gray-400 dark:text-zinc-500' }} cursor-pointer">
-                                    <i class="bi {{ $item->estado ? 'bi-trash' : 'bi-arrow-clockwise' }} text-lg"></i>
+                                    class="cursor-pointer text-zinc-500 transition hover:text-red-600 dark:text-zinc-400">
+                                    <i class="bi {{ $item->estado ? 'bi-trash' : 'bi-arrow-clockwise' }} text-base"></i>
                                 </button>
                             </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="px-4 py-4 text-center text-gray-500 dark:text-zinc-400">
+                        <td colspan="8" class="px-3 py-4 text-center text-zinc-500 dark:text-zinc-400">
                             No hay productos registrados.
                         </td>
                     </tr>
@@ -114,15 +114,15 @@
 
             @if($isCreating)
                 <div class="flex items-center gap-3 text-sm">
-                    <div class="flex items-center gap-2 {{ $step === 1 ? 'font-semibold text-blue-600 dark:text-blue-400' : 'text-emerald-600 dark:text-emerald-400' }}">
-                        <span class="flex h-6 w-6 items-center justify-center rounded-full {{ $step === 1 ? 'bg-blue-600 text-white' : 'bg-emerald-600 text-white' }}">
+                    <div class="flex items-center gap-2 {{ $step === 1 ? 'font-semibold text-zinc-800 dark:text-zinc-100' : 'text-emerald-600 dark:text-emerald-400' }}">
+                        <span class="flex h-6 w-6 items-center justify-center rounded-full border border-zinc-400 {{ $step === 1 ? 'bg-white text-zinc-700 dark:bg-zinc-800 dark:text-zinc-100' : 'bg-emerald-600 text-white border-emerald-600' }}">
                             @if($step > 1) <i class="bi bi-check-lg text-xs"></i> @else 1 @endif
                         </span>
                         Datos del producto
                     </div>
-                    <div class="h-px flex-1 bg-gray-200 dark:bg-zinc-700"></div>
-                    <div class="flex items-center gap-2 {{ $step === 2 ? 'font-semibold text-blue-600 dark:text-blue-400' : 'text-zinc-400 dark:text-zinc-500' }}">
-                        <span class="flex h-6 w-6 items-center justify-center rounded-full {{ $step === 2 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-zinc-500 dark:bg-zinc-700' }}">2</span>
+                    <div class="h-px flex-1 bg-zinc-300 dark:bg-zinc-700"></div>
+                    <div class="flex items-center gap-2 {{ $step === 2 ? 'font-semibold text-zinc-800 dark:text-zinc-100' : 'text-zinc-400 dark:text-zinc-500' }}">
+                        <span class="flex h-6 w-6 items-center justify-center rounded-full border border-zinc-400 {{ $step === 2 ? 'bg-white text-zinc-700 dark:bg-zinc-800 dark:text-zinc-100' : 'bg-zinc-200 text-zinc-500 dark:bg-zinc-700' }}">2</span>
                         Stock inicial <span class="text-xs font-normal">(Opcional)</span>
                     </div>
                 </div>
@@ -176,7 +176,7 @@
                 </div>
 
                 <div>
-                    <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Laboratorio <span class="text-xs font-normal text-gray-400 dark:text-zinc-500">(Opcional)</span></label>
+                    <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Laboratorio <span class="text-xs font-normal text-zinc-400 dark:text-zinc-500">(Opcional)</span></label>
                     <x-search-select
                         model="form.id_laboratory"
                         :value="$form->id_laboratory"
@@ -186,14 +186,14 @@
                 </div>
 
                 <div class="md:col-span-2 xl:col-span-4">
-                    <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Código de Producto SIN <span class="text-xs font-normal text-gray-400 dark:text-zinc-500">(Opcional, necesario para facturación)</span></label>
+                    <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Código de Producto SIN <span class="text-xs font-normal text-zinc-400 dark:text-zinc-500">(Opcional, necesario para facturación)</span></label>
                     <x-search-select
                         model="form.id_sin_product_code"
                         :value="$form->id_sin_product_code"
                         :options="$sinProductCodes->map(fn ($p) => ['value' => $p->id, 'label' => $p->codigo_producto . ' - ' . $p->descripcion])->values()"
                         placeholder="Buscar producto homologado por el SIN..."
                     />
-                    <p class="mt-1 text-xs text-gray-400 dark:text-zinc-500">Catálogo oficial del SIN para tu actividad económica (farmacia). Obligatorio antes de poder facturar este producto.</p>
+                    <p class="mt-1 text-xs text-zinc-400 dark:text-zinc-500">Catálogo oficial del SIN para tu actividad económica (farmacia). Obligatorio antes de poder facturar este producto.</p>
                     @error('form.id_sin_product_code') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                 </div>
 
@@ -205,15 +205,15 @@
                 <div class="md:col-span-2 xl:col-span-4">
                     <label class="inline-flex items-center gap-2 text-sm font-medium text-zinc-700 dark:text-zinc-200">
                         <input type="checkbox" wire:model="form.requiere_receta"
-                            class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-800">
+                            class="rounded border-zinc-400 accent-primary dark:border-zinc-600">
                         Requiere receta médica
                     </label>
                 </div>
             </div>
             @else
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div class="md:col-span-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-300">
-                    <i class="bi bi-info-circle mr-1"></i>
+                <div class="md:col-span-2 rounded border border-zinc-300 bg-zinc-100 px-4 py-3 text-sm text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">
+                    <i class="bi bi-info-circle text-primary mr-1"></i>
                     Este paso es opcional. Si registras el stock inicial aquí, se creará automáticamente el primer lote de este producto (igual que si lo hicieras desde Compras o Ajustes de Inventario).
                 </div>
 
@@ -231,35 +231,35 @@
             </div>
             @endif
 
-            <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center justify-between gap-2 border-t border-zinc-300 pt-4 dark:border-zinc-700">
                 <div>
                     @if($step === 2)
-                        <flux:button variant="ghost" wire:click="prevStep">
+                        <button type="button" wire:click="prevStep" class="rounded border border-zinc-400 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700 cursor-pointer">
                             <i class="bi bi-arrow-left"></i> Atrás
-                        </flux:button>
+                        </button>
                     @endif
                 </div>
 
                 <div class="flex gap-2">
-                    <flux:button variant="danger" wire:click="cancel">
+                    <button type="button" wire:click="cancel" class="rounded border border-zinc-400 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700 cursor-pointer">
                         Cancelar
-                    </flux:button>
+                    </button>
 
                     @if($isCreating && $step === 1)
-                        <flux:button variant="primary" wire:click="nextStep">
-                            Siguiente <i class="bi bi-arrow-right"></i>
-                        </flux:button>
+                        <button type="button" wire:click="nextStep" class="rounded border border-zinc-400 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 shadow-sm transition hover:bg-zinc-100 cursor-pointer dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700">
+                            Siguiente <i class="bi bi-arrow-right text-primary"></i>
+                        </button>
                     @elseif($isCreating && $step === 2)
-                        <flux:button variant="ghost" wire:click="skipStock">
+                        <button type="button" wire:click="skipStock" class="rounded border border-zinc-400 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700 cursor-pointer">
                             Omitir por ahora
-                        </flux:button>
-                        <flux:button variant="primary" wire:click="save">
-                            Guardar
-                        </flux:button>
+                        </button>
+                        <button type="button" wire:click="save" class="rounded border border-zinc-400 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 shadow-sm transition hover:bg-zinc-100 cursor-pointer dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700">
+                            <i class="bi bi-check-lg text-primary"></i> Guardar
+                        </button>
                     @else
-                        <flux:button variant="primary" wire:click="save">
-                            Guardar
-                        </flux:button>
+                        <button type="button" wire:click="save" class="rounded border border-zinc-400 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 shadow-sm transition hover:bg-zinc-100 cursor-pointer dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700">
+                            <i class="bi bi-check-lg text-primary"></i> Guardar
+                        </button>
                     @endif
                 </div>
             </div>
