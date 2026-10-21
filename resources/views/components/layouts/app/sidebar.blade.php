@@ -159,6 +159,8 @@
                     ])
                     @php
                         $isFarmaciaSection = request()->routeIs('proveedores*') || request()->routeIs('laboratorios*')
+                            || request()->routeIs('company.edit') || request()->routeIs('branches*')
+                            || request()->routeIs('payment-methods*')
                             || request()->routeIs('categorias*') || request()->routeIs('presentaciones*')
                             || request()->routeIs('lotes*')
                             || request()->routeIs('inventory-adjustments*') || request()->routeIs('invoices*')
