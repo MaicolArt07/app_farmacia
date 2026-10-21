@@ -18,6 +18,8 @@ class LivewireUsers extends Component
 
     public $mode = 'list';
 
+    public $viewingId = null;
+
     public UsersForm $form;
 
     public $permissionGroups = [];
@@ -88,7 +90,18 @@ class LivewireUsers extends Component
 
         return view('livewire.usuarios.index', [
             'users' => $query->orderBy('id', 'desc')->paginate(10),
+            'viewing' => $this->viewingId ? User::with(['permissions', 'roles.permissions', 'person'])->find($this->viewingId) : null,
         ]);
+    }
+
+    public function view($id)
+    {
+        $this->viewingId = $id;
+    }
+
+    public function closeView()
+    {
+        $this->viewingId = null;
     }
 
     public function updatedPersonSearch()
