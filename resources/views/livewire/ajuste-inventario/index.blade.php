@@ -226,8 +226,8 @@
                     Cancelar
                 </button>
 
-                <button wire:click="save" type="button" class="rounded border border-primary bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:brightness-110 cursor-pointer dark:border-primary dark:bg-primary dark:text-white dark:hover:brightness-110">
-                    <i class="bi bi-check-lg text-white"></i> Guardar ajuste
+                <button wire:click="save" type="button" class="rounded border border-primary bg-white px-4 py-2 text-sm font-semibold text-primary shadow-sm transition hover:bg-primary/10 cursor-pointer dark:bg-zinc-800 dark:hover:bg-primary/20">
+                    <i class="bi bi-check-lg text-primary"></i> Guardar ajuste
                 </button>
             </div>
         </div>

@@ -58,8 +58,8 @@
                 <button type="button" wire:click="$set('modalVisible', false)" class="rounded border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 dark:border-red-900/50 dark:bg-zinc-800 dark:text-red-400 dark:hover:bg-red-900/20 cursor-pointer">
                     Cancelar
                 </button>
-                <button type="submit" class="rounded border border-primary bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:brightness-110 cursor-pointer dark:border-primary dark:bg-primary dark:text-white dark:hover:brightness-110">
-                    <i class="bi bi-check-lg text-white"></i> {{ $roleId ? 'Actualizar' : 'Guardar' }}
+                <button type="submit" class="rounded border border-primary bg-white px-4 py-2 text-sm font-semibold text-primary shadow-sm transition hover:bg-primary/10 cursor-pointer dark:bg-zinc-800 dark:hover:bg-primary/20">
+                    <i class="bi bi-check-lg text-primary"></i> {{ $roleId ? 'Actualizar' : 'Guardar' }}
                 </button>
             </div>
         </form>
