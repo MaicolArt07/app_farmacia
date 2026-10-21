@@ -460,7 +460,7 @@
             {{-- ═══════════════════════════════════════════════
                  CONTENIDO PRINCIPAL
             ═══════════════════════════════════════════════ --}}
-            <div class="flex flex-1 flex-col min-w-0">
+            <div class="flex flex-1 flex-col min-w-0 bg-zinc-200 dark:bg-zinc-950">
 
                 <!-- ✅ HEADER MÓVIL -->
                 <flux:header class="border-b border-zinc-200 bg-white px-3 py-2 dark:border-zinc-800 dark:bg-zinc-900 lg:hidden">
