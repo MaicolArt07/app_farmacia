@@ -27,6 +27,10 @@
     --color-accent: var(--color-neutral-800);
     --color-accent-content: var(--color-neutral-800);
     --color-accent-foreground: var(--color-white);
+
+    /* Color de marca FarmaFamilia: usar solo como acento (iconos, borde activo del menu,
+       focus ring, detalles pequenos) — nunca como relleno solido grande de botones/sidebar. */
+    --color-primary: #2563eb;
 }
 
 @layer theme {
@@ -38,6 +42,10 @@
 }
 
 @layer base {
+
+    html {
+        font-size: 14px;
+    }
 
     *,
     ::after,
