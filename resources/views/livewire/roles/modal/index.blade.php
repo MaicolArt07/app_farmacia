@@ -1,77 +1,67 @@
-<div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300">
-    <div class="relative w-full max-w-md rounded-lg border border-gray-200 bg-white p-6 shadow-lg animate-[modalDrop_0.30s_ease-out] dark:border-zinc-700 dark:bg-zinc-900">
+<div x-data="{ open: true }" x-show="open" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div x-show="open" x-transition.opacity class="absolute inset-0 bg-zinc-900/30" wire:click="$set('modalVisible', false)"></div>
 
-        <h2 class="mb-4 flex items-center gap-2 text-xl font-semibold text-zinc-800 dark:text-zinc-100">
-            <i class="bi bi-shield-lock-fill text-blue-600 dark:text-blue-400"></i>
-            {{ $roleId ? 'Editar Rol' : 'Crear Rol' }}
-        </h2>
+    <div x-show="open"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+        class="relative flex w-full max-w-md flex-col rounded border border-zinc-300 bg-white shadow-xl dark:border-zinc-700 dark:bg-zinc-900 max-h-[90vh]">
 
-        <form wire:submit.prevent="save" autocomplete="off">
-            <div class="mb-4">
-                <label class="mb-1 flex items-center gap-2 font-medium text-zinc-700 dark:text-zinc-200">
-                    <i class="bi bi-tag-fill text-zinc-500 dark:text-zinc-400"></i>
-                    Nombre del Rol
-                </label>
+        <div class="flex items-center justify-between border-b border-zinc-300 bg-zinc-200 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800">
+            <h2 class="text-sm font-semibold text-zinc-800 dark:text-zinc-100">
+                {{ $roleId ? 'Editar Rol' : 'Crear Rol' }}
+            </h2>
+            <button wire:click="$set('modalVisible', false)" class="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 cursor-pointer">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
 
-                <input
-                    type="text"
-                    wire:model.defer="name"
-                    class="w-full rounded border border-gray-300 bg-white px-3 py-2 text-zinc-800 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-400"
-                />
-
-                @error('name')
-                    <span class="text-sm text-red-600">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <div class="mb-4">
-                <label class="mb-1 flex items-center gap-2 font-medium text-zinc-700 dark:text-zinc-200">
-                    <i class="bi bi-key-fill text-zinc-500 dark:text-zinc-400"></i>
-                    Permisos
-                </label>
-
-                <div class="grid max-h-48 grid-cols-2 gap-2 overflow-y-auto rounded border border-gray-300 p-2 dark:border-zinc-700 dark:bg-zinc-800/40">
-                    @foreach ($permissions as $perm)
-                        <label class="inline-flex items-center space-x-2 text-zinc-700 dark:text-zinc-200">
-                            <input
-                                type="checkbox"
-                                wire:model.defer="selectedPermissions"
-                                value="{{ $perm->name }}"
-                                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-blue-400"
-                            >
-                            <span>{{ $perm->name }}</span>
-                        </label>
-                    @endforeach
+        <form wire:submit.prevent="save" autocomplete="off" class="flex flex-1 flex-col overflow-hidden">
+            <div class="space-y-5 overflow-y-auto px-4 py-5">
+                <div class="space-y-1">
+                    <label class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Nombre del rol</label>
+                    <input
+                        type="text"
+                        wire:model.defer="name"
+                        class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                    />
+                    @error('name')
+                        <span class="text-sm text-red-500">{{ $message }}</span>
+                    @enderror
                 </div>
 
-                @error('selectedPermissions')
-                    <span class="text-sm text-red-600">{{ $message }}</span>
-                @enderror
+                <div class="space-y-1">
+                    <label class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Permisos</label>
+
+                    <div class="grid max-h-56 grid-cols-2 gap-2 overflow-y-auto rounded border border-zinc-400 bg-zinc-100 p-2 dark:border-zinc-600 dark:bg-zinc-800">
+                        @foreach ($permissions as $perm)
+                            <label class="inline-flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-200">
+                                <input
+                                    type="checkbox"
+                                    wire:model.defer="selectedPermissions"
+                                    value="{{ $perm->name }}"
+                                    class="rounded border-zinc-400 accent-primary dark:border-zinc-600"
+                                >
+                                <span>{{ $perm->name }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+
+                    @error('selectedPermissions')
+                        <span class="text-sm text-red-500">{{ $message }}</span>
+                    @enderror
+                </div>
             </div>
 
-            <div class="flex justify-end space-x-2">
-                <button
-                    type="button"
-                    wire:click="$set('modalVisible', false)"
-                    class="cursor-pointer rounded bg-gray-500 px-4 py-2 text-white transition hover:bg-gray-600 dark:bg-zinc-700 dark:hover:bg-zinc-600"
-                >
+            <div class="flex justify-end gap-3 border-t border-zinc-300 bg-zinc-100 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-900">
+                <button type="button" wire:click="$set('modalVisible', false)" class="rounded border border-zinc-400 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700 cursor-pointer">
                     Cancelar
                 </button>
-
-                <button
-                    type="submit"
-                    class="cursor-pointer rounded bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
-                >
-                    {{ $roleId ? 'Actualizar' : 'Guardar' }}
+                <button type="submit" class="rounded border border-zinc-400 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 shadow-sm transition hover:bg-zinc-100 cursor-pointer dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700">
+                    <i class="bi bi-check-lg text-primary"></i> {{ $roleId ? 'Actualizar' : 'Guardar' }}
                 </button>
             </div>
         </form>
-
-        <button
-            wire:click="$set('modalVisible', false)"
-            class="absolute right-3 top-3 cursor-pointer text-xl text-gray-600 transition hover:text-gray-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-        >
-            <i class="bi bi-x-lg"></i>
-        </button>
     </div>
 </div>

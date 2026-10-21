@@ -1,84 +1,70 @@
-<div class="p-6">
+<div class="flex flex-col bg-zinc-200 p-4 dark:bg-zinc-950">
     @if (session()->has('message'))
-        <div class="mb-4 cursor-pointer rounded bg-green-100 p-3 text-green-800 shadow dark:bg-green-900/30 dark:text-green-300">
+        <div class="mb-3 rounded border border-emerald-300 bg-emerald-100 p-3 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
             {{ session('message') }}
         </div>
     @endif
 
-    <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <button wire:click="openModal"
-            class="flex w-full cursor-pointer items-center justify-center gap-2 rounded bg-green-600 px-4 py-2 text-white transition hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 sm:w-auto">
-            <i class="bi bi-plus-circle"></i>
+    <div class="mb-3 flex flex-wrap items-center justify-between gap-3 rounded border border-zinc-300 bg-zinc-100 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900">
+        <button type="button" wire:click="openModal"
+            class="flex items-center gap-2 rounded border border-zinc-400 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-100 cursor-pointer dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700">
+            <i class="bi bi-plus-lg text-primary"></i> Nuevo rol
         </button>
 
-        <div class="relative w-full sm:w-1/2">
-            <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 dark:text-zinc-400">
-                <i class="bi bi-search"></i>
-            </span>
-            <input
-                type="text"
-                wire:model.live="search"
-                placeholder="Buscar rol..."
-                class="w-full rounded border border-gray-300 bg-white py-2 pl-10 pr-3 text-zinc-800 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
-            />
-        </div>
+        <input
+            type="text"
+            wire:model.live="search"
+            placeholder="Buscar rol..."
+            class="w-full rounded border border-zinc-400 bg-white px-3 py-1.5 text-sm text-zinc-800 placeholder:text-zinc-400 focus:border-primary focus:outline-none md:w-80 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500"
+        >
     </div>
 
-    <div class="overflow-x-auto rounded-lg">
-        <table class="min-w-full overflow-hidden rounded-lg border border-gray-300 shadow-sm dark:border-zinc-700">
-            <thead class="bg-blue-50 dark:bg-zinc-800">
+    <div class="overflow-auto rounded border border-zinc-300 dark:border-zinc-700">
+        <table class="min-w-full border-collapse text-sm">
+            <thead class="sticky top-0 bg-zinc-300 dark:bg-zinc-800">
                 <tr>
-                    <th
-                        class="border border-gray-300 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-blue-700 dark:border-zinc-700 dark:text-blue-300">
-                        Nombre del Rol
-                    </th>
-                    <th
-                        class="border border-gray-300 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-blue-700 dark:border-zinc-700 dark:text-blue-300">
-                        Permisos
-                    </th>
-                    <th
-                        class="border border-gray-300 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-blue-700 dark:border-zinc-700 dark:text-blue-300">
-                        Acciones
-                    </th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-left font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">Nombre del rol</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-left font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">Permisos</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-center font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">Opciones</th>
                 </tr>
             </thead>
             <tbody class="bg-white dark:bg-zinc-900">
                 @forelse ($roles as $role)
-                    <tr class="transition hover:bg-gray-50 dark:hover:bg-zinc-800">
-                        <td class="border border-gray-200 px-4 py-2 text-sm capitalize text-gray-800 dark:border-zinc-700 dark:text-zinc-100">
+                    <tr class="border-b border-zinc-200 hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-800">
+                        <td class="px-3 py-1.5 capitalize text-zinc-800 dark:text-zinc-100">
                             {{ $role->name }}
                         </td>
-                        <td class="border border-gray-200 px-4 py-2 text-sm capitalize text-gray-800 dark:border-zinc-700 dark:text-zinc-100">
+                        <td class="px-3 py-1.5 capitalize text-zinc-800 dark:text-zinc-100">
                             @foreach ($role->permissions as $permiso)
-                                <span
-                                    class="mr-1 rounded bg-purple-100 px-2 py-1 text-xs font-medium capitalize text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
+                                <span class="mr-1 mb-1 inline-block rounded border border-zinc-300 bg-zinc-100 px-2 py-1 text-xs font-medium text-zinc-700 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200">
                                     {{ $permiso->name }}
                                 </span>
                             @endforeach
                         </td>
-                        <td class="border border-gray-200 px-4 py-2 text-center dark:border-zinc-700">
-                            <button
-                                wire:click="openModal({{ $role->id }})"
-                                class="cursor-pointer text-yellow-500 transition hover:text-yellow-600 dark:text-yellow-400 dark:hover:text-yellow-300"
-                                title="Editar">
-                                <i class="bi bi-pencil-square text-lg"></i>
-                            </button>
+                        <td class="px-3 py-1.5">
+                            <div class="flex justify-center gap-3">
+                                <button
+                                    type="button"
+                                    wire:click="openModal({{ $role->id }})"
+                                    class="cursor-pointer text-zinc-500 transition hover:text-primary dark:text-zinc-400">
+                                    <i class="bi bi-pencil-square text-base"></i>
+                                </button>
 
-                            <button
-                                type="button"
-                                x-on:click.prevent="confirmAction({
-                                    title: '¿Eliminar este rol?',
-                                    confirmText: 'Sí, eliminar',
-                                }).then((ok) => { if (ok) $wire.delete({{ $role->id }}) })"
-                                class="ml-2 cursor-pointer text-red-500 transition hover:text-red-600 dark:text-red-400 dark:hover:text-red-300"
-                                title="Eliminar">
-                                <i class="bi bi-trash text-lg"></i>
-                            </button>
+                                <button
+                                    type="button"
+                                    x-on:click.prevent="confirmAction({
+                                        text: '¿Eliminar este rol?',
+                                        confirmText: 'Sí, eliminar',
+                                    }).then((ok) => { if (ok) $wire.delete({{ $role->id }}) })"
+                                    class="cursor-pointer text-zinc-500 transition hover:text-red-600 dark:text-zinc-400">
+                                    <i class="bi bi-trash text-base"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="3" class="py-4 text-center text-gray-500 dark:text-zinc-400">No se encontraron roles.</td>
+                        <td colspan="3" class="px-3 py-4 text-center text-zinc-500 dark:text-zinc-400">No se encontraron roles.</td>
                     </tr>
                 @endforelse
             </tbody>
