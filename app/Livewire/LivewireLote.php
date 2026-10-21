@@ -18,6 +18,8 @@ class LivewireLote extends Component
 
     public $modalVisible = false;
 
+    public $viewingId = null;
+
     public $productSearch = '';
     public $productResults = [];
     public $selectedProductLabel = '';
@@ -51,6 +53,7 @@ class LivewireLote extends Component
             'lots' => $query->orderBy('fecha_vencimiento', 'asc')
                             ->orderBy('id', 'desc')
                             ->paginate(10),
+            'viewing' => $this->viewingId ? Lote::with('product')->find($this->viewingId) : null,
         ]);
     }
 
@@ -186,6 +189,16 @@ class LivewireLote extends Component
     {
         $this->modalVisible = false;
         $this->form->resetForm();
+    }
+
+    public function view($id)
+    {
+        $this->viewingId = $id;
+    }
+
+    public function closeView()
+    {
+        $this->viewingId = null;
     }
 
     public function delete($id)

@@ -17,6 +17,8 @@ class LivewirePermissions extends Component
 
     public $modalVisible = false;
 
+    public $viewingId = null;
+
     protected $paginationTheme = 'tailwind';
 
     public function render()
@@ -29,7 +31,18 @@ class LivewirePermissions extends Component
 
         return view('livewire.permisos.index', [
             'permissions' => $query->orderBy('name')->paginate(5),
+            'viewing' => $this->viewingId ? Permission::find($this->viewingId) : null,
         ]);
+    }
+
+    public function view($id)
+    {
+        $this->viewingId = $id;
+    }
+
+    public function closeView()
+    {
+        $this->viewingId = null;
     }
 
     public function create()

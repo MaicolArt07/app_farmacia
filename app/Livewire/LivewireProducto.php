@@ -30,6 +30,8 @@ class LivewireProducto extends Component
     public $step = 1;
     public $registerInitialStock = true;
 
+    public $viewingId = null;
+
     protected $paginationTheme = 'tailwind';
 
     public function updatingSearch()
@@ -66,7 +68,18 @@ class LivewireProducto extends Component
             'laboratories' => Laboratorio::where('estado', 1)->orderBy('nombre')->get(),
             'presentations' => Presentacion::where('estado', 1)->orderBy('nombre')->get(),
             'sinProductCodes' => CodigoProductoSin::orderBy('descripcion')->get(),
+            'viewing' => $this->viewingId ? Producto::with(['category', 'laboratory', 'presentation', 'sinProductCode'])->find($this->viewingId) : null,
         ]);
+    }
+
+    public function view($id)
+    {
+        $this->viewingId = $id;
+    }
+
+    public function closeView()
+    {
+        $this->viewingId = null;
     }
 
     protected function resetStockFields()
