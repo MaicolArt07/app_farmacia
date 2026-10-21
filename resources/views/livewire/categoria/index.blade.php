@@ -13,7 +13,7 @@
         >
     </div>
 
-    <div class="flex-1 overflow-auto rounded border border-zinc-300 dark:border-zinc-700">
+    <div class="overflow-auto rounded border border-zinc-300 dark:border-zinc-700">
         <table class="min-w-full border-collapse text-sm">
             <thead class="sticky top-0 bg-zinc-300 dark:bg-zinc-800">
                 <tr>
