@@ -22,6 +22,8 @@ class LivewireProveedor extends Component
     public $personResults = [];
     public $selectedPersonLabel = '';
 
+    public $viewingId = null;
+
     protected $paginationTheme = 'tailwind';
 
     public function updatingSearch()
@@ -49,6 +51,7 @@ class LivewireProveedor extends Component
 
         return view('livewire.proveedor.index', [
             'suppliers' => $query->orderBy('id', 'desc')->paginate(10),
+            'viewing' => $this->viewingId ? Proveedor::with('person')->find($this->viewingId) : null,
         ]);
     }
 
@@ -167,6 +170,16 @@ class LivewireProveedor extends Component
     {
         $this->modalVisible = false;
         $this->form->resetForm();
+    }
+
+    public function view($id)
+    {
+        $this->viewingId = $id;
+    }
+
+    public function closeView()
+    {
+        $this->viewingId = null;
     }
 
     public function delete($id)

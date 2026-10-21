@@ -29,7 +29,7 @@
 
             <tbody class="bg-white dark:bg-zinc-900">
                 @forelse ($suppliers as $item)
-                    <tr class="border-b border-zinc-200 hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-800">
+                    <tr wire:click="view({{ $item->id }})" class="cursor-pointer border-b border-zinc-200 hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-800">
                         <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
                             {{ $item->person?->nombre }} {{ $item->person?->apellido }}
                             <div class="text-xs text-zinc-500 dark:text-zinc-400">
@@ -45,7 +45,7 @@
                                 {{ $item->estado ? 'Activo' : 'Inactivo' }}
                             </span>
                         </td>
-                        <td class="px-3 py-1.5">
+                        <td class="px-3 py-1.5" onclick="event.stopPropagation()">
                             <div class="flex justify-center gap-3">
                                 <button type="button" wire:click="edit({{ $item->id }})"
                                     class="cursor-pointer text-zinc-500 transition hover:text-primary dark:text-zinc-400">
@@ -187,6 +187,81 @@
                     <i class="bi bi-check-lg text-primary"></i> Guardar
                 </button>
             </div>
+        </div>
+    </div>
+
+    <div x-data="{ open: false }" x-init="$watch('$wire.viewingId', value => open = !!value)" x-show="!!$wire.viewingId" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div x-show="open" x-transition.opacity class="absolute inset-0 bg-zinc-900/30" wire:click="closeView"></div>
+
+        <div x-show="open"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+            class="relative flex w-full max-w-lg flex-col rounded border border-zinc-300 bg-white shadow-xl dark:border-zinc-700 dark:bg-zinc-900">
+
+            @if ($viewing)
+                <div class="flex items-center justify-between border-b border-zinc-300 bg-zinc-200 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800">
+                    <h2 class="text-sm font-semibold text-zinc-800 dark:text-zinc-100">Detalle de proveedor</h2>
+                    <button wire:click="closeView" class="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 cursor-pointer">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+
+                <div class="space-y-4 px-4 py-5">
+                    <div class="space-y-1">
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Contacto (persona)</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">
+                            {{ trim(($viewing->person?->nombre ?? '') . ' ' . ($viewing->person?->apellido ?? '')) ?: '-' }}
+                            @if ($viewing->person)
+                                - CI: {{ $viewing->person->ci ?? '-' }} - Tel: {{ $viewing->person->telefono ?? '-' }}
+                            @endif
+                        </p>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Razón social</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->razon_social }}</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Cargo de contacto</span>
+                            <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->cargo_contacto ?: '-' }}</p>
+                        </div>
+                        <div class="space-y-1">
+                            <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">NIT</span>
+                            <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->nit ?: '-' }}</p>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Email</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->email ?: '-' }}</p>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Estado</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">
+                            <span class="rounded-full px-3 py-1 text-xs font-medium {{ $viewing->estado ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' }}">
+                                {{ $viewing->estado ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Creado</span>
+                            <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->created_at?->format('d/m/Y H:i') ?? '-' }}</p>
+                        </div>
+                        <div class="space-y-1">
+                            <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Actualizado</span>
+                            <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->updated_at?->format('d/m/Y H:i') ?? '-' }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 border-t border-zinc-300 bg-zinc-100 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-900">
+                    <button wire:click="closeView" class="rounded border border-zinc-400 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700 cursor-pointer">
+                        Cerrar
+                    </button>
+                </div>
+            @endif
         </div>
     </div>
 </div>

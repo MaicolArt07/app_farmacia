@@ -17,6 +17,8 @@ class LivewireMetodoPago extends Component
 
     public $modalVisible = false;
 
+    public $viewingId = null;
+
     protected $paginationTheme = 'tailwind';
 
     public function updatingSearch()
@@ -34,6 +36,7 @@ class LivewireMetodoPago extends Component
 
         return view('livewire.metodo-pago.index', [
             'paymentMethods' => $query->orderBy('nombre')->paginate(10),
+            'viewing' => $this->viewingId ? MetodoPago::find($this->viewingId) : null,
         ]);
     }
 
@@ -82,6 +85,16 @@ class LivewireMetodoPago extends Component
     {
         $this->modalVisible = false;
         $this->form->resetForm();
+    }
+
+    public function view($id)
+    {
+        $this->viewingId = $id;
+    }
+
+    public function closeView()
+    {
+        $this->viewingId = null;
     }
 
     public function delete($id)
