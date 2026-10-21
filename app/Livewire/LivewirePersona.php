@@ -18,6 +18,8 @@ class LivewirePersona extends Component
 
     public $modalVisible = false;
 
+    public $viewingId = null;
+
     protected $paginationTheme = 'tailwind';
 
     public function render()
@@ -35,6 +37,7 @@ class LivewirePersona extends Component
         return view('livewire.persona.index', [
             'persons' => $query->paginate(10),
             'countries' => Pais::where('estado', 1)->get(),
+            'viewing' => $this->viewingId ? Persona::with('country')->find($this->viewingId) : null,
         ]);
     }
 
@@ -81,6 +84,16 @@ class LivewirePersona extends Component
     {
         $this->modalVisible = false;
         $this->form->resetForm();
+    }
+
+    public function view($id)
+    {
+        $this->viewingId = $id;
+    }
+
+    public function closeView()
+    {
+        $this->viewingId = null;
     }
 
     public function delete($id)
