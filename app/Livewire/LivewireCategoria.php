@@ -17,6 +17,8 @@ class LivewireCategoria extends Component
 
     public $modalVisible = false;
 
+    public $viewingId = null;
+
     protected $paginationTheme = 'tailwind';
 
     public function updatingSearch()
@@ -37,6 +39,7 @@ class LivewireCategoria extends Component
 
         return view('livewire.categoria.index', [
             'categorias' => $query->orderBy('id', 'desc')->paginate(10),
+            'viewing' => $this->viewingId ? Categoria::find($this->viewingId) : null,
         ]);
     }
 
@@ -77,6 +80,16 @@ class LivewireCategoria extends Component
     {
         $this->modalVisible = false;
         $this->form->resetForm();
+    }
+
+    public function view($id)
+    {
+        $this->viewingId = $id;
+    }
+
+    public function closeView()
+    {
+        $this->viewingId = null;
     }
 
     public function delete($id)
