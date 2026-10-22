@@ -34,7 +34,7 @@
                             {{ $item->created_at->format('d/m/Y H:i') }}
                         </td>
                         <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
-                            {{ $item->product?->name }}
+                            {{ $item->product?->nombre }}
                         </td>
                         <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
                             {{ $item->lot?->codigo_lote ?? '-' }}

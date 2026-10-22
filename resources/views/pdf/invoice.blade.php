@@ -58,7 +58,7 @@
         <tbody>
             @foreach ($invoice->sale->details as $detail)
                 <tr>
-                    <td>{{ $detail->product?->name }}</td>
+                    <td>{{ $detail->product?->nombre }}</td>
                     <td>{{ $detail->quantity }}</td>
                     <td class="text-right">{{ number_format($detail->sale_price, 2) }}</td>
                     <td class="text-right">{{ number_format($detail->subtotal, 2) }}</td>
