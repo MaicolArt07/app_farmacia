@@ -69,7 +69,7 @@ class UsersForm extends Form
         $this->id_person = $user->id_person;
         $this->name = $user->name;
         $this->email = $user->email;
-        $this->selectedPermissions = $user->permissions->pluck('name')->toArray();
+        $this->selectedPermissions = $user->getAllPermissions()->pluck('name')->toArray();
         $this->updateMode = true;
     }
 }

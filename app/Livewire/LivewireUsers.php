@@ -57,7 +57,7 @@ class LivewireUsers extends Component
                 ->toArray();
 
             if ($user) {
-                $user = User::with(['permissions', 'person'])->findOrFail($user);
+                $user = User::with(['permissions', 'roles.permissions', 'person'])->findOrFail($user);
                 $this->form->fillForm($user);
 
                 if ($user->person) {
