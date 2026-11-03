@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Actions;
 
+use App\Services\SessionSecurityService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
@@ -12,6 +13,12 @@ class Logout
      */
     public function __invoke()
     {
+        $user = Auth::user();
+
+        if ($user) {
+            app(SessionSecurityService::class)->recordLogout($user, request());
+        }
+
         Auth::guard('web')->logout();
 
         Session::invalidate();

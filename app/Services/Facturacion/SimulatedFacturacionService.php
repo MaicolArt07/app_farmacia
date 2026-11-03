@@ -16,9 +16,9 @@ class SimulatedFacturacionService implements FacturacionServiceInterface
     public function generar(Venta $sale, array $datosCliente = []): Factura
     {
         // Se consulta directo (sin depender de la relación cacheada en $sale)
-        // para evitar re-insertar sobre un id_sale único si el caller reutiliza
+        // para evitar re-insertar sobre un id_venta único si el caller reutiliza
         // la misma instancia de Sale entre llamadas.
-        $existing = Factura::where('id_sale', $sale->id)->first();
+        $existing = Factura::where('id_venta', $sale->id)->first();
 
         if ($existing && $existing->estado === 'ENVIADA') {
             return $existing;
@@ -26,12 +26,12 @@ class SimulatedFacturacionService implements FacturacionServiceInterface
 
         $cliente = $this->resolveClienteData($sale, $datosCliente);
 
-        $invoice = $existing ?: new Factura(['id_sale' => $sale->id]);
+        $invoice = $existing ?: new Factura(['id_venta' => $sale->id]);
 
         $company = Empresa::current();
 
         $invoice->fill([
-            'id_user' => Auth::id(),
+            'id_usuario' => Auth::id(),
             'modo' => 'SIMULADO',
             'ambiente' => $company->ambiente ?? config('facturacion.ambiente', 'PRUEBA'),
             'tipo_documento_identidad' => $cliente['tipo_documento_identidad'],

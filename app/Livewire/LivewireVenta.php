@@ -7,6 +7,7 @@ use App\Models\Lote;
 use App\Models\Caja;
 use App\Models\Cliente;
 use App\Models\Producto;
+use App\Models\Servicio;
 use App\Models\MetodoPago;
 use App\Models\MovimientoCaja;
 use App\Models\MovimientoInventario;
@@ -36,6 +37,9 @@ class LivewireVenta extends Component
     public $productSearch = '';
     public $productResults = [];
 
+    public $serviceSearch = '';
+    public $serviceResults = [];
+
     public $details = [];
 
     public $openCash = null;
@@ -55,7 +59,7 @@ class LivewireVenta extends Component
             $this->details = [];
 
             if ($sale) {
-                $sale = Venta::with(['client.person', 'details.product', 'details.lot'])->findOrFail($sale);
+                $sale = Venta::with(['client.person', 'details.product', 'details.lot', 'details.service'])->findOrFail($sale);
                 $this->form->fillForm($sale);
 
                 if ($sale->client) {
@@ -65,9 +69,24 @@ class LivewireVenta extends Component
                 }
 
                 foreach ($sale->details as $detail) {
+                    if ($detail->id_servicio) {
+                        $this->details[] = [
+                            'type' => 'servicio',
+                            'id_servicio' => $detail->id_servicio,
+                            'product_label' => $detail->service?->nombre,
+                            'lot_label' => 'Servicio',
+                            'quantity' => (float) $detail->cantidad_servicio,
+                            'available' => null,
+                            'sale_price' => (float) $detail->precio_venta,
+                            'subtotal' => (float) $detail->subtotal,
+                        ];
+                        continue;
+                    }
+
                     $this->details[] = [
-                        'id_product' => $detail->id_product,
-                        'id_lot' => $detail->id_lot,
+                        'type' => 'producto',
+                        'id_producto' => $detail->id_producto,
+                        'id_lote' => $detail->id_lote,
                         'product_label' => $detail->product?->code . ' - ' . $detail->product?->nombre,
                         'lot_label' => $detail->lot?->codigo_lote . ' | Vence: ' . optional($detail->lot?->fecha_vencimiento)->format('d/m/Y'),
                         'quantity' => $detail->quantity,
@@ -116,7 +135,7 @@ class LivewireVenta extends Component
 
     public function refreshCashStatus()
     {
-        $this->openCash = Caja::where('id_user', Auth::id())
+        $this->openCash = Caja::where('id_usuario', Auth::id())
             ->where('status', 'OPEN')
             ->where('estado', 1)
             ->first();
@@ -195,7 +214,7 @@ class LivewireVenta extends Component
     {
         $client = Cliente::with('person')->findOrFail($id);
 
-        $this->form->id_client = $client->id;
+        $this->form->id_cliente = $client->id;
         $this->selectedClientLabel = trim(($client->person?->nombre ?? '') . ' ' . ($client->person?->apellido ?? '')) .
             ' - CI: ' . ($client->person?->ci ?? '-') .
             ' - Cod: ' . $client->code;
@@ -206,7 +225,7 @@ class LivewireVenta extends Component
 
     public function clearClient()
     {
-        $this->form->id_client = null;
+        $this->form->id_cliente = null;
         $this->selectedClientLabel = '';
         $this->clientSearch = '';
         $this->clientResults = [];
@@ -231,7 +250,7 @@ class LivewireVenta extends Component
             ->limit(10)
             ->get()
             ->map(function ($product) {
-                $stock = Lote::where('id_product', $product->id)
+                $stock = Lote::where('id_producto', $product->id)
                     ->where('estado', 1)
                     ->where('cantidad_disponible', '>', 0)
                     ->where(function ($q) {
@@ -260,7 +279,7 @@ class LivewireVenta extends Component
     {
         $product = Producto::findOrFail($id);
 
-        $availableLot = Lote::where('id_product', $product->id)
+        $availableLot = Lote::where('id_producto', $product->id)
             ->where('estado', 1)
             ->where('cantidad_disponible', '>', 0)
             ->where(function ($q) {
@@ -279,8 +298,9 @@ class LivewireVenta extends Component
         $lotExpirationLabel = optional($availableLot->fecha_vencimiento)->format('d/m/Y') ?? 'Sin vencimiento';
 
         $this->details[] = [
-            'id_product' => $product->id,
-            'id_lot' => $availableLot->id,
+            'type' => 'producto',
+            'id_producto' => $product->id,
+            'id_lote' => $availableLot->id,
             'product_label' => $product->code . ' - ' . $product->nombre . ($product->concentracion ? ' | ' . $product->concentracion : ''),
             'lot_label' => $availableLot->codigo_lote . ' | Vence: ' . $lotExpirationLabel . ' | Stock: ' . $availableLot->cantidad_disponible,
             'quantity' => 1,
@@ -295,6 +315,49 @@ class LivewireVenta extends Component
         $this->calculateTotals();
     }
 
+    public function updatedServiceSearch()
+    {
+        if (strlen(trim($this->serviceSearch)) < 2) {
+            $this->serviceResults = [];
+            return;
+        }
+
+        $this->serviceResults = Servicio::query()
+            ->where('estado', 1)
+            ->where('nombre', 'like', "%{$this->serviceSearch}%")
+            ->limit(10)
+            ->get()
+            ->map(function ($service) {
+                return [
+                    'id' => $service->id,
+                    'label' => $service->nombre . ' | Bs. ' . number_format($service->precio, 2),
+                    'sale_price' => (float) $service->precio,
+                ];
+            })
+            ->toArray();
+    }
+
+    public function addServiceToDetail($id)
+    {
+        $service = Servicio::findOrFail($id);
+
+        $this->details[] = [
+            'type' => 'servicio',
+            'id_servicio' => $service->id,
+            'product_label' => $service->nombre,
+            'lot_label' => 'Servicio',
+            'quantity' => 1,
+            'available' => null,
+            'sale_price' => (float) $service->precio,
+            'subtotal' => (float) $service->precio,
+        ];
+
+        $this->serviceSearch = '';
+        $this->serviceResults = [];
+
+        $this->calculateTotals();
+    }
+
     public function removeDetail($index)
     {
         unset($this->details[$index]);
@@ -305,6 +368,13 @@ class LivewireVenta extends Component
     public function updatedDetails()
     {
         foreach ($this->details as $i => $detail) {
+            if (($detail['type'] ?? 'producto') === 'servicio') {
+                if ((float) ($detail['quantity'] ?? 0) < 0.01) {
+                    $this->details[$i]['quantity'] = 1;
+                }
+                continue;
+            }
+
             $available = (int) ($detail['available'] ?? 0);
             $quantity = (int) ($detail['quantity'] ?? 0);
 
@@ -379,9 +449,17 @@ class LivewireVenta extends Component
         }
 
         foreach ($this->details as $detail) {
+            if (($detail['type'] ?? 'producto') === 'servicio') {
+                if (empty($detail['id_servicio']) || (float) $detail['quantity'] <= 0 || (float) $detail['sale_price'] < 0) {
+                    $this->dispatch('toast', type: 'warning', message: 'Revise el detalle de venta. Hay filas de servicio incompletas.');
+                    return;
+                }
+                continue;
+            }
+
             if (
-                empty($detail['id_product']) ||
-                empty($detail['id_lot']) ||
+                empty($detail['id_producto']) ||
+                empty($detail['id_lote']) ||
                 (int) $detail['quantity'] <= 0 ||
                 (float) $detail['sale_price'] < 0
             ) {
@@ -394,7 +472,7 @@ class LivewireVenta extends Component
 
         $amountPaid = $this->form->monto_pagado === '' ? null : (float) $this->form->monto_pagado;
 
-        $paymentMethod = MetodoPago::findOrFail($this->form->id_payment_method);
+        $paymentMethod = MetodoPago::findOrFail($this->form->id_metodo_pago);
 
         if (strtoupper($paymentMethod->nombre) === 'EFECTIVO') {
             if ($amountPaid === null || $amountPaid < $this->form->total) {
@@ -414,11 +492,11 @@ class LivewireVenta extends Component
                 ->firstOrFail();
 
             $sale = Venta::create([
-                'id_client' => $this->form->id_client ?: null,
-                'id_user' => Auth::id(),
-                'id_cash_register' => $cash->id,
+                'id_cliente' => $this->form->id_cliente ?: null,
+                'id_usuario' => Auth::id(),
+                'id_caja' => $cash->id,
                 'fecha_venta' => $this->form->fecha_venta,
-                'id_payment_method' => $paymentMethod->id,
+                'id_metodo_pago' => $paymentMethod->id,
                 'metodo_pago' => $paymentMethod->nombre,
                 'subtotal' => $this->form->subtotal,
                 'descuento' => $this->form->descuento ?: 0,
@@ -431,7 +509,20 @@ class LivewireVenta extends Component
             ]);
 
             foreach ($this->details as $detail) {
-                $lot = Lote::where('id', $detail['id_lot'])
+                if (($detail['type'] ?? 'producto') === 'servicio') {
+                    DetalleVenta::create([
+                        'id_venta' => $sale->id,
+                        'id_servicio' => $detail['id_servicio'],
+                        'cantidad_servicio' => $detail['quantity'],
+                        'quantity' => (int) round($detail['quantity']) ?: 1,
+                        'precio_venta' => $detail['sale_price'],
+                        'subtotal' => $detail['subtotal'],
+                    ]);
+
+                    continue;
+                }
+
+                $lot = Lote::where('id', $detail['id_lote'])
                     ->where('estado', 1)
                     ->where('cantidad_disponible', '>=', (int) $detail['quantity'])
                     ->where(function ($q) {
@@ -448,9 +539,9 @@ class LivewireVenta extends Component
                 $stockBefore = $lot->cantidad_disponible;
 
                 DetalleVenta::create([
-                    'id_sale' => $sale->id,
-                    'id_product' => $detail['id_product'],
-                    'id_lot' => $detail['id_lot'],
+                    'id_venta' => $sale->id,
+                    'id_producto' => $detail['id_producto'],
+                    'id_lote' => $detail['id_lote'],
                     'quantity' => $detail['quantity'],
                     'precio_venta' => $detail['sale_price'],
                     'subtotal' => $detail['subtotal'],
@@ -460,9 +551,9 @@ class LivewireVenta extends Component
                 $lot->save();
 
                 MovimientoInventario::create([
-                    'id_product' => $detail['id_product'],
-                    'id_lot' => $lot->id,
-                    'id_user' => Auth::id(),
+                    'id_producto' => $detail['id_producto'],
+                    'id_lote' => $lot->id,
+                    'id_usuario' => Auth::id(),
                     'tipo_movimiento' => 'OUT',
                     'reference_type' => 'SALE',
                     'reference_id' => $sale->id,
@@ -474,8 +565,8 @@ class LivewireVenta extends Component
             }
 
             MovimientoCaja::create([
-                'id_cash_register' => $cash->id,
-                'id_user' => Auth::id(),
+                'id_caja' => $cash->id,
+                'id_usuario' => Auth::id(),
                 'type' => 'INCOME',
                 'concepto' => 'Venta #' . $sale->id,
                 'monto' => $sale->total,
@@ -530,7 +621,11 @@ class LivewireVenta extends Component
             }
 
             foreach ($sale->details as $detail) {
-                $lot = Lote::where('id', $detail->id_lot)
+                if ($detail->id_servicio) {
+                    continue;
+                }
+
+                $lot = Lote::where('id', $detail->id_lote)
                     ->lockForUpdate()
                     ->firstOrFail();
 
@@ -540,9 +635,9 @@ class LivewireVenta extends Component
                 $lot->save();
 
                 MovimientoInventario::create([
-                    'id_product' => $detail->id_product,
-                    'id_lot' => $lot->id,
-                    'id_user' => Auth::id(),
+                    'id_producto' => $detail->id_producto,
+                    'id_lote' => $lot->id,
+                    'id_usuario' => Auth::id(),
                     'tipo_movimiento' => 'RETURN',
                     'reference_type' => 'SALE_CANCEL',
                     'reference_id' => $sale->id,
@@ -553,7 +648,7 @@ class LivewireVenta extends Component
                 ]);
             }
 
-            $cash = Caja::where('id_user', Auth::id())
+            $cash = Caja::where('id_usuario', Auth::id())
                 ->where('status', 'OPEN')
                 ->where('estado', 1)
                 ->lockForUpdate()
@@ -561,8 +656,8 @@ class LivewireVenta extends Component
 
             if ($cash) {
                 MovimientoCaja::create([
-                    'id_cash_register' => $cash->id,
-                    'id_user' => Auth::id(),
+                    'id_caja' => $cash->id,
+                    'id_usuario' => Auth::id(),
                     'type' => 'EXPENSE',
                     'concepto' => 'Anulación venta #' . $sale->id,
                     'monto' => $sale->total,

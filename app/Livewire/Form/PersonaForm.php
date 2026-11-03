@@ -7,7 +7,7 @@ use Livewire\Form;
 class PersonaForm extends Form
 {
     public $id = null;
-    public $id_country = null;
+    public $id_pais = null;
     public $nombre = '';
     public $apellido = '';
     public $ci = '';
@@ -18,7 +18,7 @@ class PersonaForm extends Form
     public function rules()
     {
         return [
-            'form.id_country' => 'required|exists:paises,id',
+            'form.id_pais' => 'required|exists:paises,id',
             'form.nombre' => 'required|string|max:50',
             'form.apellido' => 'required|string|max:50',
             'form.ci' => 'required|string|max:20',
@@ -30,7 +30,7 @@ class PersonaForm extends Form
     public function messages()
     {
         return [
-            'form.id_country.required' => 'Debe seleccionar un país.',
+            'form.id_pais.required' => 'Debe seleccionar un país.',
             'form.nombre.required' => 'El nombre es obligatorio.',
             'form.apellido.required' => 'El apellido es obligatorio.',
             'form.ci.required' => 'El CI es obligatorio.',
@@ -43,7 +43,7 @@ class PersonaForm extends Form
     public function resetForm()
     {
         $this->id = null;
-        $this->id_country = '';
+        $this->id_pais = '';
         $this->nombre = '';
         $this->apellido = '';
         $this->ci = '';
@@ -55,7 +55,7 @@ class PersonaForm extends Form
     public function fillForm($person)
     {
         $this->id = $person->id;
-        $this->id_country = $person->id_country;
+        $this->id_pais = $person->id_pais;
         $this->nombre = $person->nombre;
         $this->apellido = $person->apellido;
         $this->ci = $person->ci;

@@ -79,7 +79,7 @@ class LivewireHome extends Component
         $lowStockCount = DB::table('productos')
             ->where('productos.estado', 1)
             ->leftJoin('lotes', function ($join) {
-                $join->on('lotes.id_product', '=', 'productos.id')->where('lotes.estado', 1);
+                $join->on('lotes.id_producto', '=', 'productos.id')->where('lotes.estado', 1);
             })
             ->groupBy('productos.id', 'productos.stock_minimo')
             ->havingRaw('COALESCE(SUM(lotes.cantidad_disponible), 0) <= productos.stock_minimo')
@@ -87,8 +87,8 @@ class LivewireHome extends Component
             ->count();
 
         $topProducts = DetalleVenta::query()
-            ->join('ventas', 'ventas.id', '=', 'detalles_venta.id_sale')
-            ->join('productos', 'productos.id', '=', 'detalles_venta.id_product')
+            ->join('ventas', 'ventas.id', '=', 'detalles_venta.id_venta')
+            ->join('productos', 'productos.id', '=', 'detalles_venta.id_producto')
             ->whereBetween('ventas.fecha_venta', [$from, $to])
             ->where('ventas.status', '!=', 'CANCELLED')
             ->groupBy('productos.id', 'productos.nombre', 'productos.code', 'productos.stock_minimo')
@@ -107,7 +107,7 @@ class LivewireHome extends Component
 
         $topProducts = $topProducts->map(function ($row) use ($maxQuantity) {
             $stock = DB::table('lotes')
-                ->where('id_product', $row->id)
+                ->where('id_producto', $row->id)
                 ->where('estado', 1)
                 ->sum('cantidad_disponible');
 

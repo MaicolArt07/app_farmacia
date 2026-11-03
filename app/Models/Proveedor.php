@@ -12,7 +12,7 @@ class Proveedor extends Model
     protected $table = 'proveedores';
 
     protected $fillable = [
-        'id_person',
+        'id_persona',
         'razon_social',
         'cargo_contacto',
         'nit',
@@ -22,10 +22,10 @@ class Proveedor extends Model
 
     public function person()
     {
-        return $this->belongsTo(Persona::class, 'id_person');
+        return $this->belongsTo(Persona::class, 'id_persona');
     }
     public function purchases()
 {
-    return $this->hasMany(Compra::class, 'id_supplier');
+    return $this->hasMany(Compra::class, 'id_proveedor');
 }
 }

@@ -57,7 +57,7 @@
                             </div>
                         @endif
 
-                        @error('form.id_person')
+                        @error('form.id_persona')
                             <span class="text-sm text-red-600">{{ $message }}</span>
                         @enderror
                     </div>
@@ -141,14 +141,44 @@
                     </div>
                 </div>
 
-                <!-- ✅ COLUMNA DERECHA: permisos -->
+                <!-- ✅ COLUMNA DERECHA: roles y permisos -->
                 <div>
+                    <!-- Roles -->
+                    <div class="mb-4">
+                        <label class="mb-1 flex items-center gap-2 font-medium text-zinc-700 dark:text-zinc-200">
+                            <i class="bi bi-person-badge-fill text-zinc-500"></i>
+                            Roles <span class="text-xs font-normal text-gray-400 dark:text-zinc-500">(el usuario hereda los permisos de cada rol)</span>
+                        </label>
+
+                        <div class="flex flex-wrap gap-3 rounded border border-zinc-300 p-3 dark:border-zinc-700 dark:bg-zinc-800/40">
+                            @forelse ($roles as $role)
+                                <label class="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-200">
+                                    <input
+                                        type="checkbox"
+                                        wire:model.defer="form.selectedRoles"
+                                        value="{{ $role['name'] }}"
+                                        class="rounded border-zinc-400 text-primary focus:ring-primary dark:border-zinc-600 dark:bg-zinc-800"
+                                    >
+                                    <span class="capitalize">{{ $role['name'] }}</span>
+                                </label>
+                            @empty
+                                <span class="text-sm text-zinc-500 dark:text-zinc-400">
+                                    No hay roles creados todavía. Puedes crear uno en el módulo "Roles".
+                                </span>
+                            @endforelse
+                        </div>
+
+                        @error('form.selectedRoles')
+                            <span class="text-sm text-red-600">{{ $message }}</span>
+                        @enderror
+                    </div>
+
                     <label class="mb-1 flex items-center gap-2 font-medium text-zinc-700 dark:text-zinc-200">
                         <i class="bi bi-shield-lock-fill text-zinc-500"></i>
-                        Permisos <span class="text-red-600">*</span>
+                        Permisos directos <span class="text-xs font-normal text-gray-400 dark:text-zinc-500">(Opcional, además de los que traen los roles)</span>
                     </label>
 
-                    <div class="max-h-[28rem] space-y-2 overflow-y-auto rounded border border-zinc-300 p-3 dark:border-zinc-700 dark:bg-zinc-800/40 lg:max-h-[32rem]">
+                    <div class="max-h-[22rem] space-y-2 overflow-y-auto rounded border border-zinc-300 p-3 dark:border-zinc-700 dark:bg-zinc-800/40 lg:max-h-[26rem]">
                         @foreach ($permissionGroups as $group => $permissions)
                             @php
                                 $groupNames = collect($permissions)->pluck('name');

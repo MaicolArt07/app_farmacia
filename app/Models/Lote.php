@@ -12,7 +12,7 @@ class Lote extends Model
     protected $table = 'lotes';
 
     protected $fillable = [
-        'id_product',
+        'id_producto',
         'codigo_lote',
         'precio_compra',
         'precio_venta',
@@ -34,14 +34,14 @@ class Lote extends Model
 
     public function product()
     {
-        return $this->belongsTo(Producto::class, 'id_product');
+        return $this->belongsTo(Producto::class, 'id_producto');
     }
     public function saleDetails()
     {
-        return $this->hasMany(DetalleVenta::class, 'id_lot');
+        return $this->hasMany(DetalleVenta::class, 'id_lote');
     }
     public function inventoryMovements()
     {
-        return $this->hasMany(MovimientoInventario::class, 'id_lot');
+        return $this->hasMany(MovimientoInventario::class, 'id_lote');
     }
 }

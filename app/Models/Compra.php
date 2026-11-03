@@ -12,8 +12,8 @@ class Compra extends Model
     protected $table = 'compras';
 
     protected $fillable = [
-        'id_supplier',
-        'id_user',
+        'id_proveedor',
+        'id_usuario',
         'numero_factura',
         'fecha_compra',
         'subtotal',
@@ -36,12 +36,12 @@ class Compra extends Model
 
     public function supplier()
     {
-        return $this->belongsTo(Proveedor::class, 'id_supplier');
+        return $this->belongsTo(Proveedor::class, 'id_proveedor');
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_user');
+        return $this->belongsTo(User::class, 'id_usuario');
     }
 
     public function cancelledBy()
@@ -51,7 +51,7 @@ class Compra extends Model
 
     public function details()
     {
-        return $this->hasMany(DetalleCompra::class, 'id_purchase');
+        return $this->hasMany(DetalleCompra::class, 'id_compra');
     }
 
     public function scopeActive($query)

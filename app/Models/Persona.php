@@ -8,7 +8,7 @@ class Persona extends Model
 {
     protected $table = 'personas';
     protected $fillable = [
-        'id_country',
+        'id_pais',
         'nombre',
         'apellido',
         'ci',
@@ -19,19 +19,19 @@ class Persona extends Model
 
     public function country()
     {
-        return $this->belongsTo(Pais::class, 'id_country');
+        return $this->belongsTo(Pais::class, 'id_pais');
     }
     public function client()
     {
-        return $this->hasOne(Cliente::class, 'id_person');
+        return $this->hasOne(Cliente::class, 'id_persona');
     }
     public function supplier()
     {
-        return $this->hasOne(Proveedor::class, 'id_person');
+        return $this->hasOne(Proveedor::class, 'id_persona');
     }
 
     public function user()
     {
-        return $this->hasOne(User::class, 'id_person');
+        return $this->hasOne(User::class, 'id_persona');
     }
 }

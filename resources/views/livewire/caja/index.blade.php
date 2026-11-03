@@ -16,7 +16,8 @@
         >
     </div>
 
-    <div class="overflow-auto rounded border border-zinc-300 dark:border-zinc-700">
+    {{-- Tabla (md en adelante) --}}
+    <div class="hidden overflow-auto rounded border border-zinc-300 md:block dark:border-zinc-700">
         <table class="min-w-full border-collapse text-sm">
             <thead class="sticky top-0 bg-zinc-300 dark:bg-zinc-800">
                 <tr>
@@ -157,6 +158,129 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+
+    {{-- Tarjetas responsive (solo en móvil) --}}
+    <div class="flex flex-col gap-2 md:hidden">
+        @forelse ($cashRegisters as $item)
+            <div x-data="{ open: false }" class="rounded border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900">
+                <div class="flex items-center gap-2">
+                    <button type="button" x-on:click.stop="open = !open"
+                        class="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full border border-primary text-primary transition hover:bg-primary hover:text-white">
+                        <i class="bi text-xs" :class="open ? 'bi-dash' : 'bi-plus'"></i>
+                    </button>
+
+                    <div class="min-w-0 flex-1">
+                        <p class="truncate text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ \Carbon\Carbon::parse($item->fecha_apertura)->format('d/m/Y') }}</p>
+                        <p class="truncate text-xs text-zinc-500 dark:text-zinc-400">{{ $item->user?->name ?? '-' }}</p>
+                    </div>
+
+                    <div class="flex shrink-0 items-center gap-3">
+                        <button wire:click="openDetailModal({{ $item->id }})"
+                            class="cursor-pointer text-sky-600 hover:text-sky-800 dark:text-sky-400"
+                            title="Ver detalle">
+                            <i class="bi bi-eye text-lg"></i>
+                        </button>
+
+                        @if($item->status === 'OPEN')
+                            @can('Crear Movimientos Caja')
+                                <button wire:click="openMovementModal({{ $item->id }})"
+                                    class="cursor-pointer text-blue-600 hover:text-blue-800 dark:text-blue-400"
+                                    title="Registrar movimiento">
+                                    <i class="bi bi-plus-circle text-lg"></i>
+                                </button>
+                            @endcan
+
+                            @can('Editar Caja')
+                                <button wire:click="openExtendModal({{ $item->id }})"
+                                    class="cursor-pointer text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
+                                    title="Ampliar vigencia">
+                                    <i class="bi bi-hourglass-split text-lg"></i>
+                                </button>
+
+                                <button wire:click="openCloseCashModal({{ $item->id }})"
+                                    class="cursor-pointer text-amber-600 hover:text-amber-800 dark:text-amber-400"
+                                    title="Cerrar caja">
+                                    <i class="bi bi-lock-fill text-lg"></i>
+                                </button>
+                            @endcan
+                        @endif
+
+                        @can('Cambiar Estado Caja')
+                            <button type="button"
+                                x-on:click.prevent="confirmAction({
+                                    text: '¿Deseas {{ $item->estado ? 'desactivar' : 'activar' }} este registro?',
+                                    confirmText: 'Sí, {{ $item->estado ? 'desactivar' : 'activar' }}',
+                                }).then((ok) => { if (ok) $wire.delete({{ $item->id }}) })"
+                                class="{{ $item->estado ? 'text-red-600 hover:text-red-800 dark:text-red-400' : 'text-zinc-400 dark:text-zinc-500' }} cursor-pointer"
+                                title="Activar / Desactivar">
+                                <i class="bi {{ $item->estado ? 'bi-trash' : 'bi-arrow-clockwise' }} text-lg"></i>
+                            </button>
+                        @endcan
+                    </div>
+                </div>
+
+                <div x-show="open" x-collapse x-cloak class="mt-2 grid grid-cols-2 gap-2 border-t border-zinc-200 pt-2 pl-8 dark:border-zinc-800">
+                    <div>
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Inicial</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ number_format($item->monto_apertura, 2) }}</p>
+                    </div>
+                    <div>
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Esperado</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ number_format($item->monto_esperado, 2) }}</p>
+                    </div>
+                    <div>
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Contado</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $item->monto_cierre !== null ? number_format($item->monto_cierre, 2) : '-' }}</p>
+                    </div>
+                    <div>
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Diferencia</span>
+                        <p class="text-sm">
+                            @if($item->diferencia === null)
+                                <span class="text-zinc-500 dark:text-zinc-400">-</span>
+                            @else
+                                <span class="{{ $item->diferencia == 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400' }}">
+                                    {{ number_format($item->diferencia, 2) }}
+                                </span>
+                            @endif
+                        </p>
+                    </div>
+                    <div>
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Estado</span>
+                        <p>
+                            @if($item->status === 'OPEN')
+                                <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
+                                    Abierta
+                                </span>
+                            @else
+                                <span class="rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                                    Cerrada
+                                </span>
+                            @endif
+                        </p>
+                    </div>
+                    <div>
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Fin</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">
+                            @if($item->status === 'OPEN' && $item->expires_at)
+                                {{ $item->expires_at->format('d/m/Y H:i') }}
+                                @if($item->isExpired())
+                                    <span class="mt-1 inline-block rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-300">Vencida</span>
+                                @else
+                                    <span class="mt-1 inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">Vigente</span>
+                                @endif
+                            @else
+                                -
+                            @endif
+                        </p>
+                    </div>
+                </div>
+            </div>
+        @empty
+            <div class="rounded border border-zinc-300 bg-white px-3 py-4 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400">
+                No hay cajas registradas.
+            </div>
+        @endforelse
     </div>
 
     <div class="mt-4 dark:text-zinc-200">

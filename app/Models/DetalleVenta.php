@@ -12,9 +12,11 @@ class DetalleVenta extends Model
     protected $table = 'detalles_venta';
 
     protected $fillable = [
-        'id_sale',
-        'id_product',
-        'id_lot',
+        'id_venta',
+        'id_producto',
+        'id_lote',
+        'id_servicio',
+        'cantidad_servicio',
         'quantity',
         'precio_venta',
         'subtotal',
@@ -22,22 +24,28 @@ class DetalleVenta extends Model
 
     protected $casts = [
         'quantity' => 'integer',
+        'cantidad_servicio' => 'decimal:2',
         'precio_venta' => 'decimal:2',
         'subtotal' => 'decimal:2',
     ];
 
     public function sale()
     {
-        return $this->belongsTo(Venta::class, 'id_sale');
+        return $this->belongsTo(Venta::class, 'id_venta');
     }
 
     public function product()
     {
-        return $this->belongsTo(Producto::class, 'id_product');
+        return $this->belongsTo(Producto::class, 'id_producto');
     }
 
     public function lot()
     {
-        return $this->belongsTo(Lote::class, 'id_lot');
+        return $this->belongsTo(Lote::class, 'id_lote');
+    }
+
+    public function service()
+    {
+        return $this->belongsTo(Servicio::class, 'id_servicio');
     }
 }

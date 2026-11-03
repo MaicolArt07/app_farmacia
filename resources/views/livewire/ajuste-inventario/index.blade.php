@@ -16,7 +16,8 @@
         >
     </div>
 
-    <div class="overflow-auto rounded border border-zinc-300 dark:border-zinc-700">
+    {{-- Tabla (md en adelante) --}}
+    <div class="hidden overflow-auto rounded border border-zinc-300 md:block dark:border-zinc-700">
         <table class="min-w-full border-collapse text-sm">
             <thead class="sticky top-0 bg-zinc-300 dark:bg-zinc-800">
                 <tr>
@@ -97,6 +98,72 @@
         </table>
     </div>
 
+    {{-- Tarjetas responsive (solo en móvil) --}}
+    <div class="flex flex-col gap-2 md:hidden">
+        @forelse ($adjustments as $item)
+            <div
+                x-data="{ open: false }"
+                wire:click="view({{ $item->id }})"
+                class="cursor-pointer rounded border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+            >
+                <div class="flex items-center gap-2">
+                    <button type="button" x-on:click.stop="open = !open"
+                        class="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full border border-primary text-primary transition hover:bg-primary hover:text-white">
+                        <i class="bi text-xs" :class="open ? 'bi-dash' : 'bi-plus'"></i>
+                    </button>
+
+                    <div class="min-w-0 flex-1">
+                        <p class="truncate text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ $item->product?->nombre ?? '-' }}</p>
+                        <p class="truncate text-xs text-zinc-500 dark:text-zinc-400">{{ $item->created_at?->format('d/m/Y H:i') }}</p>
+                    </div>
+
+                    <div class="flex shrink-0 items-center">
+                        @if($item->type === 'INCREASE')
+                            <span class="rounded-full px-3 py-1 text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
+                                Aumento
+                            </span>
+                        @else
+                            <span class="rounded-full px-3 py-1 text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">
+                                Disminución
+                            </span>
+                        @endif
+                    </div>
+                </div>
+
+                <div x-show="open" x-collapse x-cloak onclick="event.stopPropagation()" class="mt-2 grid grid-cols-2 gap-2 border-t border-zinc-200 pt-2 pl-8 dark:border-zinc-800">
+                    <div>
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Lote</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $item->lot?->codigo_lote ?? '-' }}</p>
+                    </div>
+                    <div>
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Cantidad</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $item->quantity }}</p>
+                    </div>
+                    <div>
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Antes</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $item->stock_before }}</p>
+                    </div>
+                    <div>
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Después</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $item->stock_after }}</p>
+                    </div>
+                    <div>
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Usuario</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $item->user?->name ?? '-' }}</p>
+                    </div>
+                    <div class="col-span-2">
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Motivo</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $item->motivo }}</p>
+                    </div>
+                </div>
+            </div>
+        @empty
+            <div class="rounded border border-zinc-300 bg-white px-3 py-4 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400">
+                No hay ajustes de inventario registrados.
+            </div>
+        @endforelse
+    </div>
+
     <div class="mt-4 dark:text-zinc-200">
         {{ $adjustments->links() }}
     </div>
@@ -147,7 +214,7 @@
                         </div>
                     @endif
 
-                    @error('form.id_product')
+                    @error('form.id_producto')
                         <span class="mt-1 block text-sm text-red-500">{{ $message }}</span>
                     @enderror
                 </div>
@@ -171,7 +238,7 @@
                                 type="text"
                                 wire:model.live="lotSearch"
                                 placeholder="Buscar lote por código o vencimiento..."
-                                @disabled(!$form->id_product)
+                                @disabled(!$form->id_producto)
                                 class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 disabled:bg-zinc-100 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:disabled:bg-zinc-700"
                             >
 
@@ -191,7 +258,7 @@
                         </div>
                     @endif
 
-                    @error('form.id_lot')
+                    @error('form.id_lote')
                         <span class="mt-1 block text-sm text-red-500">{{ $message }}</span>
                     @enderror
                 </div>

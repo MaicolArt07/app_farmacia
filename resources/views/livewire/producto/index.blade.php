@@ -13,7 +13,8 @@
         >
     </div>
 
-    <div class="overflow-auto rounded border border-zinc-300 dark:border-zinc-700">
+    {{-- Tabla (md en adelante) --}}
+    <div class="hidden overflow-auto rounded border border-zinc-300 md:block dark:border-zinc-700">
         <table class="min-w-full border-collapse text-sm">
             <thead class="sticky top-0 bg-zinc-300 dark:bg-zinc-800">
                 <tr>
@@ -102,6 +103,73 @@
         </table>
     </div>
 
+    {{-- Tarjetas responsive (solo en móvil) --}}
+    <div class="flex flex-col gap-2 md:hidden">
+        @forelse ($products as $item)
+            <div
+                x-data="{ open: false }"
+                wire:click="view({{ $item->id }})"
+                class="cursor-pointer rounded border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+            >
+                <div class="flex items-center gap-2">
+                    <button type="button" x-on:click.stop="open = !open"
+                        class="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full border border-primary text-primary transition hover:bg-primary hover:text-white">
+                        <i class="bi text-xs" :class="open ? 'bi-dash' : 'bi-plus'"></i>
+                    </button>
+
+                    <div class="min-w-0 flex-1">
+                        <p class="truncate text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ $item->nombre }}</p>
+                        <p class="truncate text-xs text-zinc-500 dark:text-zinc-400">{{ $item->code }} &middot; {{ number_format($item->precio_venta, 2) }}</p>
+                    </div>
+
+                    <div class="flex shrink-0 items-center gap-3" onclick="event.stopPropagation()">
+                        <button type="button" wire:click="edit({{ $item->id }})"
+                            class="cursor-pointer text-zinc-500 transition hover:text-primary dark:text-zinc-400">
+                            <i class="bi bi-pencil-square text-base"></i>
+                        </button>
+
+                        <button
+                            type="button"
+                            x-on:click.prevent="confirmAction({
+                                text: '¿Deseas {{ $item->estado ? 'desactivar' : 'activar' }} este registro?',
+                                confirmText: 'Sí, {{ $item->estado ? 'desactivar' : 'activar' }}',
+                            }).then((ok) => { if (ok) $wire.delete({{ $item->id }}) })"
+                            class="cursor-pointer text-zinc-500 transition hover:text-red-600 dark:text-zinc-400">
+                            <i class="bi {{ $item->estado ? 'bi-trash' : 'bi-arrow-clockwise' }} text-base"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div x-show="open" x-collapse x-cloak onclick="event.stopPropagation()" class="mt-2 grid grid-cols-2 gap-2 border-t border-zinc-200 pt-2 pl-8 dark:border-zinc-800">
+                    <div>
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Categoría</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $item->category?->nombre ?? '-' }}</p>
+                    </div>
+                    <div>
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Presentación</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $item->presentation?->nombre ?? '-' }}</p>
+                    </div>
+                    <div>
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Receta</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $item->requiere_receta ? 'Sí' : 'No' }}</p>
+                    </div>
+                    <div>
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Estado</span>
+                        <p>
+                            <span class="rounded-full px-2 py-0.5 text-xs font-medium {{ $item->estado ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' }}">
+                                {{ $item->estado ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        @empty
+            <div class="rounded border border-zinc-300 bg-white px-3 py-4 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400">
+                No hay productos registrados.
+            </div>
+        @endforelse
+    </div>
+
     <div class="mt-4 dark:text-zinc-200">
         {{ $products->links() }}
     </div>
@@ -158,43 +226,43 @@
                 <div>
                     <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Categoría <span class="text-red-600">*</span></label>
                     <x-search-select
-                        model="form.id_category"
-                        :value="$form->id_category"
+                        model="form.id_categoria"
+                        :value="$form->id_categoria"
                         :options="$categories->map(fn ($c) => ['value' => $c->id, 'label' => $c->nombre])->values()"
                     />
-                    @error('form.id_category') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                    @error('form.id_categoria') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
                     <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Presentación <span class="text-red-600">*</span></label>
                     <x-search-select
-                        model="form.id_presentation"
-                        :value="$form->id_presentation"
+                        model="form.id_presentacion"
+                        :value="$form->id_presentacion"
                         :options="$presentations->map(fn ($p) => ['value' => $p->id, 'label' => $p->nombre])->values()"
                     />
-                    @error('form.id_presentation') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                    @error('form.id_presentacion') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
                     <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Laboratorio <span class="text-xs font-normal text-zinc-400 dark:text-zinc-500">(Opcional)</span></label>
                     <x-search-select
-                        model="form.id_laboratory"
-                        :value="$form->id_laboratory"
+                        model="form.id_laboratorio"
+                        :value="$form->id_laboratorio"
                         :options="$laboratories->map(fn ($l) => ['value' => $l->id, 'label' => $l->nombre])->values()"
                     />
-                    @error('form.id_laboratory') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                    @error('form.id_laboratorio') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="md:col-span-2 xl:col-span-4">
                     <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Código de Producto SIN <span class="text-xs font-normal text-zinc-400 dark:text-zinc-500">(Opcional, necesario para facturación)</span></label>
                     <x-search-select
-                        model="form.id_sin_product_code"
-                        :value="$form->id_sin_product_code"
+                        model="form.id_codigo_producto_sin"
+                        :value="$form->id_codigo_producto_sin"
                         :options="$sinProductCodes->map(fn ($p) => ['value' => $p->id, 'label' => $p->codigo_producto . ' - ' . $p->descripcion])->values()"
                         placeholder="Buscar producto homologado por el SIN..."
                     />
                     <p class="mt-1 text-xs text-zinc-400 dark:text-zinc-500">Catálogo oficial del SIN para tu actividad económica (farmacia). Obligatorio antes de poder facturar este producto.</p>
-                    @error('form.id_sin_product_code') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                    @error('form.id_codigo_producto_sin') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="md:col-span-2 xl:col-span-4">

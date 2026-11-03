@@ -85,7 +85,7 @@ class LivewireSucursal extends Component
                     return redirect()->route('company.edit');
                 }
 
-                $data['id_company'] = $company->id;
+                $data['id_empresa'] = $company->id;
                 Sucursal::create($data);
                 $message = 'Sucursal registrada correctamente.';
             }

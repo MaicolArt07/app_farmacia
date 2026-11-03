@@ -12,10 +12,10 @@ class Producto extends Model
     protected $table = 'productos';
 
     protected $fillable = [
-        'id_category',
-        'id_laboratory',
-        'id_presentation',
-        'id_sin_product_code',
+        'id_categoria',
+        'id_laboratorio',
+        'id_presentacion',
+        'id_codigo_producto_sin',
         'code',
         'barcode',
         'nombre',
@@ -37,38 +37,38 @@ class Producto extends Model
 
     public function category()
     {
-        return $this->belongsTo(Categoria::class, 'id_category');
+        return $this->belongsTo(Categoria::class, 'id_categoria');
     }
 
     public function laboratory()
     {
-        return $this->belongsTo(Laboratorio::class, 'id_laboratory');
+        return $this->belongsTo(Laboratorio::class, 'id_laboratorio');
     }
 
     public function presentation()
     {
-        return $this->belongsTo(Presentacion::class, 'id_presentation');
+        return $this->belongsTo(Presentacion::class, 'id_presentacion');
     }
 
     public function sinProductCode()
     {
-        return $this->belongsTo(CodigoProductoSin::class, 'id_sin_product_code');
+        return $this->belongsTo(CodigoProductoSin::class, 'id_codigo_producto_sin');
     }
 
     public function lots()
     {
-        return $this->hasMany(Lote::class, 'id_product');
+        return $this->hasMany(Lote::class, 'id_producto');
     }
     public function purchaseDetails()
     {
-        return $this->hasMany(DetalleCompra::class, 'id_product');
+        return $this->hasMany(DetalleCompra::class, 'id_producto');
     }
     public function saleDetails()
     {
-        return $this->hasMany(DetalleVenta::class, 'id_product');
+        return $this->hasMany(DetalleVenta::class, 'id_producto');
     }
     public function inventoryMovements()
     {
-        return $this->hasMany(MovimientoInventario::class, 'id_product');
+        return $this->hasMany(MovimientoInventario::class, 'id_producto');
     }
 }

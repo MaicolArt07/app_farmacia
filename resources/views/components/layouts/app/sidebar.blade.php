@@ -160,7 +160,7 @@
                     @php
                         $isFarmaciaSection = request()->routeIs('proveedores*') || request()->routeIs('laboratorios*')
                             || request()->routeIs('company.edit') || request()->routeIs('branches*')
-                            || request()->routeIs('payment-methods*')
+                            || request()->routeIs('payment-methods*') || request()->routeIs('servicios*')
                             || request()->routeIs('categorias*') || request()->routeIs('presentaciones*')
                             || request()->routeIs('lotes*')
                             || request()->routeIs('inventory-adjustments*') || request()->routeIs('invoices*')
@@ -198,6 +198,11 @@
                             @can('Ver Metodos Pago')
                             <a href="{{ route('payment-methods') }}" wire:navigate title="{{ __('Métodos de Pago') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('payment-methods*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 dark:text-zinc-300' }}">
                                 <i class="bi bi-credit-card-2-front-fill text-base"></i>
+                            </a>
+                            @endcan
+                            @can('Ver Servicios')
+                            <a href="{{ route('servicios') }}" wire:navigate title="{{ __('Servicios') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('servicios*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 dark:text-zinc-300' }}">
+                                <i class="bi bi-clipboard2-pulse-fill text-base"></i>
                             </a>
                             @endcan
                             @can('Ver Categorias')
@@ -271,6 +276,11 @@
                                         <i class="bi bi-credit-card-2-front-fill text-base"></i> {{ __('Métodos de Pago') }}
                                     </a>
                                     @endcan
+                                    @can('Ver Servicios')
+                                    <a href="{{ route('servicios') }}" wire:navigate class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition {{ request()->routeIs('servicios*') ? 'border-l-[3px] border-primary bg-zinc-800 text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
+                                        <i class="bi bi-clipboard2-pulse-fill text-base"></i> {{ __('Servicios') }}
+                                    </a>
+                                    @endcan
                                     @can('Ver Categorias')
                                     <a href="{{ route('categorias') }}" wire:navigate class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition {{ request()->routeIs('categorias*') ? 'border-l-[3px] border-primary bg-zinc-800 text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                         <i class="bi bi-tags-fill text-base"></i> {{ __('Categorías') }}
@@ -315,7 +325,7 @@
                     <!-- ✅ GESTIÓN DE USUARIOS -->
                     @can('Ver Gestion de Usuarios')
                     @php
-                        $isUserSection = request()->routeIs('users*') || request()->routeIs('permissions*');
+                        $isUserSection = request()->routeIs('users*') || request()->routeIs('permissions*') || request()->routeIs('roles*') || request()->routeIs('login-logs*');
                     @endphp
                     <nav class="mt-4 flex flex-col gap-1">
                         <span class="overflow-hidden whitespace-nowrap px-3 py-1 text-xs font-semibold uppercase tracking-wider text-zinc-400 transition-all duration-200 dark:text-zinc-500"
@@ -332,6 +342,16 @@
                             @can('Ver Permisos')
                             <a href="{{ route('permissions') }}" wire:navigate title="{{ __('Permisos') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('permissions*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 dark:text-zinc-300' }}">
                                 <i class="bi bi-shield-lock-fill text-base"></i>
+                            </a>
+                            @endcan
+                            @can('Ver Roles')
+                            <a href="{{ route('roles') }}" wire:navigate title="{{ __('Roles') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('roles*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 dark:text-zinc-300' }}">
+                                <i class="bi bi-person-badge-fill text-base"></i>
+                            </a>
+                            @endcan
+                            @can('Ver Logs Acceso')
+                            <a href="{{ route('login-logs') }}" wire:navigate title="{{ __('Logs de Acceso') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('login-logs*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 dark:text-zinc-300' }}">
+                                <i class="bi bi-clock-history text-base"></i>
                             </a>
                             @endcan
                         </div>
@@ -352,6 +372,16 @@
                                     @can('Ver Permisos')
                                     <a href="{{ route('permissions') }}" wire:navigate class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition {{ request()->routeIs('permissions*') ? 'border-l-[3px] border-primary bg-zinc-800 text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                         <i class="bi bi-shield-lock-fill text-base"></i> {{ __('Permisos') }}
+                                    </a>
+                                    @endcan
+                                    @can('Ver Roles')
+                                    <a href="{{ route('roles') }}" wire:navigate class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition {{ request()->routeIs('roles*') ? 'border-l-[3px] border-primary bg-zinc-800 text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
+                                        <i class="bi bi-person-badge-fill text-base"></i> {{ __('Roles') }}
+                                    </a>
+                                    @endcan
+                                    @can('Ver Logs Acceso')
+                                    <a href="{{ route('login-logs') }}" wire:navigate class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition {{ request()->routeIs('login-logs*') ? 'border-l-[3px] border-primary bg-zinc-800 text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
+                                        <i class="bi bi-clock-history text-base"></i> {{ __('Logs de Acceso') }}
                                     </a>
                                     @endcan
                                 </div>
@@ -608,6 +638,11 @@
                                         <i class="bi bi-credit-card-2-front-fill me-2"></i> {{ __('Métodos de Pago') }}
                                     </flux:navlist.item>
                                     @endcan
+                                    @can('Ver Servicios')
+                                    <flux:navlist.item :href="route('servicios')" :current="request()->routeIs('servicios*')" wire:navigate class="rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                                        <i class="bi bi-clipboard2-pulse-fill me-2"></i> {{ __('Servicios') }}
+                                    </flux:navlist.item>
+                                    @endcan
                                     @can('Ver Categorias')
                                     <flux:navlist.item :href="route('categorias')" :current="request()->routeIs('categorias*')" wire:navigate class="rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800">
                                         <i class="bi bi-tags-fill me-2"></i> {{ __('Categorías') }}
@@ -658,6 +693,16 @@
                             @can('Ver Permisos')
                             <flux:navlist.item :href="route('permissions')" :current="request()->routeIs('permissions*')" wire:navigate class="rounded-xl px-3 py-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800">
                                 <i class="bi bi-shield-lock-fill me-2"></i> {{ __('Permisos') }}
+                            </flux:navlist.item>
+                            @endcan
+                            @can('Ver Roles')
+                            <flux:navlist.item :href="route('roles')" :current="request()->routeIs('roles*')" wire:navigate class="rounded-xl px-3 py-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                                <i class="bi bi-person-badge-fill me-2"></i> {{ __('Roles') }}
+                            </flux:navlist.item>
+                            @endcan
+                            @can('Ver Logs Acceso')
+                            <flux:navlist.item :href="route('login-logs')" :current="request()->routeIs('login-logs*')" wire:navigate class="rounded-xl px-3 py-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                                <i class="bi bi-clock-history me-2"></i> {{ __('Logs de Acceso') }}
                             </flux:navlist.item>
                             @endcan
                         </flux:navlist.group>

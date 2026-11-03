@@ -18,7 +18,7 @@ class Caja extends Model
     ];
 
     protected $fillable = [
-        'id_user',
+        'id_usuario',
         'fecha_apertura',
         'monto_apertura',
         'periodo_validez',
@@ -45,28 +45,28 @@ class Caja extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_user');
+        return $this->belongsTo(User::class, 'id_usuario');
     }
 
     public function movements()
     {
-        return $this->hasMany(MovimientoCaja::class, 'id_cash_register');
+        return $this->hasMany(MovimientoCaja::class, 'id_caja');
     }
 
     public function sales()
     {
-        return $this->hasMany(Venta::class, 'id_cash_register');
+        return $this->hasMany(Venta::class, 'id_caja');
     }
 
     public function incomes()
     {
-        return $this->hasMany(MovimientoCaja::class, 'id_cash_register')
+        return $this->hasMany(MovimientoCaja::class, 'id_caja')
             ->where('type', 'INCOME');
     }
 
     public function expenses()
     {
-        return $this->hasMany(MovimientoCaja::class, 'id_cash_register')
+        return $this->hasMany(MovimientoCaja::class, 'id_caja')
             ->where('type', 'EXPENSE');
     }
 

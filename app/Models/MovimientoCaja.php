@@ -12,8 +12,8 @@ class MovimientoCaja extends Model
     protected $table = 'movimientos_caja';
 
     protected $fillable = [
-        'id_cash_register',
-        'id_user',
+        'id_caja',
+        'id_usuario',
         'type',
         'origin',
         'concepto',
@@ -29,12 +29,12 @@ class MovimientoCaja extends Model
 
     public function cashRegister()
     {
-        return $this->belongsTo(Caja::class, 'id_cash_register');
+        return $this->belongsTo(Caja::class, 'id_caja');
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_user');
+        return $this->belongsTo(User::class, 'id_usuario');
     }
 
     public function scopeIncome($query)

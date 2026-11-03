@@ -12,9 +12,9 @@ class AjusteInventario extends Model
     protected $table = 'ajustes_inventario';
 
     protected $fillable = [
-        'id_product',
-        'id_lot',
-        'id_user',
+        'id_producto',
+        'id_lote',
+        'id_usuario',
         'type',
         'quantity',
         'motivo',
@@ -25,16 +25,16 @@ class AjusteInventario extends Model
 
     public function product()
     {
-        return $this->belongsTo(Producto::class, 'id_product');
+        return $this->belongsTo(Producto::class, 'id_producto');
     }
 
     public function lot()
     {
-        return $this->belongsTo(Lote::class, 'id_lot');
+        return $this->belongsTo(Lote::class, 'id_lote');
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_user');
+        return $this->belongsTo(User::class, 'id_usuario');
     }
 }

@@ -9,8 +9,8 @@ class Factura extends Model
     protected $table = 'facturas';
 
     protected $fillable = [
-        'id_sale',
-        'id_user',
+        'id_venta',
+        'id_usuario',
         'modo',
         'ambiente',
         'tipo_documento_identidad',
@@ -37,12 +37,12 @@ class Factura extends Model
 
     public function sale()
     {
-        return $this->belongsTo(Venta::class, 'id_sale');
+        return $this->belongsTo(Venta::class, 'id_venta');
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_user');
+        return $this->belongsTo(User::class, 'id_usuario');
     }
 
     public function isSimulado(): bool

@@ -37,12 +37,12 @@ class SiatPreviewFacturaXmlCommand extends Command
             return self::FAILURE;
         }
 
-        $faltantes = $sale->details->filter(fn ($d) => !$d->product?->id_sin_product_code);
+        $faltantes = $sale->details->filter(fn ($d) => !$d->product?->id_codigo_producto_sin);
 
         if ($faltantes->isNotEmpty()) {
             $this->warn('⚠️ Los siguientes productos de esta venta NO tienen código SIN asignado (se enviaría codigoProductoSin=0, inválido):');
             foreach ($faltantes as $d) {
-                $this->line(' - ' . ($d->product?->nombre ?? 'producto #' . $d->id_product));
+                $this->line(' - ' . ($d->product?->nombre ?? 'producto #' . $d->id_producto));
             }
         }
 

@@ -114,7 +114,7 @@ class LivewireProveedor extends Component
     {
         $person = Persona::findOrFail($id);
 
-        $this->form->id_person = $person->id;
+        $this->form->id_persona = $person->id;
         $this->selectedPersonLabel = trim($person->nombre . ' ' . $person->apellido) . ' - CI: ' . $person->ci;
         $this->personSearch = '';
         $this->personResults = [];
@@ -122,7 +122,7 @@ class LivewireProveedor extends Component
 
     public function clearPerson()
     {
-        $this->form->id_person = null;
+        $this->form->id_persona = null;
         $this->selectedPersonLabel = '';
         $this->personSearch = '';
         $this->personResults = [];
@@ -136,7 +136,7 @@ class LivewireProveedor extends Component
             if ($this->form->id) {
                 $supplier = Proveedor::findOrFail($this->form->id);
                 $supplier->update([
-                    'id_person' => $this->form->id_person,
+                    'id_persona' => $this->form->id_persona,
                     'razon_social' => $this->form->razon_social,
                     'cargo_contacto' => $this->form->cargo_contacto,
                     'nit' => $this->form->nit,
@@ -147,7 +147,7 @@ class LivewireProveedor extends Component
                 $message = 'Proveedor actualizado correctamente.';
             } else {
                 Proveedor::create([
-                    'id_person' => $this->form->id_person,
+                    'id_persona' => $this->form->id_persona,
                     'razon_social' => $this->form->razon_social,
                     'cargo_contacto' => $this->form->cargo_contacto,
                     'nit' => $this->form->nit,

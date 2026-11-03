@@ -20,7 +20,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'id_person',
+        'id_persona',
         'name',
         'email',
         'password',
@@ -34,6 +34,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'session_token',
     ];
 
     /**
@@ -63,16 +64,21 @@ class User extends Authenticatable
 
     public function cashRegisters()
     {
-        return $this->hasMany(Caja::class, 'id_user');
+        return $this->hasMany(Caja::class, 'id_usuario');
     }
 
     public function cashMovements()
     {
-        return $this->hasMany(MovimientoCaja::class, 'id_user');
+        return $this->hasMany(MovimientoCaja::class, 'id_usuario');
     }
 
     public function person()
     {
-        return $this->belongsTo(Persona::class, 'id_person');
+        return $this->belongsTo(Persona::class, 'id_persona');
+    }
+
+    public function loginLogs()
+    {
+        return $this->hasMany(LoginLog::class, 'id_usuario');
     }
 }

@@ -82,7 +82,7 @@ class LivewireCaja extends Component
     {
         $this->validate($this->openForm->rulesOpen(), $this->openForm->messages());
 
-        $hasOpenCash = Caja::where('id_user', Auth::id())
+        $hasOpenCash = Caja::where('id_usuario', Auth::id())
             ->where('status', 'OPEN')
             ->exists();
 
@@ -93,7 +93,7 @@ class LivewireCaja extends Component
 
         try {
             Caja::create([
-                'id_user' => Auth::id(),
+                'id_usuario' => Auth::id(),
                 'fecha_apertura' => now()->toDateString(),
                 'monto_apertura' => $this->openForm->opening_amount,
                 'periodo_validez' => $this->openForm->validity_period,
@@ -140,8 +140,8 @@ class LivewireCaja extends Component
                 ->firstOrFail();
 
             MovimientoCaja::create([
-                'id_cash_register' => $cash->id,
-                'id_user' => Auth::id(),
+                'id_caja' => $cash->id,
+                'id_usuario' => Auth::id(),
                 'type' => $this->movementForm->type,
                 'concepto' => $this->movementForm->concepto,
                 'monto' => $this->movementForm->monto,

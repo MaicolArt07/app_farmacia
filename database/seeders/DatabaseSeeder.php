@@ -21,13 +21,13 @@ class DatabaseSeeder extends Seeder
 
         $adminPerson = Person::firstOrCreate(
             ['ci' => '0000001'],
-            ['name' => 'Administrador', 'lastname' => 'Sistema', 'id_country' => $idCountry, 'state' => 1, 'phone' => '00000000', 'address' => '-']
+            ['name' => 'Administrador', 'lastname' => 'Sistema', 'id_pais' => $idCountry, 'state' => 1, 'phone' => '00000000', 'address' => '-']
         );
 
         $admin = User::firstOrCreate(
             ['email' => 'admin@farmafamilia.com'],
             [
-                'id_person' => $adminPerson->id,
+                'id_persona' => $adminPerson->id,
                 'name' => 'Administrador',
                 'password' => Hash::make('Admin123!'),
             ]
@@ -37,13 +37,13 @@ class DatabaseSeeder extends Seeder
 
         $empleadoPerson = Person::firstOrCreate(
             ['ci' => '0000002'],
-            ['name' => 'Empleado', 'lastname' => 'Farmacia', 'id_country' => $idCountry, 'state' => 1, 'phone' => '00000000', 'address' => '-']
+            ['name' => 'Empleado', 'lastname' => 'Farmacia', 'id_pais' => $idCountry, 'state' => 1, 'phone' => '00000000', 'address' => '-']
         );
 
         $empleado = User::firstOrCreate(
             ['email' => 'empleado@farmafamilia.com'],
             [
-                'id_person' => $empleadoPerson->id,
+                'id_persona' => $empleadoPerson->id,
                 'name' => 'Empleado',
                 'password' => Hash::make('Empleado123!'),
             ]
@@ -54,6 +54,8 @@ class DatabaseSeeder extends Seeder
             'Ver Clientes',
             'Ver Productos',
             'Ver Lotes',
+            'Ver Servicios',
+            'Crear Servicios',
             'Ver Ventas',
             'Crear Ventas',
             'Cambiar Estado Ventas',

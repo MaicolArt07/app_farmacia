@@ -8,9 +8,9 @@ use Livewire\Form;
 class VentaForm extends Form
 {
     public $id = null;
-    public $id_client = null;
+    public $id_cliente = null;
     public $fecha_venta = '';
-    public $id_payment_method = null;
+    public $id_metodo_pago = null;
     public $subtotal = 0;
     public $descuento = 0;
     public $total = 0;
@@ -22,9 +22,9 @@ class VentaForm extends Form
     public function rules()
     {
         return [
-            'form.id_client' => 'nullable|exists:clientes,id',
+            'form.id_cliente' => 'nullable|exists:clientes,id',
             'form.fecha_venta' => 'required|date',
-            'form.id_payment_method' => 'required|exists:metodos_pago,id',
+            'form.id_metodo_pago' => 'required|exists:metodos_pago,id',
             'form.descuento' => 'nullable|numeric|min:0',
             'form.monto_pagado' => 'nullable|numeric|min:0',
             'form.observacion' => 'nullable|string',
@@ -35,8 +35,8 @@ class VentaForm extends Form
     {
         return [
             'form.fecha_venta.required' => 'La fecha de venta es obligatoria.',
-            'form.id_payment_method.required' => 'Debe seleccionar el método de pago.',
-            'form.id_payment_method.exists' => 'El método de pago seleccionado no es válido.',
+            'form.id_metodo_pago.required' => 'Debe seleccionar el método de pago.',
+            'form.id_metodo_pago.exists' => 'El método de pago seleccionado no es válido.',
             'form.descuento.numeric' => 'El descuento debe ser numérico.',
             'form.monto_pagado.numeric' => 'El monto recibido debe ser numérico.',
         ];
@@ -45,9 +45,9 @@ class VentaForm extends Form
     public function resetForm()
     {
         $this->id = null;
-        $this->id_client = null;
+        $this->id_cliente = null;
         $this->fecha_venta = now()->format('Y-m-d');
-        $this->id_payment_method = MetodoPago::where('nombre', 'Efectivo')->value('id');
+        $this->id_metodo_pago = MetodoPago::where('nombre', 'Efectivo')->value('id');
         $this->subtotal = 0;
         $this->descuento = 0;
         $this->total = 0;
@@ -60,9 +60,9 @@ class VentaForm extends Form
     public function fillForm($sale)
     {
         $this->id = $sale->id;
-        $this->id_client = $sale->id_client;
+        $this->id_cliente = $sale->id_cliente;
         $this->fecha_venta = optional($sale->fecha_venta)->format('Y-m-d');
-        $this->id_payment_method = $sale->id_payment_method;
+        $this->id_metodo_pago = $sale->id_metodo_pago;
         $this->subtotal = $sale->subtotal;
         $this->descuento = $sale->descuento;
         $this->total = $sale->total;

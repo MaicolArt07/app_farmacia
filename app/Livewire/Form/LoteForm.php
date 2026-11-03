@@ -8,7 +8,7 @@ use Illuminate\Validation\Rule;
 class LoteForm extends Form
 {
     public $id = null;
-    public $id_product = null;
+    public $id_producto = null;
 
     public $codigo_lote = '';
     public $precio_compra = '';
@@ -22,7 +22,7 @@ class LoteForm extends Form
     public function rules()
     {
         return [
-            'form.id_product' => 'required|exists:productos,id',
+            'form.id_producto' => 'required|exists:productos,id',
             'form.codigo_lote' => [
                 'required',
                 'string',
@@ -40,8 +40,8 @@ class LoteForm extends Form
     public function messages()
     {
         return [
-            'form.id_product.required' => 'Debe seleccionar un producto.',
-            'form.id_product.exists' => 'El producto seleccionado no es válido.',
+            'form.id_producto.required' => 'Debe seleccionar un producto.',
+            'form.id_producto.exists' => 'El producto seleccionado no es válido.',
             'form.codigo_lote.required' => 'El lote es obligatorio.',
             'form.fecha_vencimiento.date' => 'La fecha de vencimiento no es válida.',
             'form.precio_compra.required' => 'El precio de compra es obligatorio.',
@@ -54,7 +54,7 @@ class LoteForm extends Form
     public function resetForm()
     {
         $this->id = null;
-        $this->id_product = null;
+        $this->id_producto = null;
 
         $this->codigo_lote = '';
         $this->precio_compra = '';
@@ -69,7 +69,7 @@ class LoteForm extends Form
     public function fillForm($lot)
     {
         $this->id = $lot->id;
-        $this->id_product = $lot->id_product;
+        $this->id_producto = $lot->id_producto;
 
         $this->codigo_lote = $lot->codigo_lote;
         $this->precio_compra = $lot->precio_compra;

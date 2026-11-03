@@ -32,4 +32,12 @@ yarn-error.log
 # Dumps y backups de base de datos (contienen datos reales y hashes de contraseña)
 /database/*.sql
 /database/backups/
+/storage/backups/
 .playwright-mcp/
+
+# Datos sensibles: inventario real (precios de compra/venta) y guía con credenciales
+/docs/inventario/
+/docs/instalacion-maquina-nueva.md
+
+# Respaldo/zip accidental del proyecto completo (258MB, no debe versionarse)
+/app_far.zip

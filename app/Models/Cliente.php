@@ -12,7 +12,7 @@ class Cliente extends Model
     protected $table = 'clientes';
 
     protected $fillable = [
-        'id_person',
+        'id_persona',
         'code',
         'tipo',
         'nit',
@@ -22,11 +22,11 @@ class Cliente extends Model
 
     public function person()
     {
-        return $this->belongsTo(Persona::class, 'id_person');
+        return $this->belongsTo(Persona::class, 'id_persona');
     }
 
     public function sales()
     {
-        return $this->hasMany(Venta::class, 'id_client');
+        return $this->hasMany(Venta::class, 'id_cliente');
     }
 }

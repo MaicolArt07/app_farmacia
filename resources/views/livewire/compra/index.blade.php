@@ -13,7 +13,7 @@
         >
     </div>
 
-    <div class="overflow-auto rounded border border-zinc-300 dark:border-zinc-700">
+    <div class="hidden overflow-auto rounded border border-zinc-300 md:block dark:border-zinc-700">
         <table class="min-w-full border-collapse text-sm">
             <thead class="sticky top-0 bg-zinc-300 dark:bg-zinc-800">
                 <tr>
@@ -104,6 +104,82 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+
+    <div class="flex flex-col gap-2 md:hidden">
+        @forelse ($purchases as $item)
+            <div x-data="{ open: false }" class="rounded border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900">
+                <div class="flex items-center gap-2">
+                    <button type="button" x-on:click.stop="open = !open"
+                        class="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full border border-primary text-primary transition hover:bg-primary hover:text-white">
+                        <i class="bi text-xs" :class="open ? 'bi-dash' : 'bi-plus'"></i>
+                    </button>
+
+                    <div class="min-w-0 flex-1">
+                        <p class="truncate text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ $item->supplier?->razon_social ?? '-' }}</p>
+                        <p class="truncate text-xs text-zinc-500 dark:text-zinc-400">{{ \Carbon\Carbon::parse($item->fecha_compra)->format('d/m/Y') }} &middot; {{ number_format($item->total, 2) }}</p>
+                    </div>
+
+                    <div class="flex shrink-0 items-center gap-3" onclick="event.stopPropagation()">
+                        <a href="{{ route('compras.view', $item->id) }}" wire:navigate
+                            class="cursor-pointer text-zinc-500 transition hover:text-primary dark:text-zinc-400">
+                            <i class="bi bi-eye text-base"></i>
+                        </a>
+
+                        <a href="{{ route('compras.edit', $item->id) }}" wire:navigate
+                            class="cursor-pointer text-zinc-500 transition hover:text-primary dark:text-zinc-400">
+                            <i class="bi bi-pencil-square text-base"></i>
+                        </a>
+
+                        <button type="button"
+                            x-on:click.prevent="confirmAction({
+                                text: '¿Deseas {{ $item->estado ? 'desactivar' : 'activar' }} este registro?',
+                                confirmText: 'Sí, {{ $item->estado ? 'desactivar' : 'activar' }}',
+                            }).then((ok) => { if (ok) $wire.delete({{ $item->id }}) })"
+                            class="{{ $item->estado ? 'text-zinc-500 hover:text-red-600 dark:text-zinc-400' : 'text-zinc-400 dark:text-zinc-600' }} cursor-pointer transition">
+                            <i class="bi {{ $item->estado ? 'bi-trash' : 'bi-arrow-clockwise' }} text-base"></i>
+                        </button>
+
+                        @can('Cambiar Estado Compras')
+                            @if($item->status !== 'CANCELLED')
+                                <button
+                                    type="button"
+                                    x-on:click.prevent="confirmAction({
+                                        title: '¿Anular esta compra?',
+                                        text: 'Se revertirá el stock ingresado.',
+                                        confirmText: 'Sí, anular',
+                                    }).then((ok) => { if (ok) $wire.cancelPurchase({{ $item->id }}) })"
+                                    class="cursor-pointer text-zinc-500 transition hover:text-red-600 dark:text-zinc-400"
+                                    title="Anular compra">
+                                    <i class="bi bi-arrow-counterclockwise text-base"></i>
+                                </button>
+                            @endif
+                        @endcan
+                    </div>
+                </div>
+
+                <div x-show="open" x-collapse x-cloak onclick="event.stopPropagation()" class="mt-2 grid grid-cols-2 gap-2 border-t border-zinc-200 pt-2 pl-8 dark:border-zinc-800">
+                    <div>
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Factura</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $item->numero_factura ?: '-' }}</p>
+                    </div>
+                    <div>
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Estado</span>
+                        <p>
+                            @if($item->status === 'CANCELLED')
+                                <span class="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-300">Anulada</span>
+                            @else
+                                <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">Activa</span>
+                            @endif
+                        </p>
+                    </div>
+                </div>
+            </div>
+        @empty
+            <div class="rounded border border-zinc-300 bg-white px-3 py-4 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400">
+                No hay compras registradas.
+            </div>
+        @endforelse
     </div>
 
     <div class="mt-4 dark:text-zinc-200">

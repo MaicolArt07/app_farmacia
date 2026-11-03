@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Auth;
 
+use App\Models\User;
+use App\Services\SessionSecurityService;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
@@ -9,6 +11,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -31,7 +34,9 @@ class Login extends Component
         $this->validate();
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
+        $user = User::where('email', $this->email)->first();
+
+        if (! $user || ! Auth::validate(['email' => $this->email, 'password' => $this->password])) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -39,10 +44,42 @@ class Login extends Component
             ]);
         }
 
+        if (app(SessionSecurityService::class)->hasActiveSession($user)) {
+            $this->dispatch('confirm-session-override');
+
+            return;
+        }
+
+        $this->finalizeLogin($user);
+    }
+
+    /**
+     * El usuario confirmó que quiere cerrar la sesión activa en el otro dispositivo.
+     */
+    #[On('confirmLogin')]
+    public function confirmLogin(): void
+    {
+        $user = User::where('email', $this->email)->first();
+
+        if (! $user || ! Auth::validate(['email' => $this->email, 'password' => $this->password])) {
+            throw ValidationException::withMessages([
+                'email' => __('auth.failed'),
+            ]);
+        }
+
+        $this->finalizeLogin($user);
+    }
+
+    private function finalizeLogin(User $user): void
+    {
         RateLimiter::clear($this->throttleKey());
+
+        app(SessionSecurityService::class)->startSession($user, request());
+
+        Auth::login($user, $this->remember);
+
         Session::regenerate();
 
-        // $this->redirectIntended(default: route('/', absolute: false), navigate: true);
         $this->redirectIntended(default: '/', navigate: true);
     }
 

@@ -10,6 +10,7 @@ use App\Livewire\LivewireLaboratorio;
 use App\Livewire\LivewireEmpresaForm;
 use App\Livewire\LivewireSucursal;
 use App\Livewire\LivewireMetodoPago;
+use App\Livewire\LivewireServicio;
 use App\Livewire\LivewireCategoria;
 use App\Livewire\LivewirePresentacion;
 use App\Livewire\LivewireProducto;
@@ -22,6 +23,8 @@ use App\Livewire\LivewireInventoryAlerts;
 use App\Livewire\LivewireKardex;
 use App\Livewire\LivewireFactura;
 use App\Livewire\LivewireReports;
+use App\Livewire\LivewireLoginLogs;
+use App\Livewire\LivewireRoles;
 use App\Models\Factura;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
@@ -37,10 +40,10 @@ use Barryvdh\DomPDF\Facade\Pdf;
 // })->name('home');
 
 Route::get('/', LivewireHome::class)
-    ->middleware(['auth', RedirectToFirstPermission::class])
+    ->middleware(['auth', 'single.session', RedirectToFirstPermission::class])
     ->name('home');
-    
-Route::middleware(['auth'])->group(function () {
+
+Route::middleware(['auth', 'single.session'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
     // Route::get('/', function () {
@@ -76,6 +79,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/payment-methods', LivewireMetodoPago::class)
     ->middleware('can:Ver Metodos Pago')
     ->name('payment-methods');
+
+    Route::get('/servicios', LivewireServicio::class)
+    ->middleware('can:Ver Servicios')
+    ->name('servicios');
 
 
     Route::get('/categorias', LivewireCategoria::class)
@@ -172,6 +179,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/users/{user}/edit', LivewireUsers::class)->middleware('can:Ver Usuarios')->name('users.edit');
 
     Route::get('/permissions', LivewirePermissions::class)->middleware('can:Ver Permisos')->name('permissions');
+
+    Route::get('/roles', LivewireRoles::class)->middleware('can:Ver Roles')->name('roles');
+
+    Route::get('/login-logs', LivewireLoginLogs::class)->middleware('can:Ver Logs Acceso')->name('login-logs');
 
     Route::get('/personas', LivewirePersona::class)->middleware('can:Ver Persona')->name('personas');
 

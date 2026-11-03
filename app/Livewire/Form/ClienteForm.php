@@ -7,7 +7,7 @@ use Livewire\Form;
 class ClienteForm extends Form
 {
     public $id = null;
-    public $id_person = null;
+    public $id_persona = null;
     public $code = '';
     public $tipo = 'natural';
     public $nit = '';
@@ -17,7 +17,7 @@ class ClienteForm extends Form
     public function rules()
     {
         return [
-            'form.id_person' => 'required|exists:personas,id',
+            'form.id_persona' => 'required|exists:personas,id',
             'form.code' => 'required|string|max:30',
             'form.tipo' => 'required|in:natural,company',
             'form.nit' => 'nullable|string|max:30',
@@ -28,8 +28,8 @@ class ClienteForm extends Form
     public function messages()
     {
         return [
-            'form.id_person.required' => 'Debe seleccionar una persona.',
-            'form.id_person.exists' => 'La persona seleccionada no es válida.',
+            'form.id_persona.required' => 'Debe seleccionar una persona.',
+            'form.id_persona.exists' => 'La persona seleccionada no es válida.',
             'form.code.required' => 'El código es obligatorio.',
             'form.tipo.required' => 'Debe seleccionar el tipo de cliente.',
             'form.tipo.in' => 'El tipo seleccionado no es válido.',
@@ -40,7 +40,7 @@ class ClienteForm extends Form
     public function resetForm()
     {
         $this->id = null;
-        $this->id_person = null;
+        $this->id_persona = null;
         $this->code = '';
         $this->tipo = 'natural';
         $this->nit = '';
@@ -51,7 +51,7 @@ class ClienteForm extends Form
     public function fillForm($client)
     {
         $this->id = $client->id;
-        $this->id_person = $client->id_person;
+        $this->id_persona = $client->id_persona;
         $this->code = $client->code;
         $this->tipo = $client->tipo;
         $this->nit = $client->nit;

@@ -138,10 +138,10 @@ class LivewireProducto extends Component
 
         try {
             $data = [
-                'id_category' => $this->form->id_category,
-                'id_laboratory' => $this->form->id_laboratory ?: null,
-                'id_presentation' => $this->form->id_presentation,
-                'id_sin_product_code' => $this->form->id_sin_product_code ?: null,
+                'id_categoria' => $this->form->id_categoria,
+                'id_laboratorio' => $this->form->id_laboratorio ?: null,
+                'id_presentacion' => $this->form->id_presentacion,
+                'id_codigo_producto_sin' => $this->form->id_codigo_producto_sin ?: null,
                 'code' => $this->form->code,
                 'barcode' => $this->form->barcode ?: null,
                 'nombre' => $this->form->nombre,
@@ -164,7 +164,7 @@ class LivewireProducto extends Component
 
                 if ($this->registerInitialStock) {
                     $lot = Lote::create([
-                        'id_product' => $product->id,
+                        'id_producto' => $product->id,
                         'codigo_lote' => $this->stockForm->codigo_lote,
                         'precio_compra' => $this->stockForm->precio_compra,
                         'precio_venta' => $this->form->precio_venta,
@@ -175,9 +175,9 @@ class LivewireProducto extends Component
                     ]);
 
                     MovimientoInventario::create([
-                        'id_product' => $product->id,
-                        'id_lot' => $lot->id,
-                        'id_user' => Auth::id(),
+                        'id_producto' => $product->id,
+                        'id_lote' => $lot->id,
+                        'id_usuario' => Auth::id(),
                         'tipo_movimiento' => 'IN',
                         'reference_type' => 'INITIAL_STOCK',
                         'reference_id' => null,

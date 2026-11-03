@@ -20,7 +20,8 @@
         >
     </div>
 
-    <div class="overflow-auto rounded border border-zinc-300 dark:border-zinc-700">
+    {{-- Tabla (md en adelante) --}}
+    <div class="hidden overflow-auto rounded border border-zinc-300 md:block dark:border-zinc-700">
         <table class="min-w-full border-collapse text-sm">
             <thead class="sticky top-0 bg-zinc-300 dark:bg-zinc-800">
                 <tr>
@@ -75,6 +76,65 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+
+    {{-- Tarjetas responsive (solo en móvil, estilo "datatable responsive": campo principal + Ver más) --}}
+    <div class="flex flex-col gap-2 md:hidden">
+        @forelse ($persons as $item)
+            <div
+                x-data="{ open: false }"
+                wire:click="view({{ $item->id }})"
+                class="cursor-pointer rounded border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+            >
+                <div class="flex items-center gap-2">
+                    <button type="button" x-on:click.stop="open = !open"
+                        class="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full border border-primary text-primary transition hover:bg-primary hover:text-white">
+                        <i class="bi text-xs" :class="open ? 'bi-dash' : 'bi-plus'"></i>
+                    </button>
+
+                    <div class="min-w-0 flex-1">
+                        <p class="truncate text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ $item->nombre }} {{ $item->apellido }}</p>
+                        <p class="truncate text-xs text-zinc-500 dark:text-zinc-400">CI: {{ $item->ci ?: '-' }}</p>
+                    </div>
+
+                    <div class="flex shrink-0 items-center gap-3" onclick="event.stopPropagation()">
+                        <button type="button" wire:click="edit({{ $item->id }})"
+                            class="cursor-pointer text-zinc-500 transition hover:text-primary dark:text-zinc-400">
+                            <i class="bi bi-pencil-square text-base"></i>
+                        </button>
+
+                        <button
+                            type="button"
+                            x-on:click.prevent="confirmAction({
+                                text: '¿Deseas {{ $item->estado ? 'desactivar' : 'activar' }} este registro?',
+                                confirmText: 'Sí, {{ $item->estado ? 'desactivar' : 'activar' }}',
+                            }).then((ok) => { if (ok) $wire.delete({{ $item->id }}) })"
+                            class="cursor-pointer text-zinc-500 transition hover:text-red-600 dark:text-zinc-400">
+                            <i class="bi {{ $item->estado ? 'bi-trash' : 'bi-arrow-clockwise' }} text-base"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div x-show="open" x-collapse x-cloak onclick="event.stopPropagation()" class="mt-2 grid grid-cols-2 gap-2 border-t border-zinc-200 pt-2 pl-8 dark:border-zinc-800">
+                    <div>
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Teléfono</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $item->telefono ?: '-' }}</p>
+                    </div>
+                    <div>
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Estado</span>
+                        <p>
+                            <span class="rounded-full px-2 py-0.5 text-xs font-medium {{ $item->estado ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' }}">
+                                {{ $item->estado ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        @empty
+            <div class="rounded border border-zinc-300 bg-white px-3 py-4 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400">
+                No hay personas registradas.
+            </div>
+        @endforelse
     </div>
 
     <div class="mt-4 dark:text-zinc-200">
@@ -141,13 +201,13 @@
                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-200">País <span class="text-red-600">*</span></label>
 
                     <x-search-select
-                        model="form.id_country"
-                        :value="$form->id_country"
+                        model="form.id_pais"
+                        :value="$form->id_pais"
                         placeholder="Seleccione un país"
                         :options="$countries->map(fn ($c) => ['value' => $c->id, 'label' => $c->nombre])->values()"
                     />
 
-                    @error('form.id_country')
+                    @error('form.id_pais')
                         <span class="text-sm text-red-500">{{ $message }}</span>
                     @enderror
                 </div>

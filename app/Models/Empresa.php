@@ -38,7 +38,7 @@ class Empresa extends Model
 
     public function branches()
     {
-        return $this->hasMany(Sucursal::class, 'id_company');
+        return $this->hasMany(Sucursal::class, 'id_empresa');
     }
 
     /**

@@ -12,7 +12,7 @@ class Sucursal extends Model
     protected $table = 'sucursales';
 
     protected $fillable = [
-        'id_company',
+        'id_empresa',
         'numero_sucursal',
         'punto_venta',
         'nombre',
@@ -30,6 +30,6 @@ class Sucursal extends Model
 
     public function company()
     {
-        return $this->belongsTo(Empresa::class, 'id_company');
+        return $this->belongsTo(Empresa::class, 'id_empresa');
     }
 }

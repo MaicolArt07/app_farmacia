@@ -113,7 +113,7 @@ class LivewireCliente extends Component
     {
         $person = Persona::findOrFail($id);
 
-        $this->form->id_person = $person->id;
+        $this->form->id_persona = $person->id;
         $this->selectedPersonLabel = trim($person->nombre . ' ' . $person->apellido) . ' - CI: ' . $person->ci;
         $this->personSearch = '';
         $this->personResults = [];
@@ -121,7 +121,7 @@ class LivewireCliente extends Component
 
     public function clearPerson()
     {
-        $this->form->id_person = null;
+        $this->form->id_persona = null;
         $this->selectedPersonLabel = '';
         $this->personSearch = '';
         $this->personResults = [];
@@ -135,7 +135,7 @@ class LivewireCliente extends Component
             if ($this->form->id) {
                 $client = Cliente::findOrFail($this->form->id);
                 $client->update([
-                    'id_person' => $this->form->id_person,
+                    'id_persona' => $this->form->id_persona,
                     'code' => $this->form->code,
                     'tipo' => $this->form->tipo,
                     'nit' => $this->form->nit,
@@ -146,7 +146,7 @@ class LivewireCliente extends Component
                 $message = 'Cliente actualizado correctamente.';
             } else {
                 Cliente::create([
-                    'id_person' => $this->form->id_person,
+                    'id_persona' => $this->form->id_persona,
                     'code' => $this->form->code,
                     'tipo' => $this->form->tipo,
                     'nit' => $this->form->nit,

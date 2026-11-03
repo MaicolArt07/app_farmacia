@@ -7,7 +7,7 @@ use Livewire\Form;
 class ProveedorForm extends Form
 {
     public $id = null;
-    public $id_person = null;
+    public $id_persona = null;
     public $razon_social = '';
     public $cargo_contacto = '';
     public $nit = '';
@@ -17,7 +17,7 @@ class ProveedorForm extends Form
     public function rules()
     {
         return [
-            'form.id_person' => 'required|exists:personas,id',
+            'form.id_persona' => 'required|exists:personas,id',
             'form.razon_social' => 'required|string|max:150',
             'form.cargo_contacto' => 'nullable|string|max:100',
             'form.nit' => 'nullable|string|max:30',
@@ -28,8 +28,8 @@ class ProveedorForm extends Form
     public function messages()
     {
         return [
-            'form.id_person.required' => 'Debe seleccionar una persona.',
-            'form.id_person.exists' => 'La persona seleccionada no es válida.',
+            'form.id_persona.required' => 'Debe seleccionar una persona.',
+            'form.id_persona.exists' => 'La persona seleccionada no es válida.',
             'form.razon_social.required' => 'La razón social es obligatoria.',
             'form.email.email' => 'El correo electrónico no es válido.',
         ];
@@ -38,7 +38,7 @@ class ProveedorForm extends Form
     public function resetForm()
     {
         $this->id = null;
-        $this->id_person = null;
+        $this->id_persona = null;
         $this->razon_social = '';
         $this->cargo_contacto = '';
         $this->nit = '';
@@ -49,7 +49,7 @@ class ProveedorForm extends Form
     public function fillForm($supplier)
     {
         $this->id = $supplier->id;
-        $this->id_person = $supplier->id_person;
+        $this->id_persona = $supplier->id_persona;
         $this->razon_social = $supplier->razon_social;
         $this->cargo_contacto = $supplier->cargo_contacto;
         $this->nit = $supplier->nit;

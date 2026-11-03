@@ -31,10 +31,15 @@ class UpgradeSchemaCommand extends Command
         $this->makeLotsExpirationDateNullable();
         $this->createInvoicesTable();
         $this->addProductsCodeUnique();
+        $this->addUsersSessionTokenColumn();
+        $this->createLoginLogsTable();
+        $this->renameForeignKeyColumnsToSpanish();
         $this->addForeignKeys();
         $this->seedInvoicingPermissions();
         $this->seedReportsPermissions();
         $this->seedMissingKardexAndAlertsPermissions();
+        $this->seedLoginLogsPermission();
+        $this->seedRolesPermission();
         $this->seedCorePermissions();
 
         $this->newLine();
@@ -53,20 +58,22 @@ class UpgradeSchemaCommand extends Command
 
     private function fixOrphanCountry(): void
     {
-        $this->line('Verificando país huérfano en personas.id_country...');
+        $column = Schema::hasColumn('personas', 'id_pais') ? 'id_pais' : 'id_country';
+
+        $this->line("Verificando país huérfano en personas.{$column}...");
 
         $bolivia = DB::table('paises')->where('nombre', 'Bolivia')->first();
 
         if (!$bolivia) {
-            $this->warnings[] = 'No existe un país "Bolivia" en la tabla paises; no se corrigió personas.id_country.';
+            $this->warnings[] = "No existe un país \"Bolivia\" en la tabla paises; no se corrigió personas.{$column}.";
             return;
         }
 
         $validIds = DB::table('paises')->pluck('id')->all();
 
         $affected = DB::table('personas')
-            ->whereNotIn('id_country', $validIds)
-            ->update(['id_country' => $bolivia->id]);
+            ->whereNotIn($column, $validIds)
+            ->update([$column => $bolivia->id]);
 
         if ($affected > 0) {
             $this->info("  -> {$affected} fila(s) de personas reapuntadas a pais '{$bolivia->nombre}' (id={$bolivia->id}).");
@@ -100,15 +107,15 @@ class UpgradeSchemaCommand extends Command
 
     private function addUsersIdPersonColumn(): void
     {
-        $this->line('Agregando users.id_person...');
+        $this->line('Agregando users.id_persona...');
 
-        if (Schema::hasColumn('users', 'id_person')) {
+        if (Schema::hasColumn('users', 'id_persona') || Schema::hasColumn('users', 'id_person')) {
             $this->line('  -> ya existe.');
             return;
         }
 
         DB::statement('ALTER TABLE `users` ADD COLUMN `id_person` BIGINT UNSIGNED NULL DEFAULT NULL AFTER `id`');
-        $this->info('  -> columna creada.');
+        $this->info('  -> columna creada (se renombrará a id_persona en el siguiente paso).');
     }
 
     private function fixPersonCreatedAtTypo(): void
@@ -226,36 +233,37 @@ class UpgradeSchemaCommand extends Command
         $this->line('Agregando foreign keys reales...');
 
         $definitions = [
-            ['personas', 'id_country', 'paises', 'id', 'RESTRICT'],
-            ['clientes', 'id_person', 'personas', 'id', 'RESTRICT'],
-            ['proveedores', 'id_person', 'personas', 'id', 'RESTRICT'],
-            ['users', 'id_person', 'personas', 'id', 'SET NULL'],
-            ['productos', 'id_category', 'categorias', 'id', 'RESTRICT'],
-            ['productos', 'id_laboratory', 'laboratorios', 'id', 'RESTRICT'],
-            ['productos', 'id_presentation', 'presentaciones', 'id', 'RESTRICT'],
-            ['lotes', 'id_product', 'productos', 'id', 'RESTRICT'],
-            ['compras', 'id_supplier', 'proveedores', 'id', 'RESTRICT'],
-            ['compras', 'id_user', 'users', 'id', 'RESTRICT'],
+            ['personas', 'id_pais', 'paises', 'id', 'RESTRICT'],
+            ['clientes', 'id_persona', 'personas', 'id', 'RESTRICT'],
+            ['proveedores', 'id_persona', 'personas', 'id', 'RESTRICT'],
+            ['users', 'id_persona', 'personas', 'id', 'SET NULL'],
+            ['productos', 'id_categoria', 'categorias', 'id', 'RESTRICT'],
+            ['productos', 'id_laboratorio', 'laboratorios', 'id', 'RESTRICT'],
+            ['productos', 'id_presentacion', 'presentaciones', 'id', 'RESTRICT'],
+            ['lotes', 'id_producto', 'productos', 'id', 'RESTRICT'],
+            ['compras', 'id_proveedor', 'proveedores', 'id', 'RESTRICT'],
+            ['compras', 'id_usuario', 'users', 'id', 'RESTRICT'],
             ['compras', 'cancelled_by', 'users', 'id', 'SET NULL'],
-            ['detalles_compra', 'id_purchase', 'compras', 'id', 'CASCADE'],
-            ['detalles_compra', 'id_product', 'productos', 'id', 'RESTRICT'],
-            ['ventas', 'id_client', 'clientes', 'id', 'RESTRICT'],
-            ['ventas', 'id_user', 'users', 'id', 'RESTRICT'],
+            ['detalles_compra', 'id_compra', 'compras', 'id', 'CASCADE'],
+            ['detalles_compra', 'id_producto', 'productos', 'id', 'RESTRICT'],
+            ['ventas', 'id_cliente', 'clientes', 'id', 'RESTRICT'],
+            ['ventas', 'id_usuario', 'users', 'id', 'RESTRICT'],
             ['ventas', 'cancelled_by', 'users', 'id', 'SET NULL'],
-            ['detalles_venta', 'id_sale', 'ventas', 'id', 'CASCADE'],
-            ['detalles_venta', 'id_product', 'productos', 'id', 'RESTRICT'],
-            ['detalles_venta', 'id_lot', 'lotes', 'id', 'RESTRICT'],
-            ['cajas', 'id_user', 'users', 'id', 'RESTRICT'],
-            ['movimientos_caja', 'id_cash_register', 'cajas', 'id', 'CASCADE'],
-            ['movimientos_caja', 'id_user', 'users', 'id', 'RESTRICT'],
-            ['movimientos_inventario', 'id_product', 'productos', 'id', 'RESTRICT'],
-            ['movimientos_inventario', 'id_lot', 'lotes', 'id', 'SET NULL'],
-            ['movimientos_inventario', 'id_user', 'users', 'id', 'RESTRICT'],
-            ['ajustes_inventario', 'id_product', 'productos', 'id', 'RESTRICT'],
-            ['ajustes_inventario', 'id_lot', 'lotes', 'id', 'RESTRICT'],
-            ['ajustes_inventario', 'id_user', 'users', 'id', 'RESTRICT'],
-            ['facturas', 'id_sale', 'ventas', 'id', 'RESTRICT'],
-            ['facturas', 'id_user', 'users', 'id', 'RESTRICT'],
+            ['detalles_venta', 'id_venta', 'ventas', 'id', 'CASCADE'],
+            ['detalles_venta', 'id_producto', 'productos', 'id', 'RESTRICT'],
+            ['detalles_venta', 'id_lote', 'lotes', 'id', 'RESTRICT'],
+            ['cajas', 'id_usuario', 'users', 'id', 'RESTRICT'],
+            ['movimientos_caja', 'id_caja', 'cajas', 'id', 'CASCADE'],
+            ['movimientos_caja', 'id_usuario', 'users', 'id', 'RESTRICT'],
+            ['movimientos_inventario', 'id_producto', 'productos', 'id', 'RESTRICT'],
+            ['movimientos_inventario', 'id_lote', 'lotes', 'id', 'SET NULL'],
+            ['movimientos_inventario', 'id_usuario', 'users', 'id', 'RESTRICT'],
+            ['ajustes_inventario', 'id_producto', 'productos', 'id', 'RESTRICT'],
+            ['ajustes_inventario', 'id_lote', 'lotes', 'id', 'RESTRICT'],
+            ['ajustes_inventario', 'id_usuario', 'users', 'id', 'RESTRICT'],
+            ['facturas', 'id_venta', 'ventas', 'id', 'RESTRICT'],
+            ['facturas', 'id_usuario', 'users', 'id', 'RESTRICT'],
+            ['login_logs', 'id_usuario', 'users', 'id', 'RESTRICT'],
         ];
 
         $database = DB::getDatabaseName();
@@ -354,6 +362,136 @@ class UpgradeSchemaCommand extends Command
         }
     }
 
+    private function addUsersSessionTokenColumn(): void
+    {
+        $this->line('Agregando users.session_token (sesión única por usuario)...');
+
+        if (Schema::hasColumn('users', 'session_token')) {
+            $this->line('  -> ya existe.');
+            return;
+        }
+
+        DB::statement('ALTER TABLE `users` ADD COLUMN `session_token` VARCHAR(64) NULL DEFAULT NULL AFTER `remember_token`');
+        $this->info('  -> columna creada.');
+    }
+
+    private function createLoginLogsTable(): void
+    {
+        $this->line('Creando tabla login_logs...');
+
+        if (Schema::hasTable('login_logs')) {
+            $this->line('  -> ya existe.');
+            return;
+        }
+
+        DB::statement(<<<SQL
+            CREATE TABLE `login_logs` (
+              `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+              `id_user` bigint UNSIGNED NOT NULL,
+              `session_token` varchar(64) DEFAULT NULL,
+              `action` enum('login','logout','forced_logout') NOT NULL DEFAULT 'login',
+              `ip_address` varchar(45) DEFAULT NULL,
+              `user_agent` text,
+              `browser` varchar(100) DEFAULT NULL,
+              `platform` varchar(100) DEFAULT NULL,
+              `device` varchar(50) DEFAULT NULL,
+              `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+              PRIMARY KEY (`id`),
+              KEY `login_logs_id_user_foreign` (`id_user`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        SQL);
+
+        $this->info('  -> tabla creada.');
+    }
+
+    private function seedLoginLogsPermission(): void
+    {
+        $this->line('Creando permiso de Logs de Acceso...');
+
+        $permission = Permission::firstOrCreate(['name' => 'Ver Logs Acceso', 'guard_name' => 'web']);
+
+        $admin = Role::where('name', 'admin')->where('guard_name', 'web')->first();
+
+        if ($admin) {
+            $admin->givePermissionTo($permission);
+            $this->info('  -> permiso creado y asignado al rol admin.');
+        } else {
+            $this->warnings[] = "Rol 'admin' no encontrado; el permiso 'Ver Logs Acceso' se creó pero no se asignó a ningún rol.";
+        }
+    }
+
+    private function seedRolesPermission(): void
+    {
+        $this->line('Creando permiso de Roles...');
+
+        $permission = Permission::firstOrCreate(['name' => 'Ver Roles', 'guard_name' => 'web']);
+
+        $admin = Role::where('name', 'admin')->where('guard_name', 'web')->first();
+
+        if ($admin) {
+            $admin->givePermissionTo($permission);
+            $this->info('  -> permiso creado y asignado al rol admin.');
+        } else {
+            $this->warnings[] = "Rol 'admin' no encontrado; el permiso 'Ver Roles' se creó pero no se asignó a ningún rol.";
+        }
+    }
+
+    private function renameForeignKeyColumnsToSpanish(): void
+    {
+        $this->line('Renombrando columnas FK a español (id_person -> id_persona, etc.)...');
+
+        $renames = [
+            ['users', 'id_person', 'id_persona', 'BIGINT UNSIGNED NULL DEFAULT NULL'],
+            ['clientes', 'id_person', 'id_persona', 'BIGINT UNSIGNED NOT NULL'],
+            ['proveedores', 'id_person', 'id_persona', 'BIGINT UNSIGNED NOT NULL'],
+            ['personas', 'id_country', 'id_pais', 'INT NOT NULL'],
+            ['productos', 'id_category', 'id_categoria', 'BIGINT UNSIGNED NOT NULL'],
+            ['productos', 'id_laboratory', 'id_laboratorio', 'BIGINT UNSIGNED NULL DEFAULT NULL'],
+            ['productos', 'id_presentation', 'id_presentacion', 'BIGINT UNSIGNED NOT NULL'],
+            ['productos', 'id_sin_product_code', 'id_codigo_producto_sin', 'BIGINT UNSIGNED NULL DEFAULT NULL'],
+            ['lotes', 'id_product', 'id_producto', 'BIGINT UNSIGNED NOT NULL'],
+            ['movimientos_inventario', 'id_product', 'id_producto', 'BIGINT UNSIGNED NOT NULL'],
+            ['movimientos_inventario', 'id_lot', 'id_lote', 'BIGINT UNSIGNED NULL DEFAULT NULL'],
+            ['movimientos_inventario', 'id_user', 'id_usuario', 'BIGINT UNSIGNED NOT NULL'],
+            ['ajustes_inventario', 'id_product', 'id_producto', 'BIGINT UNSIGNED NOT NULL'],
+            ['ajustes_inventario', 'id_lot', 'id_lote', 'BIGINT UNSIGNED NOT NULL'],
+            ['ajustes_inventario', 'id_user', 'id_usuario', 'BIGINT UNSIGNED NOT NULL'],
+            ['compras', 'id_supplier', 'id_proveedor', 'BIGINT UNSIGNED NOT NULL'],
+            ['compras', 'id_user', 'id_usuario', 'BIGINT UNSIGNED NOT NULL'],
+            ['detalles_compra', 'id_purchase', 'id_compra', 'BIGINT UNSIGNED NOT NULL'],
+            ['detalles_compra', 'id_product', 'id_producto', 'BIGINT UNSIGNED NOT NULL'],
+            ['cajas', 'id_user', 'id_usuario', 'BIGINT UNSIGNED NOT NULL'],
+            ['movimientos_caja', 'id_cash_register', 'id_caja', 'BIGINT UNSIGNED NOT NULL'],
+            ['movimientos_caja', 'id_user', 'id_usuario', 'BIGINT UNSIGNED NOT NULL'],
+            ['ventas', 'id_client', 'id_cliente', 'BIGINT UNSIGNED NULL DEFAULT NULL'],
+            ['ventas', 'id_user', 'id_usuario', 'BIGINT UNSIGNED NOT NULL'],
+            ['ventas', 'id_cash_register', 'id_caja', 'BIGINT UNSIGNED NULL DEFAULT NULL'],
+            ['ventas', 'id_payment_method', 'id_metodo_pago', 'BIGINT UNSIGNED NULL DEFAULT NULL'],
+            ['detalles_venta', 'id_sale', 'id_venta', 'BIGINT UNSIGNED NOT NULL'],
+            ['detalles_venta', 'id_product', 'id_producto', 'BIGINT UNSIGNED NOT NULL'],
+            ['detalles_venta', 'id_lot', 'id_lote', 'BIGINT UNSIGNED NOT NULL'],
+            ['facturas', 'id_sale', 'id_venta', 'BIGINT UNSIGNED NOT NULL'],
+            ['facturas', 'id_user', 'id_usuario', 'BIGINT UNSIGNED NOT NULL'],
+            ['sucursales', 'id_company', 'id_empresa', 'BIGINT UNSIGNED NOT NULL'],
+            ['login_logs', 'id_user', 'id_usuario', 'BIGINT UNSIGNED NOT NULL'],
+        ];
+
+        $renamed = 0;
+
+        foreach ($renames as [$table, $old, $new, $definition]) {
+            if (Schema::hasTable($table) && Schema::hasColumn($table, $old) && !Schema::hasColumn($table, $new)) {
+                try {
+                    DB::statement("ALTER TABLE `{$table}` CHANGE `{$old}` `{$new}` {$definition}");
+                    $renamed++;
+                } catch (\Throwable $e) {
+                    $this->warnings[] = "No se pudo renombrar {$table}.{$old} -> {$new}: " . $e->getMessage();
+                }
+            }
+        }
+
+        $this->info("  -> {$renamed} columna(s) renombrada(s) (el resto ya estaba en español).");
+    }
+
     private function seedCorePermissions(): void
     {
         $this->line('Creando catálogo completo de permisos...');
@@ -368,6 +506,9 @@ class UpgradeSchemaCommand extends Command
             'Ver Empresa',
             'Ver Sucursales',
             'Ver Metodos Pago',
+            'Ver Servicios',
+            'Crear Servicios',
+            'Cambiar Estado Servicios',
             'Ver Categorias',
             'Ver Presentaciones',
             'Ver Productos',
@@ -395,6 +536,8 @@ class UpgradeSchemaCommand extends Command
             'Ver Gestion de Usuarios',
             'Ver Usuarios',
             'Ver Permisos',
+            'Ver Logs Acceso',
+            'Ver Roles',
         ];
 
         $created = 0;

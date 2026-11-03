@@ -18,7 +18,7 @@ class KardexExport implements FromCollection, WithHeadings, WithMapping, ShouldA
     {
         return MovimientoInventario::with(['product', 'lot', 'user'])
             ->whereBetween('created_at', [$this->from . ' 00:00:00', $this->to . ' 23:59:59'])
-            ->when($this->productId, fn ($q) => $q->where('id_product', $this->productId))
+            ->when($this->productId, fn ($q) => $q->where('id_producto', $this->productId))
             ->orderBy('created_at')
             ->get();
     }

@@ -15,8 +15,8 @@
         />
     </div>
 
-    <!-- Tabla -->
-    <div class="overflow-auto rounded border border-zinc-300 dark:border-zinc-700">
+    <!-- Tabla (md en adelante) -->
+    <div class="hidden overflow-auto rounded border border-zinc-300 md:block dark:border-zinc-700">
         <table class="min-w-full border-collapse text-sm">
             <thead class="sticky top-0 bg-zinc-300 dark:bg-zinc-800">
                 <tr>
@@ -75,6 +75,74 @@
         </table>
     </div>
 
+    {{-- Tarjetas responsive (solo en móvil) --}}
+    <div class="flex flex-col gap-2 md:hidden">
+        @forelse ($users as $user)
+            <div
+                x-data="{ open: false }"
+                wire:click="view({{ $user->id }})"
+                class="cursor-pointer rounded border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+            >
+                <div class="flex items-center gap-2">
+                    <button type="button" x-on:click.stop="open = !open"
+                        class="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full border border-primary text-primary transition hover:bg-primary hover:text-white">
+                        <i class="bi text-xs" :class="open ? 'bi-dash' : 'bi-plus'"></i>
+                    </button>
+
+                    <div class="min-w-0 flex-1">
+                        <p class="truncate text-sm font-medium capitalize text-zinc-800 dark:text-zinc-100">{{ $user->name }}</p>
+                        <p class="truncate text-xs text-zinc-500 dark:text-zinc-400">{{ $user->email }}</p>
+                    </div>
+
+                    <div class="flex shrink-0 items-center gap-3" onclick="event.stopPropagation()">
+                        <a
+                            href="{{ route('users.edit', $user->id) }}" wire:navigate
+                            class="cursor-pointer text-zinc-500 transition hover:text-primary dark:text-zinc-400"
+                            title="Editar">
+                            <i class="bi bi-pencil-square text-base"></i>
+                        </a>
+
+                        <button
+                            type="button"
+                            x-on:click.prevent="confirmAction({
+                                title: '¿Eliminar usuario?',
+                                confirmText: 'Sí, eliminar',
+                            }).then((ok) => { if (ok) $wire.delete({{ $user->id }}) })"
+                            class="cursor-pointer text-zinc-500 transition hover:text-red-600 dark:text-zinc-400"
+                            title="Eliminar">
+                            <i class="bi bi-trash text-base"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div x-show="open" x-collapse x-cloak onclick="event.stopPropagation()" class="mt-2 grid grid-cols-2 gap-2 border-t border-zinc-200 pt-2 pl-8 dark:border-zinc-800">
+                    <div class="col-span-2">
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Persona</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">
+                            @if ($user->person)
+                                {{ trim($user->person->nombre . ' ' . $user->person->apellido) }}
+                            @else
+                                &mdash;
+                            @endif
+                        </p>
+                    </div>
+                    <div class="col-span-2">
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Permisos</span>
+                        <p>
+                            <span class="rounded-full bg-zinc-200 px-3 py-1 text-xs font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">
+                                {{ $user->getAllPermissions()->count() }} permiso(s)
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        @empty
+            <div class="rounded border border-zinc-300 bg-white px-3 py-4 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400">
+                No se encontraron usuarios.
+            </div>
+        @endforelse
+    </div>
+
     <!-- Paginacion -->
     <div class="mt-4 dark:text-zinc-200">
         {{ $users->links() }}
@@ -115,7 +183,17 @@
                         </p>
                     </div>
                     <div class="space-y-1">
-                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Permisos ({{ $viewing->getAllPermissions()->count() }})</span>
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Roles ({{ $viewing->roles->count() }})</span>
+                        <div class="flex flex-wrap gap-1">
+                            @forelse ($viewing->roles as $role)
+                                <span class="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium capitalize text-primary">{{ $role->name }}</span>
+                            @empty
+                                <span class="text-sm text-zinc-500 dark:text-zinc-400">Sin roles asignados.</span>
+                            @endforelse
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Permisos totales ({{ $viewing->getAllPermissions()->count() }})</span>
                         <div class="flex flex-wrap gap-1">
                             @forelse ($viewing->getAllPermissions() as $permission)
                                 <span class="rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">{{ $permission->name }}</span>

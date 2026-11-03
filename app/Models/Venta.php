@@ -12,10 +12,10 @@ class Venta extends Model
     protected $table = 'ventas';
 
     protected $fillable = [
-        'id_client',
-        'id_user',
-        'id_cash_register',
-        'id_payment_method',
+        'id_cliente',
+        'id_usuario',
+        'id_caja',
+        'id_metodo_pago',
         'fecha_venta',
         'metodo_pago',
         'subtotal',
@@ -54,22 +54,22 @@ class Venta extends Model
 
     public function client()
     {
-        return $this->belongsTo(Cliente::class, 'id_client');
+        return $this->belongsTo(Cliente::class, 'id_cliente');
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_user');
+        return $this->belongsTo(User::class, 'id_usuario');
     }
 
     public function cashRegister()
     {
-        return $this->belongsTo(Caja::class, 'id_cash_register');
+        return $this->belongsTo(Caja::class, 'id_caja');
     }
 
     public function paymentMethod()
     {
-        return $this->belongsTo(MetodoPago::class, 'id_payment_method');
+        return $this->belongsTo(MetodoPago::class, 'id_metodo_pago');
     }
 
     public function cancelledBy()
@@ -79,12 +79,12 @@ class Venta extends Model
 
     public function details()
     {
-        return $this->hasMany(DetalleVenta::class, 'id_sale');
+        return $this->hasMany(DetalleVenta::class, 'id_venta');
     }
 
     public function invoice()
     {
-        return $this->hasOne(Factura::class, 'id_sale');
+        return $this->hasOne(Factura::class, 'id_venta');
     }
 
     /*

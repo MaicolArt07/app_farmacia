@@ -153,7 +153,7 @@ class ImportInventoryCommand extends Command
         }
 
         DB::table('personas')
-            ->whereNotIn('id', DB::table('users')->whereNotNull('id_person')->pluck('id_person'))
+            ->whereNotIn('id', DB::table('users')->whereNotNull('id_persona')->pluck('id_persona'))
             ->delete();
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1');
@@ -212,9 +212,9 @@ class ImportInventoryCommand extends Command
         }
 
         $product = Producto::create([
-            'id_category' => $category->id,
-            'id_laboratory' => $laboratory?->id,
-            'id_presentation' => $presentation->id,
+            'id_categoria' => $category->id,
+            'id_laboratorio' => $laboratory?->id,
+            'id_presentacion' => $presentation->id,
             'code' => $clave,
             'barcode' => $clave,
             'nombre' => $name,
@@ -230,7 +230,7 @@ class ImportInventoryCommand extends Command
         $summary['products_created']++;
 
         $lot = Lote::create([
-            'id_product' => $product->id,
+            'id_producto' => $product->id,
             'codigo_lote' => 'CARGA-INICIAL-' . $clave,
             'precio_compra' => $precioCompra,
             'precio_venta' => $precioVenta,
@@ -250,9 +250,9 @@ class ImportInventoryCommand extends Command
         }
 
         MovimientoInventario::create([
-            'id_product' => $product->id,
-            'id_lot' => $lot->id,
-            'id_user' => $userId,
+            'id_producto' => $product->id,
+            'id_lote' => $lot->id,
+            'id_usuario' => $userId,
             'tipo_movimiento' => 'IN',
             'reference_type' => 'INVENTORY_IMPORT',
             'reference_id' => null,

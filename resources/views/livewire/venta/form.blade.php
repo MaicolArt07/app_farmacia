@@ -87,7 +87,7 @@
                     </div>
                 @endif
 
-                @error('form.id_client')
+                @error('form.id_cliente')
                     <span class="mt-1 block text-sm text-red-500">{{ $message }}</span>
                 @enderror
             </div>
@@ -101,13 +101,13 @@
 
             <div>
                 <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Método de pago <span class="text-red-600">*</span></label>
-                <select wire:model="form.id_payment_method" @disabled($viewMode)
+                <select wire:model="form.id_metodo_pago" @disabled($viewMode)
                     class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 disabled:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:disabled:bg-zinc-700">
                     @foreach($paymentMethods as $method)
                         <option value="{{ $method->id }}">{{ $method->nombre }}</option>
                     @endforeach
                 </select>
-                @error('form.id_payment_method') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                @error('form.id_metodo_pago') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
             </div>
 
             @unless($viewMode)
@@ -147,11 +147,39 @@
             </div>
             @endunless
 
+            @unless($viewMode)
+            <div class="md:col-span-2 xl:col-span-4">
+                <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Agregar servicio <span class="text-xs font-normal text-gray-400 dark:text-zinc-500">(Ej: inyectable, curación, nebulización...)</span></label>
+                <div class="relative">
+                    <input
+                        type="text"
+                        wire:model.live="serviceSearch"
+                        placeholder="Buscar servicio por nombre..."
+                        class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-zinc-800 focus:border-blue-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
+                    >
+
+                    @if (!empty($serviceResults))
+                        <div class="absolute z-10 mt-1 max-h-72 w-full overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
+                            @foreach ($serviceResults as $service)
+                                <button
+                                    type="button"
+                                    wire:click="addServiceToDetail({{ $service['id'] }})"
+                                    class="block w-full border-b border-gray-100 px-3 py-2 text-left text-sm hover:bg-gray-100 dark:border-zinc-700 dark:hover:bg-zinc-700"
+                                >
+                                    <span class="font-semibold text-zinc-800 dark:text-zinc-100">{{ $service['label'] }}</span>
+                                </button>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+            </div>
+            @endunless
+
             <div class="md:col-span-2 xl:col-span-4 overflow-x-auto rounded-xl border border-gray-200 dark:border-zinc-800">
                 <table class="min-w-full border-collapse text-sm">
                     <thead class="bg-gray-100 dark:bg-zinc-800">
                         <tr>
-                            <th class="border border-gray-200 px-3 py-2 text-left text-zinc-700 dark:border-zinc-700 dark:text-zinc-200">PRODUCTO</th>
+                            <th class="border border-gray-200 px-3 py-2 text-left text-zinc-700 dark:border-zinc-700 dark:text-zinc-200">PRODUCTO / SERVICIO</th>
                             <th class="border border-gray-200 px-3 py-2 text-left text-zinc-700 dark:border-zinc-700 dark:text-zinc-200">LOTE</th>
                             <th class="border border-gray-200 px-3 py-2 text-center text-zinc-700 dark:border-zinc-700 dark:text-zinc-200">STOCK</th>
                             <th class="border border-gray-200 px-3 py-2 text-center text-zinc-700 dark:border-zinc-700 dark:text-zinc-200">CANTIDAD</th>
@@ -167,6 +195,9 @@
                         @forelse($details as $index => $detail)
                             <tr class="bg-white dark:bg-zinc-900">
                                 <td class="border border-gray-200 px-3 py-2 align-middle text-zinc-800 dark:border-zinc-800 dark:text-zinc-100 min-w-[220px]">
+                                    @if (($detail['type'] ?? 'producto') === 'servicio')
+                                        <span class="mr-1 rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-semibold text-sky-700 dark:bg-sky-900/30 dark:text-sky-300">SERVICIO</span>
+                                    @endif
                                     {{ $detail['product_label'] }}
                                 </td>
 
@@ -175,12 +206,17 @@
                                 </td>
 
                                 <td class="border border-gray-200 px-3 py-2 text-center align-middle text-zinc-700 dark:border-zinc-800 dark:text-zinc-300">
-                                    {{ $detail['available'] ?? 0 }}
+                                    {{ ($detail['type'] ?? 'producto') === 'servicio' ? '-' : ($detail['available'] ?? 0) }}
                                 </td>
 
                                 <td class="border border-gray-200 px-3 py-2 align-middle dark:border-zinc-800 min-w-[100px]">
-                                    <input type="number" min="1" max="{{ $detail['available'] ?? 1 }}" wire:model.live="details.{{ $index }}.quantity" @disabled($viewMode)
-                                        class="w-full rounded border border-gray-300 px-2 py-1 text-center dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
+                                    @if (($detail['type'] ?? 'producto') === 'servicio')
+                                        <input type="number" min="1" step="1" wire:model.live="details.{{ $index }}.quantity" @disabled($viewMode)
+                                            class="w-full rounded border border-gray-300 px-2 py-1 text-center dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
+                                    @else
+                                        <input type="number" min="1" max="{{ $detail['available'] ?? 1 }}" wire:model.live="details.{{ $index }}.quantity" @disabled($viewMode)
+                                            class="w-full rounded border border-gray-300 px-2 py-1 text-center dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
+                                    @endif
                                 </td>
 
                                 <td class="border border-gray-200 px-3 py-2 align-middle dark:border-zinc-800 min-w-[120px]">
@@ -204,7 +240,7 @@
                         @empty
                             <tr>
                                 <td colspan="{{ $viewMode ? 6 : 7 }}" class="border border-gray-200 px-4 py-4 text-center text-gray-500 dark:border-zinc-800 dark:text-zinc-400">
-                                    No hay productos en el detalle.
+                                    No hay productos ni servicios en el detalle.
                                 </td>
                             </tr>
                         @endforelse
@@ -239,7 +275,7 @@
                     <div class="mt-4 border-t border-gray-200 pt-3 dark:border-zinc-700">
                         <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">
                             Monto recibido
-                            @if(strtoupper(optional($paymentMethods->firstWhere('id', $form->id_payment_method))->nombre) === 'EFECTIVO')
+                            @if(strtoupper(optional($paymentMethods->firstWhere('id', $form->id_metodo_pago))->nombre) === 'EFECTIVO')
                                 <span class="text-red-600">*</span>
                             @else
                                 <span class="text-xs font-normal text-gray-400 dark:text-zinc-500">(Opcional)</span>

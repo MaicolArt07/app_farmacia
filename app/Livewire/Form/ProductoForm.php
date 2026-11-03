@@ -9,10 +9,10 @@ class ProductoForm extends Form
 {
     public $id = null;
 
-    public $id_category = null;
-    public $id_laboratory = null;
-    public $id_presentation = null;
-    public $id_sin_product_code = null;
+    public $id_categoria = null;
+    public $id_laboratorio = null;
+    public $id_presentacion = null;
+    public $id_codigo_producto_sin = null;
 
     public $code = '';
     public $barcode = '';
@@ -29,10 +29,10 @@ class ProductoForm extends Form
     public function rules()
     {
         return [
-            'form.id_category' => 'required|exists:categorias,id',
-            'form.id_laboratory' => 'nullable|exists:laboratorios,id',
-            'form.id_presentation' => 'required|exists:presentaciones,id',
-            'form.id_sin_product_code' => 'nullable|exists:codigos_producto_sin,id',
+            'form.id_categoria' => 'required|exists:categorias,id',
+            'form.id_laboratorio' => 'nullable|exists:laboratorios,id',
+            'form.id_presentacion' => 'required|exists:presentaciones,id',
+            'form.id_codigo_producto_sin' => 'nullable|exists:codigos_producto_sin,id',
 
             'form.code' => [
                 'required',
@@ -56,13 +56,13 @@ class ProductoForm extends Form
     public function messages()
     {
         return [
-            'form.id_category.required' => 'Debe seleccionar una categoría.',
-            'form.id_category.exists' => 'La categoría seleccionada no es válida.',
+            'form.id_categoria.required' => 'Debe seleccionar una categoría.',
+            'form.id_categoria.exists' => 'La categoría seleccionada no es válida.',
 
-            'form.id_laboratory.exists' => 'El laboratorio seleccionado no es válido.',
-            'form.id_presentation.required' => 'Debe seleccionar una presentación.',
-            'form.id_presentation.exists' => 'La presentación seleccionada no es válida.',
-            'form.id_sin_product_code.exists' => 'El código de producto SIN seleccionado no es válido.',
+            'form.id_laboratorio.exists' => 'El laboratorio seleccionado no es válido.',
+            'form.id_presentacion.required' => 'Debe seleccionar una presentación.',
+            'form.id_presentacion.exists' => 'La presentación seleccionada no es válida.',
+            'form.id_codigo_producto_sin.exists' => 'El código de producto SIN seleccionado no es válido.',
 
             'form.code.required' => 'El código es obligatorio.',
             'form.code.unique' => 'El código ya está registrado.',
@@ -79,10 +79,10 @@ class ProductoForm extends Form
     {
         $this->id = null;
 
-        $this->id_category = null;
-        $this->id_laboratory = null;
-        $this->id_presentation = null;
-        $this->id_sin_product_code = null;
+        $this->id_categoria = null;
+        $this->id_laboratorio = null;
+        $this->id_presentacion = null;
+        $this->id_codigo_producto_sin = null;
 
         $this->code = '';
         $this->barcode = '';
@@ -101,10 +101,10 @@ class ProductoForm extends Form
     {
         $this->id = $product->id;
 
-        $this->id_category = $product->id_category;
-        $this->id_laboratory = $product->id_laboratory;
-        $this->id_presentation = $product->id_presentation;
-        $this->id_sin_product_code = $product->id_sin_product_code;
+        $this->id_categoria = $product->id_categoria;
+        $this->id_laboratorio = $product->id_laboratorio;
+        $this->id_presentacion = $product->id_presentacion;
+        $this->id_codigo_producto_sin = $product->id_codigo_producto_sin;
 
         $this->code = $product->code;
         $this->barcode = $product->barcode;

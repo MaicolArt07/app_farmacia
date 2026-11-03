@@ -105,7 +105,7 @@ class LivewireAjusteInventario extends Component
     {
         $product = Producto::findOrFail($id);
 
-        $this->form->id_product = $product->id;
+        $this->form->id_producto = $product->id;
         $this->selectedProductLabel = $product->code . ' - ' . $product->nombre;
 
         $this->productSearch = '';
@@ -116,7 +116,7 @@ class LivewireAjusteInventario extends Component
 
     public function resetProduct()
     {
-        $this->form->id_product = null;
+        $this->form->id_producto = null;
         $this->selectedProductLabel = '';
         $this->productSearch = '';
         $this->productResults = [];
@@ -125,12 +125,12 @@ class LivewireAjusteInventario extends Component
 
     public function updatedLotSearch()
     {
-        if (!$this->form->id_product || strlen(trim($this->lotSearch)) < 1) {
+        if (!$this->form->id_producto || strlen(trim($this->lotSearch)) < 1) {
             $this->lotResults = [];
             return;
         }
 
-        $this->lotResults = Lote::where('id_product', $this->form->id_product)
+        $this->lotResults = Lote::where('id_producto', $this->form->id_producto)
             ->where('estado', 1)
             ->where(function ($q) {
                 $q->where('codigo_lote', 'like', "%{$this->lotSearch}%")
@@ -149,7 +149,7 @@ class LivewireAjusteInventario extends Component
     {
         $lot = Lote::findOrFail($id);
 
-        $this->form->id_lot = $lot->id;
+        $this->form->id_lote = $lot->id;
         $this->selectedLotLabel = $lot->codigo_lote . ' | Vence: ' . (optional($lot->fecha_vencimiento)->format('d/m/Y') ?? 'Sin vencimiento') . ' | Stock: ' . $lot->cantidad_disponible;
 
         $this->lotSearch = '';
@@ -158,7 +158,7 @@ class LivewireAjusteInventario extends Component
 
     public function clearLot()
     {
-        $this->form->id_lot = null;
+        $this->form->id_lote = null;
         $this->selectedLotLabel = '';
         $this->lotSearch = '';
         $this->lotResults = [];
@@ -171,8 +171,8 @@ class LivewireAjusteInventario extends Component
         DB::beginTransaction();
 
         try {
-            $lot = Lote::where('id', $this->form->id_lot)
-                ->where('id_product', $this->form->id_product)
+            $lot = Lote::where('id', $this->form->id_lote)
+                ->where('id_producto', $this->form->id_producto)
                 ->lockForUpdate()
                 ->firstOrFail();
 
@@ -198,9 +198,9 @@ class LivewireAjusteInventario extends Component
             $lot->save();
 
             $adjustment = AjusteInventario::create([
-                'id_product' => $this->form->id_product,
-                'id_lot' => $this->form->id_lot,
-                'id_user' => auth()->id(),
+                'id_producto' => $this->form->id_producto,
+                'id_lote' => $this->form->id_lote,
+                'id_usuario' => auth()->id(),
                 'type' => $this->form->type,
                 'quantity' => $this->form->quantity,
                 'motivo' => $this->form->reason,
@@ -210,9 +210,9 @@ class LivewireAjusteInventario extends Component
             ]);
 
             MovimientoInventario::create([
-                'id_product' => $this->form->id_product,
-                'id_lot' => $this->form->id_lot,
-                'id_user' => auth()->id(),
+                'id_producto' => $this->form->id_producto,
+                'id_lote' => $this->form->id_lote,
+                'id_usuario' => auth()->id(),
                 'tipo_movimiento' => $movementType,
                 'reference_type' => 'INVENTORY_ADJUSTMENT',
                 'reference_id' => $adjustment->id,

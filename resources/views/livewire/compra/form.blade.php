@@ -50,7 +50,7 @@
                     </div>
                 @endif
 
-                @error('form.id_supplier')
+                @error('form.id_proveedor')
                     <span class="mt-1 block text-sm text-red-500">{{ $message }}</span>
                 @enderror
             </div>

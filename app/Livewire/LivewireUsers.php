@@ -6,9 +6,11 @@ use App\Livewire\Form\UsersForm;
 use App\Models\Persona;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class LivewireUsers extends Component
 {
@@ -24,6 +26,8 @@ class LivewireUsers extends Component
 
     public $permissionGroups = [];
 
+    public $roles = [];
+
     public $personSearch = '';
     public $personResults = [];
     public $selectedPersonLabel = '';
@@ -36,6 +40,8 @@ class LivewireUsers extends Component
             $this->mode = 'form';
 
             $this->form->resetForm();
+
+            $this->roles = Role::where('guard_name', 'web')->orderBy('name')->get(['id', 'name'])->toArray();
 
             $prefixes = ['Cambiar Estado', 'Ver', 'Crear', 'Editar', 'Exportar'];
 
@@ -138,7 +144,7 @@ class LivewireUsers extends Component
     {
         $person = Persona::findOrFail($id);
 
-        $this->form->id_person = $person->id;
+        $this->form->id_persona = $person->id;
         $this->selectedPersonLabel = trim($person->nombre . ' ' . $person->apellido) . ' - CI: ' . $person->ci;
         $this->personSearch = '';
         $this->personResults = [];
@@ -146,7 +152,7 @@ class LivewireUsers extends Component
 
     public function clearPerson()
     {
-        $this->form->id_person = null;
+        $this->form->id_persona = null;
         $this->selectedPersonLabel = '';
         $this->personSearch = '';
         $this->personResults = [];
@@ -172,9 +178,15 @@ class LivewireUsers extends Component
     {
         $this->validate($this->form->rules(), $this->form->messages());
 
+        if (empty($this->form->selectedRoles) && empty($this->form->selectedPermissions)) {
+            throw ValidationException::withMessages([
+                'form.selectedRoles' => 'Debe asignar al menos un rol o un permiso directo.',
+            ]);
+        }
+
         if ($this->form->id) {
             $user = User::findOrFail($this->form->id);
-            $user->id_person = $this->form->id_person;
+            $user->id_persona = $this->form->id_persona;
             $user->name = $this->form->name;
             $user->email = $this->form->email;
 
@@ -187,7 +199,7 @@ class LivewireUsers extends Component
             $message = 'Usuario actualizado correctamente.';
         } else {
             $user = User::create([
-                'id_person' => $this->form->id_person,
+                'id_persona' => $this->form->id_persona,
                 'name' => $this->form->name,
                 'email' => $this->form->email,
                 'password' => Hash::make($this->form->password),
@@ -196,6 +208,7 @@ class LivewireUsers extends Component
             $message = 'Usuario creado correctamente.';
         }
 
+        $user->syncRoles($this->form->selectedRoles);
         $user->syncPermissions($this->form->selectedPermissions);
 
         $this->dispatch('toast', type: 'success', message: $message);

@@ -19,7 +19,7 @@
         >
     </div>
 
-    <div class="overflow-auto rounded border border-zinc-300 dark:border-zinc-700">
+    <div class="hidden overflow-auto rounded border border-zinc-300 md:block dark:border-zinc-700">
         <table class="min-w-full border-collapse text-sm">
             <thead class="sticky top-0 bg-zinc-300 dark:bg-zinc-800">
                 <tr>
@@ -63,6 +63,55 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+
+    <div class="flex flex-col gap-2 md:hidden">
+        @forelse ($permissions as $permission)
+            <div
+                x-data="{ open: false }"
+                wire:click="view({{ $permission->id }})"
+                class="cursor-pointer rounded border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+            >
+                <div class="flex items-center gap-2">
+                    <button type="button" x-on:click.stop="open = !open"
+                        class="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full border border-primary text-primary transition hover:bg-primary hover:text-white">
+                        <i class="bi text-xs" :class="open ? 'bi-dash' : 'bi-plus'"></i>
+                    </button>
+
+                    <div class="min-w-0 flex-1">
+                        <p class="truncate text-sm font-medium capitalize text-zinc-800 dark:text-zinc-100">{{ $permission->name }}</p>
+                    </div>
+
+                    <div class="flex shrink-0 items-center gap-3" onclick="event.stopPropagation()">
+                        <button type="button" wire:click="edit({{ $permission->id }})"
+                            class="cursor-pointer text-zinc-500 transition hover:text-primary dark:text-zinc-400">
+                            <i class="bi bi-pencil-square text-base"></i>
+                        </button>
+
+                        <button
+                            type="button"
+                            x-on:click.prevent="confirmAction({
+                                text: '¿Eliminar este permiso?',
+                                confirmText: 'Sí, eliminar',
+                            }).then((ok) => { if (ok) $wire.delete({{ $permission->id }}) })"
+                            class="cursor-pointer text-zinc-500 transition hover:text-red-600 dark:text-zinc-400">
+                            <i class="bi bi-trash text-base"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div x-show="open" x-collapse x-cloak onclick="event.stopPropagation()" class="mt-2 grid grid-cols-2 gap-2 border-t border-zinc-200 pt-2 pl-8 dark:border-zinc-800">
+                    <div>
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Guard</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $permission->guard_name }}</p>
+                    </div>
+                </div>
+            </div>
+        @empty
+            <div class="rounded border border-zinc-300 bg-white px-3 py-4 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400">
+                No se encontraron permisos.
+            </div>
+        @endforelse
     </div>
 
     <div class="mt-4 dark:text-zinc-200">

@@ -113,7 +113,7 @@ class LivewireLote extends Component
     {
         $product = Producto::findOrFail($id);
 
-        $this->form->id_product = $product->id;
+        $this->form->id_producto = $product->id;
         $this->selectedProductLabel = $product->code . ' - ' . $product->nombre .
             ($product->concentracion ? ' | ' . $product->concentracion : '');
 
@@ -127,7 +127,7 @@ class LivewireLote extends Component
 
     public function clearProduct()
     {
-        $this->form->id_product = null;
+        $this->form->id_producto = null;
         $this->selectedProductLabel = '';
         $this->productSearch = '';
         $this->productResults = [];
@@ -146,7 +146,7 @@ class LivewireLote extends Component
             $expirationDate = $this->form->fecha_vencimiento ?: null;
 
             $data = [
-                'id_product' => $this->form->id_product,
+                'id_producto' => $this->form->id_producto,
                 'codigo_lote' => $this->form->codigo_lote,
                 'precio_compra' => $this->form->precio_compra,
                 'precio_venta' => $this->form->precio_venta,
@@ -162,7 +162,7 @@ class LivewireLote extends Component
                 $lot->update($data);
                 $message = 'Lote actualizado correctamente.';
             } else {
-                $exists = Lote::where('id_product', $this->form->id_product)
+                $exists = Lote::where('id_producto', $this->form->id_producto)
                     ->where('codigo_lote', $this->form->codigo_lote)
                     ->when($expirationDate, fn ($q) => $q->where('fecha_vencimiento', $expirationDate))
                     ->when(!$expirationDate, fn ($q) => $q->whereNull('fecha_vencimiento'))

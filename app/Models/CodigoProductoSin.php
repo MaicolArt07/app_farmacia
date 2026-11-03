@@ -22,6 +22,6 @@ class CodigoProductoSin extends Model
 
     public function products()
     {
-        return $this->hasMany(Producto::class, 'id_sin_product_code');
+        return $this->hasMany(Producto::class, 'id_codigo_producto_sin');
     }
 }

@@ -57,7 +57,7 @@ class LivewireCompra extends Component
 
                 foreach ($purchase->details as $detail) {
                     $this->details[] = [
-                        'id_product' => $detail->id_product,
+                        'id_producto' => $detail->id_producto,
                         'product_label' => $detail->product?->code . ' - ' . $detail->product?->nombre,
                         'batch_code' => $detail->codigo_lote,
                         'expiration_date' => optional($detail->fecha_vencimiento)->format('Y-m-d'),
@@ -134,7 +134,7 @@ class LivewireCompra extends Component
     {
         $supplier = Proveedor::with('person')->findOrFail($id);
 
-        $this->form->id_supplier = $supplier->id;
+        $this->form->id_proveedor = $supplier->id;
         $this->selectedSupplierLabel = $supplier->razon_social . ' - ' .
             trim(($supplier->person?->nombre ?? '') . ' ' . ($supplier->person?->apellido ?? ''));
 
@@ -144,7 +144,7 @@ class LivewireCompra extends Component
 
     public function clearSupplier()
     {
-        $this->form->id_supplier = null;
+        $this->form->id_proveedor = null;
         $this->selectedSupplierLabel = '';
         $this->supplierSearch = '';
         $this->supplierResults = [];
@@ -183,7 +183,7 @@ class LivewireCompra extends Component
         $product = Producto::findOrFail($id);
 
         $this->details[] = [
-            'id_product' => $product->id,
+            'id_producto' => $product->id,
             'product_label' => $product->code . ' - ' . $product->nombre . ($product->concentracion ? ' | ' . $product->concentracion : ''),
             'batch_code' => '',
             'expiration_date' => '',
@@ -240,7 +240,7 @@ class LivewireCompra extends Component
 
         foreach ($this->details as $detail) {
             if (
-                empty($detail['id_product']) ||
+                empty($detail['id_producto']) ||
                 empty($detail['batch_code']) ||
                 empty($detail['expiration_date']) ||
                 (int)$detail['quantity'] <= 0 ||
@@ -261,8 +261,8 @@ class LivewireCompra extends Component
                 $purchase = Compra::findOrFail($this->form->id);
 
                 $purchase->update([
-                    'id_supplier' => $this->form->id_supplier,
-                    'id_user' => Auth::id(),
+                    'id_proveedor' => $this->form->id_proveedor,
+                    'id_usuario' => Auth::id(),
                     'numero_factura' => $this->form->numero_factura ?: null,
                     'fecha_compra' => $this->form->fecha_compra,
                     'subtotal' => $this->form->subtotal,
@@ -271,10 +271,10 @@ class LivewireCompra extends Component
                     'estado' => $this->form->estado,
                 ]);
 
-                $existingDetails = DetalleCompra::where('id_purchase', $purchase->id)->get();
+                $existingDetails = DetalleCompra::where('id_compra', $purchase->id)->get();
 
                 foreach ($existingDetails as $existingDetail) {
-                    $existingLot = Lote::where('id_product', $existingDetail->id_product)
+                    $existingLot = Lote::where('id_producto', $existingDetail->id_producto)
                         ->where('codigo_lote', $existingDetail->codigo_lote)
                         ->where('fecha_vencimiento', $existingDetail->fecha_vencimiento)
                         ->lockForUpdate()
@@ -284,7 +284,7 @@ class LivewireCompra extends Component
                         continue;
                     }
 
-                    $wasSold = DetalleVenta::where('id_lot', $existingLot->id)->exists();
+                    $wasSold = DetalleVenta::where('id_lote', $existingLot->id)->exists();
 
                     if ($wasSold) {
                         DB::rollBack();
@@ -322,9 +322,9 @@ class LivewireCompra extends Component
                     $existingLot->save();
 
                     MovimientoInventario::create([
-                        'id_product' => $existingDetail->id_product,
-                        'id_lot' => $existingLot->id,
-                        'id_user' => Auth::id(),
+                        'id_producto' => $existingDetail->id_producto,
+                        'id_lote' => $existingLot->id,
+                        'id_usuario' => Auth::id(),
                         'tipo_movimiento' => 'CANCEL',
                         'reference_type' => 'PURCHASE_EDIT',
                         'reference_id' => $purchase->id,
@@ -335,11 +335,11 @@ class LivewireCompra extends Component
                     ]);
                 }
 
-                DetalleCompra::where('id_purchase', $purchase->id)->delete();
+                DetalleCompra::where('id_compra', $purchase->id)->delete();
             } else {
                 $purchase = Compra::create([
-                    'id_supplier' => $this->form->id_supplier,
-                    'id_user' => Auth::id(),
+                    'id_proveedor' => $this->form->id_proveedor,
+                    'id_usuario' => Auth::id(),
                     'numero_factura' => $this->form->numero_factura ?: null,
                     'fecha_compra' => $this->form->fecha_compra,
                     'subtotal' => $this->form->subtotal,
@@ -351,8 +351,8 @@ class LivewireCompra extends Component
 
             foreach ($this->details as $detail) {
                 DetalleCompra::create([
-                    'id_purchase' => $purchase->id,
-                    'id_product' => $detail['id_product'],
+                    'id_compra' => $purchase->id,
+                    'id_producto' => $detail['id_producto'],
                     'codigo_lote' => $detail['batch_code'],
                     'fecha_vencimiento' => $detail['expiration_date'],
                     'quantity' => $detail['quantity'],
@@ -361,7 +361,7 @@ class LivewireCompra extends Component
                     'subtotal' => $detail['subtotal'],
                 ]);
 
-                $lot = Lote::where('id_product', $detail['id_product'])
+                $lot = Lote::where('id_producto', $detail['id_producto'])
                     ->where('codigo_lote', $detail['batch_code'])
                     ->where('fecha_vencimiento', $detail['expiration_date'])
                     ->lockForUpdate()
@@ -382,7 +382,7 @@ class LivewireCompra extends Component
                     $stockBefore = 0;
 
                     $lot = Lote::create([
-                        'id_product' => $detail['id_product'],
+                        'id_producto' => $detail['id_producto'],
                         'codigo_lote' => $detail['batch_code'],
                         'precio_compra' => $detail['purchase_price'],
                         'precio_venta' => $detail['sale_price'],
@@ -397,9 +397,9 @@ class LivewireCompra extends Component
                 }
 
                 MovimientoInventario::create([
-                    'id_product' => $detail['id_product'],
-                    'id_lot' => $lot->id,
-                    'id_user' => Auth::id(),
+                    'id_producto' => $detail['id_producto'],
+                    'id_lote' => $lot->id,
+                    'id_usuario' => Auth::id(),
                     'tipo_movimiento' => 'IN',
                     'reference_type' => 'PURCHASE',
                     'reference_id' => $purchase->id,
@@ -443,13 +443,13 @@ class LivewireCompra extends Component
             }
 
             foreach ($purchase->details as $detail) {
-                $lot = Lote::where('id_product', $detail->id_product)
+                $lot = Lote::where('id_producto', $detail->id_producto)
                     ->where('codigo_lote', $detail->codigo_lote)
                     ->where('fecha_vencimiento', $detail->fecha_vencimiento)
                     ->lockForUpdate()
                     ->firstOrFail();
 
-                $wasSold = DetalleVenta::where('id_lot', $lot->id)->exists();
+                $wasSold = DetalleVenta::where('id_lote', $lot->id)->exists();
 
                 if ($wasSold) {
                     DB::rollBack();
@@ -487,9 +487,9 @@ class LivewireCompra extends Component
                 $lot->save();
 
                 MovimientoInventario::create([
-                    'id_product' => $detail->id_product,
-                    'id_lot' => $lot->id,
-                    'id_user' => auth()->id(),
+                    'id_producto' => $detail->id_producto,
+                    'id_lote' => $lot->id,
+                    'id_usuario' => auth()->id(),
                     'tipo_movimiento' => 'CANCEL',
                     'reference_type' => 'PURCHASE_CANCEL',
                     'reference_id' => $purchase->id,
