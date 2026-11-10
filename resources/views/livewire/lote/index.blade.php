@@ -1,9 +1,13 @@
 <div class="flex flex-col bg-zinc-200 p-4 dark:bg-zinc-950">
     <div class="mb-3 flex flex-wrap items-center justify-between gap-3 rounded border border-zinc-300 bg-zinc-100 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900">
+        @if ($canEditFull)
         <button type="button" wire:click="create"
             class="flex items-center gap-2 rounded border border-zinc-400 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-100 cursor-pointer dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700">
             <i class="bi bi-box2-heart text-primary"></i> Nuevo lote
         </button>
+        @else
+        <div></div>
+        @endif
 
         <input
             type="text"
@@ -78,6 +82,12 @@
 
                         <td class="px-3 py-1.5" onclick="event.stopPropagation()">
                             <div class="flex justify-center gap-3">
+                                <button type="button" wire:click="openCuadre({{ $item->id }})"
+                                    class="cursor-pointer text-sky-600 transition hover:text-sky-800 dark:text-sky-400"
+                                    title="Cuadre: cuánto entró, cuánto se vendió y cuánto debe haber">
+                                    <i class="bi bi-clipboard-data text-base"></i>
+                                </button>
+
                                 <button type="button" wire:click="edit({{ $item->id }})"
                                     class="cursor-pointer text-zinc-500 transition hover:text-primary dark:text-zinc-400">
                                     <i class="bi bi-pencil-square text-base"></i>
@@ -125,6 +135,11 @@
                     </div>
 
                     <div class="flex shrink-0 items-center gap-3" onclick="event.stopPropagation()">
+                        <button type="button" wire:click="openCuadre({{ $item->id }})"
+                            class="cursor-pointer text-sky-600 dark:text-sky-400" title="Cuadre del lote">
+                            <i class="bi bi-clipboard-data text-base"></i>
+                        </button>
+
                         <button type="button" wire:click="edit({{ $item->id }})"
                             class="cursor-pointer text-zinc-500 transition hover:text-primary dark:text-zinc-400">
                             <i class="bi bi-pencil-square text-base"></i>
@@ -211,6 +226,13 @@
                 </button>
             </div>
 
+            @unless ($canEditFull)
+            <div class="mx-4 mt-4 flex items-center gap-2 rounded border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-300">
+                <i class="bi bi-info-circle-fill"></i>
+                Solo puedes corregir el <strong>código de lote</strong> y la <strong>fecha de vencimiento</strong>. El resto de los campos están bloqueados.
+            </div>
+            @endunless
+
             <div class="grid grid-cols-1 gap-4 px-4 py-5 md:grid-cols-2 xl:grid-cols-3">
                 <div class="space-y-1 md:col-span-2 xl:col-span-3">
                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Buscar producto <span class="text-red-600">*</span></label>
@@ -220,11 +242,13 @@
                             <span class="text-sm text-zinc-700 dark:text-zinc-200">
                                 {{ $selectedProductLabel }}
                             </span>
+                            @if ($canEditFull)
                             <button wire:click="clearProduct" type="button" class="cursor-pointer text-zinc-500 hover:text-red-600 dark:text-zinc-400">
                                 <i class="bi bi-x-circle"></i>
                             </button>
+                            @endif
                         </div>
-                    @else
+                    @elseif ($canEditFull)
                         <div class="relative">
                             <input
                                 type="text"
@@ -270,36 +294,36 @@
 
                 <div class="space-y-1">
                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Ubicación (Opcional)</label>
-                    <input type="text" wire:model="form.ubicacion"
-                        class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
+                    <input type="text" wire:model="form.ubicacion" @disabled(!$canEditFull)
+                        class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-100 disabled:text-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:disabled:bg-zinc-900 dark:disabled:text-zinc-500">
                     @error('form.ubicacion') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="space-y-1">
                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Precio compra</label>
-                    <input type="number" step="0.01" wire:model="form.precio_compra"
-                        class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
+                    <input type="number" step="0.01" wire:model="form.precio_compra" @disabled(!$canEditFull)
+                        class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-100 disabled:text-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:disabled:bg-zinc-900 dark:disabled:text-zinc-500">
                     @error('form.precio_compra') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="space-y-1">
                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Precio venta</label>
-                    <input type="number" step="0.01" wire:model="form.precio_venta"
-                        class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
+                    <input type="number" step="0.01" wire:model="form.precio_venta" @disabled(!$canEditFull)
+                        class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-100 disabled:text-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:disabled:bg-zinc-900 dark:disabled:text-zinc-500">
                     @error('form.precio_venta') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="space-y-1">
                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Cantidad ingresada</label>
-                    <input type="number" wire:model="form.cantidad_ingresada"
-                        class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
+                    <input type="number" wire:model="form.cantidad_ingresada" @disabled(!$canEditFull)
+                        class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-100 disabled:text-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:disabled:bg-zinc-900 dark:disabled:text-zinc-500">
                     @error('form.cantidad_ingresada') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="space-y-1">
                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Cantidad disponible</label>
-                    <input type="number" wire:model="form.cantidad_disponible"
-                        class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
+                    <input type="number" wire:model="form.cantidad_disponible" @disabled(!$canEditFull)
+                        class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-100 disabled:text-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:disabled:bg-zinc-900 dark:disabled:text-zinc-500">
                     @error('form.cantidad_disponible') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                 </div>
             </div>
@@ -407,4 +431,97 @@
             @endif
         </div>
     </div>
+
+    {{-- ================= Cuadre del lote ================= --}}
+    @if($cuadre)
+        @php $c = $cuadre; $ok = $c['diferencia'] === 0; @endphp
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div class="w-full max-w-2xl rounded-2xl bg-white shadow-2xl dark:bg-zinc-900">
+                <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-zinc-800">
+                    <div>
+                        <h2 class="text-lg font-semibold text-zinc-800 dark:text-zinc-100">
+                            <i class="bi bi-clipboard-data mr-1 text-sky-600"></i>Cuadre del lote
+                        </h2>
+                        <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ $c['lot']->product?->nombre }} · {{ $c['lot']->codigo_lote }}</p>
+                    </div>
+                    <button wire:click="closeCuadre" class="text-gray-500 hover:text-red-500 dark:text-zinc-400"><i class="bi bi-x-lg"></i></button>
+                </div>
+
+                <div class="max-h-[70vh] space-y-4 overflow-y-auto px-6 py-5">
+                    {{-- Cuenta --}}
+                    <div class="rounded-lg border border-gray-200 p-3 text-sm dark:border-zinc-700">
+                        <div class="flex justify-between text-zinc-700 dark:text-zinc-300"><span><i class="bi bi-box-arrow-in-down text-emerald-600"></i> Entró (carga inicial / ingresos)</span><span class="font-semibold">+{{ $c['entradas'] }}</span></div>
+                        <div class="flex justify-between text-zinc-700 dark:text-zinc-300"><span><i class="bi bi-cart-check text-red-600"></i> Vendido ({{ $c['num_ventas'] }} {{ $c['num_ventas'] === 1 ? 'venta' : 'ventas' }})</span><span class="font-semibold">−{{ $c['vendidas'] }}</span></div>
+                        @if($c['devueltas'])
+                            <div class="flex justify-between text-zinc-700 dark:text-zinc-300"><span><i class="bi bi-arrow-return-left text-amber-600"></i> Volvió por cancelaciones / devoluciones</span><span class="font-semibold">+{{ $c['devueltas'] }}</span></div>
+                        @endif
+                        @if($c['ajuste_mas'])
+                            <div class="flex justify-between text-zinc-700 dark:text-zinc-300"><span><i class="bi bi-plus-circle text-sky-600"></i> Ajustes de inventario (+)</span><span class="font-semibold">+{{ $c['ajuste_mas'] }}</span></div>
+                        @endif
+                        @if($c['ajuste_menos'])
+                            <div class="flex justify-between text-zinc-700 dark:text-zinc-300"><span><i class="bi bi-dash-circle text-sky-600"></i> Ajustes de inventario (−)</span><span class="font-semibold">−{{ $c['ajuste_menos'] }}</span></div>
+                        @endif
+                        @if($c['otros'])
+                            <div class="flex justify-between text-zinc-700 dark:text-zinc-300"><span>Otros (apertura de paquetes, etc.)</span><span class="font-semibold">{{ $c['otros'] > 0 ? '+' : '' }}{{ $c['otros'] }}</span></div>
+                        @endif
+                        <div class="mt-1 flex justify-between border-t border-gray-200 pt-1 font-bold text-zinc-800 dark:border-zinc-700 dark:text-zinc-100"><span>= Debería haber</span><span>{{ $c['calculado'] }}</span></div>
+                        <div class="flex justify-between font-bold text-zinc-800 dark:text-zinc-100"><span>Disponible en el sistema</span><span>{{ $c['disponible'] }}</span></div>
+                    </div>
+
+                    @if($ok)
+                        <div class="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-300">
+                            <i class="bi bi-check-circle-fill"></i> Cuadra: todo lo que entró y salió de este lote está registrado.
+                        </div>
+                    @else
+                        <div class="rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-300">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            <strong>No cuadra por {{ $c['diferencia'] > 0 ? '+' : '' }}{{ $c['diferencia'] }}.</strong>
+                            El stock se cambió sin dejar registro (por ejemplo, editando el lote a mano).
+                            Para corregirlo con registro use <strong>Ajustes de inventario</strong>.
+                        </div>
+                    @endif
+
+                    {{-- Historial --}}
+                    <div>
+                        <div class="mb-1 text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Historial del lote</div>
+                        <div class="max-h-64 overflow-y-auto rounded-lg border border-gray-200 dark:border-zinc-700">
+                            <table class="min-w-full text-sm">
+                                <thead class="sticky top-0 bg-gray-100 dark:bg-zinc-800">
+                                    <tr>
+                                        <th class="px-3 py-1.5 text-left text-xs text-zinc-600 dark:text-zinc-300">FECHA</th>
+                                        <th class="px-3 py-1.5 text-left text-xs text-zinc-600 dark:text-zinc-300">MOVIMIENTO</th>
+                                        <th class="px-3 py-1.5 text-left text-xs text-zinc-600 dark:text-zinc-300">USUARIO</th>
+                                        <th class="px-3 py-1.5 text-right text-xs text-zinc-600 dark:text-zinc-300">CANT.</th>
+                                        <th class="px-3 py-1.5 text-right text-xs text-zinc-600 dark:text-zinc-300">QUEDA</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200 dark:divide-zinc-700">
+                                    @php $running = 0; @endphp
+                                    @forelse($c['moves'] as $m)
+                                        @php $running += $m->delta; @endphp
+                                        <tr class="bg-white dark:bg-zinc-900" title="{{ $m->descripcion }}">
+                                            <td class="px-3 py-1.5 text-zinc-700 dark:text-zinc-300" style="white-space: nowrap">{{ $m->fecha?->format('d/m/Y H:i') }}</td>
+                                            <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">{{ $m->label }}</td>
+                                            <td class="px-3 py-1.5 text-xs text-zinc-500 dark:text-zinc-400">{{ $m->user }}</td>
+                                            <td class="px-3 py-1.5 text-right font-semibold {{ $m->delta < 0 ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400' }}">{{ $m->delta > 0 ? '+' : '' }}{{ $m->delta }}</td>
+                                            <td class="px-3 py-1.5 text-right text-zinc-700 dark:text-zinc-300">{{ $running }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr><td colspan="5" class="px-3 py-3 text-center text-xs text-zinc-500">Este lote no tiene movimientos registrados.</td></tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end border-t border-gray-200 px-6 py-4 dark:border-zinc-800">
+                    <button wire:click="closeCuadre"
+                        class="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-zinc-700 hover:bg-gray-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>

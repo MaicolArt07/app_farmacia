@@ -80,6 +80,19 @@
                                     <i class="bi bi-pencil-square text-base"></i>
                                 </button>
 
+                                @if($item->id_producto_unidad)
+                                    <button type="button" title="Abrir paquete ({{ $item->unidades_por_paquete }} unidades sueltas)"
+                                        x-on:click.prevent="confirmAction({
+                                            title: '¿Abrir 1 paquete?',
+                                            text: 'Se descuenta 1 paquete y se agregan {{ $item->unidades_por_paquete }} unidades sueltas.',
+                                            confirmText: 'Sí, abrir',
+                                            danger: false,
+                                        }).then((ok) => { if (ok) $wire.openPackage({{ $item->id }}) })"
+                                        class="cursor-pointer text-amber-600 transition hover:text-amber-800 dark:text-amber-400">
+                                        <i class="bi bi-box-seam text-base"></i>
+                                    </button>
+                                @endif
+
                                 <button
                                     type="button"
                                     x-on:click.prevent="confirmAction({
@@ -127,6 +140,19 @@
                             class="cursor-pointer text-zinc-500 transition hover:text-primary dark:text-zinc-400">
                             <i class="bi bi-pencil-square text-base"></i>
                         </button>
+
+                        @if($item->id_producto_unidad)
+                            <button type="button" title="Abrir paquete"
+                                x-on:click.prevent="confirmAction({
+                                    title: '¿Abrir 1 paquete?',
+                                    text: 'Se descuenta 1 paquete y se agregan {{ $item->unidades_por_paquete }} unidades sueltas.',
+                                    confirmText: 'Sí, abrir',
+                                    danger: false,
+                                }).then((ok) => { if (ok) $wire.openPackage({{ $item->id }}) })"
+                                class="cursor-pointer text-amber-600 transition hover:text-amber-800 dark:text-amber-400">
+                                <i class="bi bi-box-seam text-base"></i>
+                            </button>
+                        @endif
 
                         <button
                             type="button"
@@ -263,6 +289,22 @@
                     />
                     <p class="mt-1 text-xs text-zinc-400 dark:text-zinc-500">Catálogo oficial del SIN para tu actividad económica (farmacia). Obligatorio antes de poder facturar este producto.</p>
                     @error('form.id_codigo_producto_sin') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                </div>
+
+                {{-- Paquete que también se vende suelto (ej. Huggies x20 -> Huggies unidad) --}}
+                <div class="md:col-span-2 xl:col-span-3">
+                    <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Se abre en (producto unidad) <span class="text-xs font-normal text-zinc-400 dark:text-zinc-500">(Opcional, solo si es un paquete que también se vende suelto)</span></label>
+                    <x-search-select
+                        model="form.id_producto_unidad"
+                        :value="$form->id_producto_unidad"
+                        :options="$unitOptions"
+                        placeholder="Buscar el producto unidad..."
+                    />
+                    @error('form.id_producto_unidad') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <flux:input type="number" min="2" label="Unidades por paquete" wire:model="form.unidades_por_paquete" />
+                    @error('form.unidades_por_paquete') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="md:col-span-2 xl:col-span-4">

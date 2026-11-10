@@ -23,29 +23,14 @@ test('a fresh login sets a session token and logs it', function () {
     expect(LoginLog::where('id_usuario', $user->id)->where('action', 'login')->count())->toBe(1);
 });
 
-test('logging in again while a session is active requires confirmation and does not log in immediately', function () {
-    $user = User::factory()->create(['password' => bcrypt('secret123')]);
-    $user->forceFill(['session_token' => 'already-logged-in-elsewhere'])->save();
-
-    Livewire::test(Login::class)
-        ->set('email', $user->email)
-        ->set('password', 'secret123')
-        ->call('login')
-        ->assertHasNoErrors();
-
-    $this->assertGuest();
-
-    expect($user->fresh()->session_token)->toBe('already-logged-in-elsewhere');
-});
-
-test('confirming the override logs in and issues a brand new token', function () {
+test('logging in again while a stale session token exists logs in directly with a brand new token', function () {
     $user = User::factory()->create(['password' => bcrypt('secret123')]);
     $user->forceFill(['session_token' => 'old-device-token'])->save();
 
     Livewire::test(Login::class)
         ->set('email', $user->email)
         ->set('password', 'secret123')
-        ->call('confirmLogin')
+        ->call('login')
         ->assertHasNoErrors()
         ->assertRedirect(route('home', absolute: false));
 

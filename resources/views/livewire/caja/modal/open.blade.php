@@ -1,5 +1,5 @@
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-    <div class="w-full max-w-md rounded-2xl bg-white shadow-2xl dark:bg-zinc-900">
+    <div class="w-full max-w-xl rounded-2xl bg-white shadow-2xl dark:bg-zinc-900">
 
         <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-zinc-800">
             <h2 class="text-lg font-semibold text-zinc-800 dark:text-zinc-100">
@@ -11,33 +11,17 @@
             </button>
         </div>
 
-        <div class="space-y-4 px-6 py-5">
+        <div class="max-h-[70vh] space-y-4 overflow-y-auto px-6 py-5">
             <div class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-zinc-300">
-                <i class="bi bi-calendar-event mr-1"></i> Se abrirá con la fecha de hoy: <span class="font-semibold">{{ now()->format('d/m/Y') }}</span>
+                <div><i class="bi bi-calendar-event mr-1"></i> Se abrirá con la fecha de hoy: <span class="font-semibold">{{ now()->format('d/m/Y') }}</span></div>
+                <div class="mt-1"><i class="bi bi-person mr-1"></i> Caja de: <span class="font-semibold">{{ auth()->user()->name }}</span></div>
             </div>
 
-            <div>
-                <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Monto inicial <span class="text-red-600">*</span></label>
-                <input type="number" step="0.01" wire:model="openForm.opening_amount"
-                    class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-right dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
-                @error('openForm.opening_amount')
-                    <span class="text-sm text-red-500">{{ $message }}</span>
-                @enderror
-            </div>
+            @include('livewire.caja.partials.cortes', ['target' => 'openForm.opening_amount', 'label' => 'Monto inicial'])
 
-            <div>
-                <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Duración de la caja <span class="text-red-600">*</span></label>
-                <select wire:model="openForm.validity_period"
-                    class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
-                    <option value="DAILY">Diaria (24 horas)</option>
-                    <option value="WEEKLY">Semanal (7 días)</option>
-                    <option value="MONTHLY">Mensual (30 días)</option>
-                </select>
-                <p class="mt-1 text-xs text-gray-400 dark:text-zinc-500">Pasado ese tiempo, el sistema te avisará que la caja está vencida para que la cierres o amplíes su vigencia.</p>
-                @error('openForm.validity_period')
-                    <span class="text-sm text-red-500">{{ $message }}</span>
-                @enderror
-            </div>
+            <p class="text-xs text-gray-400 dark:text-zinc-500">
+                <i class="bi bi-info-circle mr-1"></i>La caja es del día: al terminar el día el sistema te avisará que debes cerrarla.
+            </p>
         </div>
 
         <div class="flex justify-end gap-2 border-t border-gray-200 px-6 py-4 dark:border-zinc-800">

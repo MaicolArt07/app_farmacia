@@ -14,6 +14,10 @@ class ProductoForm extends Form
     public $id_presentacion = null;
     public $id_codigo_producto_sin = null;
 
+    // Paquete que también se vende suelto: se abre en este producto "unidad".
+    public $id_producto_unidad = null;
+    public $unidades_por_paquete = null;
+
     public $code = '';
     public $barcode = '';
     public $nombre = '';
@@ -33,6 +37,9 @@ class ProductoForm extends Form
             'form.id_laboratorio' => 'nullable|exists:laboratorios,id',
             'form.id_presentacion' => 'required|exists:presentaciones,id',
             'form.id_codigo_producto_sin' => 'nullable|exists:codigos_producto_sin,id',
+
+            'form.id_producto_unidad' => ['nullable', 'exists:productos,id', Rule::notIn(array_filter([$this->id]))],
+            'form.unidades_por_paquete' => 'nullable|required_with:form.id_producto_unidad|integer|min:2',
 
             'form.code' => [
                 'required',
@@ -64,6 +71,10 @@ class ProductoForm extends Form
             'form.id_presentacion.exists' => 'La presentación seleccionada no es válida.',
             'form.id_codigo_producto_sin.exists' => 'El código de producto SIN seleccionado no es válido.',
 
+            'form.id_producto_unidad.not_in' => 'Un paquete no puede abrirse en sí mismo.',
+            'form.unidades_por_paquete.required_with' => 'Indique cuántas unidades trae cada paquete.',
+            'form.unidades_por_paquete.min' => 'Un paquete debe traer al menos 2 unidades.',
+
             'form.code.required' => 'El código es obligatorio.',
             'form.code.unique' => 'El código ya está registrado.',
 
@@ -83,6 +94,8 @@ class ProductoForm extends Form
         $this->id_laboratorio = null;
         $this->id_presentacion = null;
         $this->id_codigo_producto_sin = null;
+        $this->id_producto_unidad = null;
+        $this->unidades_por_paquete = null;
 
         $this->code = '';
         $this->barcode = '';
@@ -105,6 +118,8 @@ class ProductoForm extends Form
         $this->id_laboratorio = $product->id_laboratorio;
         $this->id_presentacion = $product->id_presentacion;
         $this->id_codigo_producto_sin = $product->id_codigo_producto_sin;
+        $this->id_producto_unidad = $product->id_producto_unidad;
+        $this->unidades_por_paquete = $product->unidades_por_paquete;
 
         $this->code = $product->code;
         $this->barcode = $product->barcode;

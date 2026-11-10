@@ -35,9 +35,9 @@ yarn-error.log
 /storage/backups/
 .playwright-mcp/
 
-# Datos sensibles: inventario real (precios de compra/venta) y guía con credenciales
-/docs/inventario/
-/docs/instalacion-maquina-nueva.md
+# Archivos de respaldo del editor de diagramas
+*.bkp
 
-# Respaldo/zip accidental del proyecto completo (258MB, no debe versionarse)
+# Empaquetados completos del proyecto (pesan cientos de MB, no van en git)
 /app_far.zip
+/app_farmacia.zip

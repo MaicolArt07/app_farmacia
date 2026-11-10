@@ -29,6 +29,9 @@
                     <th class="border-b border-zinc-400 px-3 py-1.5 text-right font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">DIF.</th>
                     <th class="border-b border-zinc-400 px-3 py-1.5 text-center font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">ESTADO</th>
                     <th class="border-b border-zinc-400 px-3 py-1.5 text-center font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">FIN</th>
+                    @role('admin')
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-left font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">OBSERVACIÓN</th>
+                    @endrole
                     <th class="border-b border-zinc-400 px-3 py-1.5 text-center font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">OPCIONES</th>
                 </tr>
             </thead>
@@ -38,6 +41,7 @@
                     <tr class="border-b border-zinc-200 hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-800">
                         <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
                             {{ \Carbon\Carbon::parse($item->fecha_apertura)->format('d/m/Y') }}
+                            <span class="text-xs text-zinc-500 dark:text-zinc-400">{{ $item->created_at?->format('H:i') }}</span>
                         </td>
 
                         <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
@@ -60,9 +64,11 @@
                             @if($item->diferencia === null)
                                 <span class="text-zinc-500 dark:text-zinc-400">-</span>
                             @else
-                                <span class="{{ $item->diferencia == 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400' }}">
-                                    {{ number_format($item->diferencia, 2) }}
+                                @php $dif = (float) $item->diferencia; @endphp
+                                <span class="font-semibold {{ $dif == 0 ? 'text-emerald-600 dark:text-emerald-400' : ($dif > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400') }}">
+                                    {{ $dif > 0 ? '+' : '' }}{{ number_format($dif, 2) }}
                                 </span>
+                                <div class="text-xs text-zinc-500 dark:text-zinc-400">{{ $dif == 0 ? 'Cuadra' : ($dif > 0 ? 'Sobrante' : 'Faltante') }}</div>
                             @endif
                         </td>
 
@@ -96,19 +102,52 @@
                                 @else
                                     <span class="text-zinc-500 dark:text-zinc-400">-</span>
                                 @endif
+                            @elseif($item->closed_at)
+                                <div class="text-zinc-800 dark:text-zinc-100">{{ \Carbon\Carbon::parse($item->closed_at)->format('d/m/Y') }}</div>
+                                <div class="text-xs text-zinc-500 dark:text-zinc-400">{{ \Carbon\Carbon::parse($item->closed_at)->format('H:i') }}</div>
                             @else
                                 <span class="text-zinc-500 dark:text-zinc-400">-</span>
                             @endif
                         </td>
 
+                        @role('admin')
+                        <td class="px-3 py-1.5 text-zinc-700 dark:text-zinc-300" style="max-width: 16rem">
+                            @if($item->observacion)
+                                <button type="button" wire:click="openNoteModal({{ $item->id }})"
+                                    class="block w-full cursor-pointer truncate text-left text-xs hover:text-primary"
+                                    title="{{ $item->observacion }}">
+                                    <i class="bi bi-journal-text mr-1 text-primary"></i>{{ $item->observacion }}
+                                </button>
+                            @else
+                                <span class="text-xs text-zinc-400 dark:text-zinc-500">—</span>
+                            @endif
+                        </td>
+                        @endrole
+
                         <td class="px-3 py-1.5">
                             <div class="flex justify-center gap-3">
 
+                                @role('admin')
+                                <button wire:click="openNoteModal({{ $item->id }})"
+                                    class="cursor-pointer {{ $item->observacion ? 'text-primary' : 'text-zinc-500 hover:text-primary dark:text-zinc-400' }}"
+                                    title="{{ $item->observacion ? 'Editar observación' : 'Agregar observación' }}">
+                                    <i class="bi {{ $item->observacion ? 'bi-journal-text' : 'bi-journal-plus' }} text-lg"></i>
+                                </button>
+
+                                <a href="{{ route('cash-registers.sales', $item->id) }}" wire:navigate
+                                    class="cursor-pointer text-emerald-600 hover:text-emerald-800 dark:text-emerald-400"
+                                    title="Ver ventas detalladas de esta caja">
+                                    <i class="bi bi-receipt text-lg"></i>
+                                </a>
+                                @endrole
+
+                                @can('Ver Movimientos Caja')
                                 <button wire:click="openDetailModal({{ $item->id }})"
                                     class="cursor-pointer text-sky-600 hover:text-sky-800 dark:text-sky-400"
                                     title="Ver detalle">
                                     <i class="bi bi-eye text-lg"></i>
                                 </button>
+                                @endcan
 
                                 @if($item->status === 'OPEN')
                                     @can('Crear Movimientos Caja')
@@ -125,7 +164,9 @@
                                             title="Ampliar vigencia">
                                             <i class="bi bi-hourglass-split text-lg"></i>
                                         </button>
+                                    @endcan
 
+                                    @can('Cerrar Caja')
                                         <button wire:click="openCloseCashModal({{ $item->id }})"
                                             class="cursor-pointer text-amber-600 hover:text-amber-800 dark:text-amber-400"
                                             title="Cerrar caja">
@@ -151,7 +192,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="9" class="px-3 py-4 text-center text-zinc-500 dark:text-zinc-400">
+                        <td colspan="10" class="px-3 py-4 text-center text-zinc-500 dark:text-zinc-400">
                             No hay cajas registradas.
                         </td>
                     </tr>
@@ -171,16 +212,30 @@
                     </button>
 
                     <div class="min-w-0 flex-1">
-                        <p class="truncate text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ \Carbon\Carbon::parse($item->fecha_apertura)->format('d/m/Y') }}</p>
+                        <p class="truncate text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ \Carbon\Carbon::parse($item->fecha_apertura)->format('d/m/Y') }} <span class="text-xs text-zinc-500 dark:text-zinc-400">{{ $item->created_at?->format('H:i') }}</span></p>
                         <p class="truncate text-xs text-zinc-500 dark:text-zinc-400">{{ $item->user?->name ?? '-' }}</p>
                     </div>
 
                     <div class="flex shrink-0 items-center gap-3">
+                        @role('admin')
+                        <button wire:click="openNoteModal({{ $item->id }})"
+                            class="cursor-pointer {{ $item->observacion ? 'text-primary' : 'text-zinc-500 dark:text-zinc-400' }}"
+                            title="Observación">
+                            <i class="bi {{ $item->observacion ? 'bi-journal-text' : 'bi-journal-plus' }} text-lg"></i>
+                        </button>
+                        <a href="{{ route('cash-registers.sales', $item->id) }}" wire:navigate
+                            class="cursor-pointer text-emerald-600 dark:text-emerald-400" title="Ventas detalladas">
+                            <i class="bi bi-receipt text-lg"></i>
+                        </a>
+                        @endrole
+
+                        @can('Ver Movimientos Caja')
                         <button wire:click="openDetailModal({{ $item->id }})"
                             class="cursor-pointer text-sky-600 hover:text-sky-800 dark:text-sky-400"
                             title="Ver detalle">
                             <i class="bi bi-eye text-lg"></i>
                         </button>
+                        @endcan
 
                         @if($item->status === 'OPEN')
                             @can('Crear Movimientos Caja')
@@ -197,7 +252,9 @@
                                     title="Ampliar vigencia">
                                     <i class="bi bi-hourglass-split text-lg"></i>
                                 </button>
+                            @endcan
 
+                            @can('Cerrar Caja')
                                 <button wire:click="openCloseCashModal({{ $item->id }})"
                                     class="cursor-pointer text-amber-600 hover:text-amber-800 dark:text-amber-400"
                                     title="Cerrar caja">
@@ -239,8 +296,10 @@
                             @if($item->diferencia === null)
                                 <span class="text-zinc-500 dark:text-zinc-400">-</span>
                             @else
-                                <span class="{{ $item->diferencia == 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400' }}">
-                                    {{ number_format($item->diferencia, 2) }}
+                                @php $dif = (float) $item->diferencia; @endphp
+                                <span class="font-semibold {{ $dif == 0 ? 'text-emerald-600 dark:text-emerald-400' : ($dif > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400') }}">
+                                    {{ $dif > 0 ? '+' : '' }}{{ number_format($dif, 2) }}
+                                    ({{ $dif == 0 ? 'cuadra' : ($dif > 0 ? 'sobrante' : 'faltante') }})
                                 </span>
                             @endif
                         </p>
@@ -269,11 +328,21 @@
                                 @else
                                     <span class="mt-1 inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">Vigente</span>
                                 @endif
+                            @elseif($item->closed_at)
+                                {{ \Carbon\Carbon::parse($item->closed_at)->format('d/m/Y H:i') }}
                             @else
                                 -
                             @endif
                         </p>
                     </div>
+                    @role('admin')
+                        @if($item->observacion)
+                            <div class="col-span-2">
+                                <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Observación</span>
+                                <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $item->observacion }}</p>
+                            </div>
+                        @endif
+                    @endrole
                 </div>
             </div>
         @empty
@@ -305,6 +374,10 @@
 
     @if($detailModalVisible)
         @include('livewire.caja.modal.detail')
+    @endif
+
+    @if($noteModalVisible)
+        @include('livewire.caja.modal.note')
     @endif
 
 </div>

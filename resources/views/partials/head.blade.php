@@ -15,3 +15,17 @@
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 @fluxAppearance
 
+{{-- Campos numéricos sin flechas y sin que la rueda del mouse cambie el valor
+     (se cambiaba la cantidad/monto sin querer al desplazar la página). --}}
+<style>
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+</style>
+<script>
+    document.addEventListener('wheel', function (e) {
+        const el = document.activeElement;
+        if (el && el.type === 'number' && el === e.target) el.blur();
+    }, { passive: true });
+</script>
+

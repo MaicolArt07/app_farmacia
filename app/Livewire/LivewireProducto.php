@@ -68,6 +68,12 @@ class LivewireProducto extends Component
             'laboratories' => Laboratorio::where('estado', 1)->orderBy('nombre')->get(),
             'presentations' => Presentacion::where('estado', 1)->orderBy('nombre')->get(),
             'sinProductCodes' => CodigoProductoSin::orderBy('descripcion')->get(),
+            // Solo al abrir el modal: lista de productos para "se abre en (unidad)".
+            'unitOptions' => $this->modalVisible
+                ? Producto::where('estado', 1)->when($this->form->id, fn ($q) => $q->where('id', '!=', $this->form->id))
+                    ->orderBy('nombre')->get(['id', 'code', 'nombre'])
+                    ->map(fn ($p) => ['value' => $p->id, 'label' => $p->nombre . ' (' . $p->code . ')'])->values()
+                : collect(),
             'viewing' => $this->viewingId ? Producto::with(['category', 'laboratory', 'presentation', 'sinProductCode'])->find($this->viewingId) : null,
         ]);
     }
@@ -107,6 +113,20 @@ class LivewireProducto extends Component
         $this->modalVisible = true;
     }
 
+    /** Abre 1 paquete cerrado en unidades sueltas (ver App\Services\AperturaPaquete). */
+    public function openPackage($id)
+    {
+        try {
+            $pack = Producto::with('unitProduct')->findOrFail($id);
+            app(\App\Services\AperturaPaquete::class)->abrir($pack, Auth::id());
+
+            $this->dispatch('toast', type: 'success',
+                message: "Paquete abierto: {$pack->unidades_por_paquete} unidades sueltas de {$pack->unitProduct?->nombre}.");
+        } catch (\Throwable $e) {
+            $this->dispatch('toast', type: 'error', message: 'No se pudo abrir el paquete. ' . $e->getMessage());
+        }
+    }
+
     public function nextStep()
     {
         $this->validate($this->form->rules(), $this->form->messages());
@@ -142,6 +162,8 @@ class LivewireProducto extends Component
                 'id_laboratorio' => $this->form->id_laboratorio ?: null,
                 'id_presentacion' => $this->form->id_presentacion,
                 'id_codigo_producto_sin' => $this->form->id_codigo_producto_sin ?: null,
+                'id_producto_unidad' => $this->form->id_producto_unidad ?: null,
+                'unidades_por_paquete' => $this->form->id_producto_unidad ? (int) $this->form->unidades_por_paquete : null,
                 'code' => $this->form->code,
                 'barcode' => $this->form->barcode ?: null,
                 'nombre' => $this->form->nombre,
@@ -156,8 +178,19 @@ class LivewireProducto extends Component
 
             if ($this->form->id) {
                 $product = Producto::findOrFail($this->form->id);
+                $oldPrice = (float) $product->precio_venta;
                 $product->update($data);
                 $message = 'Producto actualizado correctamente.';
+
+                // Si cambió el precio, se aplica a los lotes con stock que tenían
+                // el precio anterior. Los lotes que entraron con un precio propio
+                // (otro ingreso) conservan el suyo.
+                if ($oldPrice !== (float) $this->form->precio_venta) {
+                    Lote::where('id_producto', $product->id)
+                        ->where('cantidad_disponible', '>', 0)
+                        ->where(fn ($q) => $q->whereNull('precio_venta')->orWhere('precio_venta', $oldPrice))
+                        ->update(['precio_venta' => $this->form->precio_venta]);
+                }
             } else {
                 $product = Producto::create($data);
                 $message = 'Producto registrado correctamente.';

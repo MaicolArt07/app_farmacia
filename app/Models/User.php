@@ -21,6 +21,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'id_persona',
+        'id_sucursal',
         'name',
         'email',
         'password',
@@ -80,5 +81,10 @@ class User extends Authenticatable
     public function loginLogs()
     {
         return $this->hasMany(LoginLog::class, 'id_usuario');
+    }
+
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class, 'id_sucursal');
     }
 }

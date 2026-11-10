@@ -65,7 +65,9 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    // Bolivia (UTC-4). Debe coincidir con la hora de MySQL/Windows para que
+    // las fechas de cajas, ventas, etc. no se registren 4 horas adelantadas.
+    'timezone' => env('APP_TIMEZONE', 'America/La_Paz'),
 
     /*
     |--------------------------------------------------------------------------

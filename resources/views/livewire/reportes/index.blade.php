@@ -6,6 +6,22 @@
 
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
 
+        @role('admin')
+        <!-- Productos más vendidos (solo admin) -->
+        <div class="rounded border border-primary bg-white p-4 dark:bg-zinc-900">
+            <h2 class="mb-1 font-semibold text-zinc-800 dark:text-zinc-100">
+                <i class="bi bi-trophy-fill me-1 text-primary"></i> Productos más vendidos
+            </h2>
+            <p class="mb-3 text-xs text-zinc-500 dark:text-zinc-400">
+                Ranking de productos por cantidad, monto o ganancia entre dos fechas. Se ve en pantalla y se exporta a PDF o Excel.
+            </p>
+            <a href="{{ route('reports.top-products') }}" wire:navigate
+                class="block w-full cursor-pointer rounded border border-primary bg-white px-3 py-1.5 text-center text-sm font-medium text-primary shadow-sm transition hover:bg-primary/10 dark:bg-zinc-800">
+                <i class="bi bi-bar-chart-line me-1"></i> Abrir informe
+            </a>
+        </div>
+        @endrole
+
         <!-- Libro Diario -->
         <div class="rounded border border-zinc-300 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
             <h2 class="mb-1 font-semibold text-zinc-800 dark:text-zinc-100">

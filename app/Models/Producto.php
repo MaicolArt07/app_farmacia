@@ -16,6 +16,8 @@ class Producto extends Model
         'id_laboratorio',
         'id_presentacion',
         'id_codigo_producto_sin',
+        'id_producto_unidad',
+        'unidades_por_paquete',
         'code',
         'barcode',
         'nombre',
@@ -33,7 +35,35 @@ class Producto extends Model
         'requiere_receta' => 'boolean',
         'stock_minimo' => 'integer',
         'estado' => 'integer',
+        'unidades_por_paquete' => 'integer',
     ];
+
+    /** Producto "unidad" en el que se abre este paquete (si es un paquete). */
+    public function unitProduct()
+    {
+        return $this->belongsTo(Producto::class, 'id_producto_unidad');
+    }
+
+    /** Paquetes que se abren en este producto (si es un producto "unidad"). */
+    public function packProducts()
+    {
+        return $this->hasMany(Producto::class, 'id_producto_unidad');
+    }
+
+    public function isPack(): bool
+    {
+        return $this->id_producto_unidad !== null && (int) $this->unidades_por_paquete > 0;
+    }
+
+    /** Stock disponible en lotes activos y no vencidos. */
+    public function availableStock(): int
+    {
+        return (int) Lote::where('id_producto', $this->id)
+            ->where('estado', 1)
+            ->where('cantidad_disponible', '>', 0)
+            ->where(fn ($q) => $q->whereNull('fecha_vencimiento')->orWhereDate('fecha_vencimiento', '>=', now()->toDateString()))
+            ->sum('cantidad_disponible');
+    }
 
     public function category()
     {

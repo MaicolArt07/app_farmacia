@@ -18,12 +18,14 @@ class DetalleVenta extends Model
         'id_servicio',
         'cantidad_servicio',
         'quantity',
+        'cantidad_devuelta',
         'precio_venta',
         'subtotal',
     ];
 
     protected $casts = [
         'quantity' => 'integer',
+        'cantidad_devuelta' => 'integer',
         'cantidad_servicio' => 'decimal:2',
         'precio_venta' => 'decimal:2',
         'subtotal' => 'decimal:2',

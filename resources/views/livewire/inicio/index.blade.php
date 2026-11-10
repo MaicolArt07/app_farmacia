@@ -21,18 +21,33 @@
                     <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
                     Actualizado
                 </span>
+                @can('Ver Productos')
                 <a href="{{ route('productos') }}" wire:navigate
                     class="inline-flex items-center gap-2 rounded border border-zinc-400 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition active:scale-95 hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700">
                     <i class="bi bi-capsule-pill text-primary"></i>
                     <span>Ver Productos</span>
                 </a>
+                @endcan
             </div>
         </div>
     </div>
 
     {{-- ============================================================
-         2. FILTRO GLOBAL
+         2. FILTRO GLOBAL (el Trabajador no tiene filtros: solo su caja de hoy)
     ============================================================ --}}
+    @if ($workerMode)
+        <div class="mb-4 flex items-start gap-3 rounded border px-4 py-3 text-sm {{ $workerCash ? 'border-primary bg-white text-zinc-700 dark:bg-zinc-900 dark:text-zinc-200' : 'border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-300' }}">
+            <i class="bi {{ $workerCash ? 'bi-cash-coin text-primary' : 'bi-exclamation-triangle-fill' }} text-lg"></i>
+            <div>
+                @if ($workerCash)
+                    Mostrando solo lo vendido en <span class="font-semibold">tu caja abierta de hoy</span>
+                    ({{ now()->format('d/m/Y') }}, abierta a las {{ $workerCash->created_at?->format('H:i') }}).
+                @else
+                    No tienes una caja abierta. Abre tu caja para empezar a vender y ver aquí tus ventas del día.
+                @endif
+            </div>
+        </div>
+    @else
     <div class="mb-4 rounded border border-zinc-300 bg-zinc-100 p-4 dark:border-zinc-700 dark:bg-zinc-900">
 
         <div class="mb-3 flex flex-wrap items-center gap-2">
@@ -99,6 +114,7 @@
             </div>
         @endif
     </div>
+    @endif
 
     {{-- ============================================================
          3. KPIs
@@ -110,7 +126,7 @@
                 <div>
                     <p class="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-zinc-400">Ventas</p>
                     <p class="mt-1.5 text-2xl font-bold text-slate-800 dark:text-white">{{ $salesCount }}</p>
-                    <p class="mt-0.5 text-xs text-slate-400 dark:text-zinc-500">en el periodo</p>
+                    <p class="mt-0.5 text-xs text-slate-400 dark:text-zinc-500">{{ $periodLabel }}</p>
                 </div>
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
                     <i class="bi bi-bag-check-fill text-lg"></i>
@@ -123,7 +139,7 @@
                 <div>
                     <p class="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-zinc-400">Total vendido</p>
                     <p class="mt-1.5 text-2xl font-bold text-slate-800 dark:text-white">{{ number_format($salesTotal, 2) }}</p>
-                    <p class="mt-0.5 text-xs text-slate-400 dark:text-zinc-500">Bs. en el periodo</p>
+                    <p class="mt-0.5 text-xs text-slate-400 dark:text-zinc-500">Bs. {{ $periodLabel }}</p>
                 </div>
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
                     <i class="bi bi-cash-coin text-lg"></i>
@@ -168,7 +184,7 @@
                     <span class="h-5 w-0.5 rounded-full bg-slate-400"></span>
                     Top productos más vendidos
                 </h2>
-                <p class="mt-0.5 text-sm text-slate-500 dark:text-zinc-400">Cantidad vendida por producto en el periodo.</p>
+                <p class="mt-0.5 text-sm text-slate-500 dark:text-zinc-400">Cantidad vendida por producto {{ $periodLabel }}.</p>
             </div>
             <span class="rounded-lg bg-slate-50 px-2 py-0.5 text-xs font-medium text-slate-400 dark:bg-zinc-800 dark:text-zinc-500">
                 {{ $topProducts->count() }} productos
@@ -185,7 +201,7 @@
                     <i class="bi bi-graph-up text-2xl"></i>
                 </div>
                 <p class="text-sm font-medium text-slate-600 dark:text-zinc-300">Sin ventas registradas</p>
-                <p class="mt-0.5 text-xs text-slate-400 dark:text-zinc-500">No hay productos vendidos en este periodo.</p>
+                <p class="mt-0.5 text-xs text-slate-400 dark:text-zinc-500">No hay productos vendidos {{ $periodLabel }}.</p>
             </div>
         @endif
     </div>
@@ -201,7 +217,7 @@
                     <span class="h-5 w-0.5 rounded-full bg-slate-400"></span>
                     Ventas por método de pago
                 </h3>
-                <p class="mt-0.5 text-sm text-slate-500 dark:text-zinc-400">Distribución de ventas en el periodo.</p>
+                <p class="mt-0.5 text-sm text-slate-500 dark:text-zinc-400">Distribución de ventas {{ $periodLabel }}.</p>
             </div>
 
             @if ($salesCount > 0)
@@ -253,7 +269,7 @@
                     <span class="h-5 w-0.5 rounded-full bg-slate-400"></span>
                     Evolución de ventas
                 </h3>
-                <p class="mt-0.5 text-sm text-slate-500 dark:text-zinc-400">Ventas (Bs.) día por día en el periodo.</p>
+                <p class="mt-0.5 text-sm text-slate-500 dark:text-zinc-400">Ventas (Bs.) día por día {{ $periodLabel }}.</p>
             </div>
 
             @if ($salesCount > 0)
@@ -266,7 +282,7 @@
                         <i class="bi bi-activity text-2xl"></i>
                     </div>
                     <p class="text-sm font-medium text-slate-600 dark:text-zinc-300">Sin evolución</p>
-                    <p class="mt-0.5 text-xs text-slate-400 dark:text-zinc-500">No se registraron ventas en este periodo.</p>
+                    <p class="mt-0.5 text-xs text-slate-400 dark:text-zinc-500">No se registraron ventas {{ $periodLabel }}.</p>
                 </div>
             @endif
         </div>
@@ -282,7 +298,7 @@
                     <span class="h-5 w-0.5 rounded-full bg-slate-400"></span>
                     Resumen de productos
                 </h3>
-                <p class="mt-0.5 text-sm text-slate-500 dark:text-zinc-400">Productos con mayor movimiento en el periodo.</p>
+                <p class="mt-0.5 text-sm text-slate-500 dark:text-zinc-400">Productos con mayor movimiento {{ $periodLabel }}.</p>
             </div>
             <a href="{{ route('productos') }}" wire:navigate class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 transition-colors hover:text-slate-800 dark:text-zinc-300 dark:hover:text-white">
                 <span>Ver todos</span>
@@ -337,7 +353,7 @@
                     @empty
                         <tr>
                             <td colspan="6" class="px-4 py-8 text-center text-sm text-slate-400 dark:text-zinc-500">
-                                No se encontraron ventas en este periodo.
+                                No se encontraron ventas {{ $periodLabel }}.
                             </td>
                         </tr>
                     @endforelse

@@ -15,12 +15,16 @@ class Venta extends Model
         'id_cliente',
         'id_usuario',
         'id_caja',
+        'id_sucursal',
         'id_metodo_pago',
         'fecha_venta',
         'metodo_pago',
         'subtotal',
         'descuento',
         'total',
+        'monto_efectivo',
+        'monto_qr',
+        'monto_devuelto',
         'monto_pagado',
         'monto_cambio',
         'observacion',
@@ -38,6 +42,8 @@ class Venta extends Model
         'subtotal' => 'decimal:2',
         'descuento' => 'decimal:2',
         'total' => 'decimal:2',
+        'monto_efectivo' => 'decimal:2',
+        'monto_qr' => 'decimal:2',
         'monto_pagado' => 'decimal:2',
         'monto_cambio' => 'decimal:2',
         'estado' => 'integer',
@@ -87,6 +93,11 @@ class Venta extends Model
         return $this->hasOne(Factura::class, 'id_venta');
     }
 
+    public function returns()
+    {
+        return $this->hasMany(Devolucion::class, 'id_venta');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | SCOPES
@@ -120,6 +131,37 @@ class Venta extends Model
     }
 
     /*
+     * Reparto del cobro. Efectivo => todo al cajón; QR => todo a la cuenta;
+     * Mixto => monto_efectivo + monto_qr. Si una venta vieja no tiene el
+     * reparto guardado, se deduce del método de pago.
+     */
+
+    /** SQL: parte en EFECTIVO de cada venta (para SUM). */
+    public const SQL_CASH = "COALESCE(monto_efectivo, CASE WHEN UPPER(metodo_pago) = 'EFECTIVO' THEN total ELSE 0 END)";
+
+    /** SQL: parte por QR de cada venta (para SUM). */
+    public const SQL_QR = "COALESCE(monto_qr, CASE WHEN UPPER(metodo_pago) = 'QR' THEN total ELSE 0 END)";
+
+    public function isMixed(): bool
+    {
+        return strtoupper((string) $this->metodo_pago) === 'MIXTO';
+    }
+
+    public function cashPart(): float
+    {
+        if ($this->monto_efectivo !== null) return (float) $this->monto_efectivo;
+
+        return strtoupper((string) $this->metodo_pago) === 'EFECTIVO' ? (float) $this->total : 0.0;
+    }
+
+    public function qrPart(): float
+    {
+        if ($this->monto_qr !== null) return (float) $this->monto_qr;
+
+        return strtoupper((string) $this->metodo_pago) === 'QR' ? (float) $this->total : 0.0;
+    }
+
+    /*
     |--------------------------------------------------------------------------
     | ATRIBUTOS ACCESORIOS
     |--------------------------------------------------------------------------
@@ -135,5 +177,10 @@ class Venta extends Model
         return $this->status === 'CANCELLED'
             ? 'red'
             : 'emerald';
+    }
+
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class, 'id_sucursal');
     }
 }

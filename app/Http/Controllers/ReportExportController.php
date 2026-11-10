@@ -53,6 +53,42 @@ class ReportExportController extends Controller
         return Excel::download(new InventoryAlertsExport(), 'alertas-inventario_' . now()->format('Y-m-d') . '.xlsx');
     }
 
+    /* ---------- Productos más vendidos (solo admin, ver rutas) ---------- */
+
+    public function topProductsPdf(Request $request)
+    {
+        [$from, $to] = $this->validatedRange($request);
+        $order = $this->topOrder($request);
+
+        $rows = \App\Support\TopProductsReport::rows($from, $to, $order);
+
+        return \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.top-products', [
+            'rows' => $rows,
+            'totals' => \App\Support\TopProductsReport::totals($rows),
+            'from' => $from,
+            'to' => $to,
+            'orderLabel' => \App\Support\TopProductsReport::ORDERS[$order],
+        ])->setPaper('letter', 'landscape')
+            ->stream("productos-mas-vendidos_{$from}_a_{$to}.pdf");
+    }
+
+    public function topProductsExcel(Request $request)
+    {
+        [$from, $to] = $this->validatedRange($request);
+
+        return Excel::download(
+            new \App\Exports\TopProductsExport($from, $to, $this->topOrder($request)),
+            "productos-mas-vendidos_{$from}_a_{$to}.xlsx"
+        );
+    }
+
+    private function topOrder(Request $request): string
+    {
+        $order = (string) $request->query('order', 'cantidad');
+
+        return array_key_exists($order, \App\Support\TopProductsReport::ORDERS) ? $order : 'cantidad';
+    }
+
     private function validatedRange(Request $request): array
     {
         $data = $request->validate([

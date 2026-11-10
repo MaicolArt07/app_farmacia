@@ -11,14 +11,13 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 #[Layout('components.layouts.auth')]
 class Login extends Component
 {
-    #[Validate('required|string|email')]
+    #[Validate('required|string')]
     public string $email = '';
 
     #[Validate('required|string')]
@@ -34,34 +33,11 @@ class Login extends Component
         $this->validate();
         $this->ensureIsNotRateLimited();
 
-        $user = User::where('email', $this->email)->first();
+        $user = User::where('email', $this->email)->orWhere('name', $this->email)->first();
 
-        if (! $user || ! Auth::validate(['email' => $this->email, 'password' => $this->password])) {
+        if (! $user || ! Auth::validate(['email' => $user->email, 'password' => $this->password])) {
             RateLimiter::hit($this->throttleKey());
 
-            throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
-            ]);
-        }
-
-        if (app(SessionSecurityService::class)->hasActiveSession($user)) {
-            $this->dispatch('confirm-session-override');
-
-            return;
-        }
-
-        $this->finalizeLogin($user);
-    }
-
-    /**
-     * El usuario confirmó que quiere cerrar la sesión activa en el otro dispositivo.
-     */
-    #[On('confirmLogin')]
-    public function confirmLogin(): void
-    {
-        $user = User::where('email', $this->email)->first();
-
-        if (! $user || ! Auth::validate(['email' => $this->email, 'password' => $this->password])) {
             throw ValidationException::withMessages([
                 'email' => __('auth.failed'),
             ]);

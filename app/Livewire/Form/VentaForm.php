@@ -3,6 +3,7 @@
 namespace App\Livewire\Form;
 
 use App\Models\MetodoPago;
+use Illuminate\Validation\Rule;
 use Livewire\Form;
 
 class VentaForm extends Form
@@ -16,6 +17,8 @@ class VentaForm extends Form
     public $total = 0;
     public $monto_pagado = '';
     public $monto_cambio = 0;
+    /** Solo Mixto: cuánto paga por QR (el resto es efectivo). */
+    public $monto_qr = '';
     public $observacion = '';
     public $estado = 1;
 
@@ -24,9 +27,10 @@ class VentaForm extends Form
         return [
             'form.id_cliente' => 'nullable|exists:clientes,id',
             'form.fecha_venta' => 'required|date',
-            'form.id_metodo_pago' => 'required|exists:metodos_pago,id',
-            'form.descuento' => 'nullable|numeric|min:0',
+            // Solo métodos activos (hoy: Efectivo y QR).
+            'form.id_metodo_pago' => ['required', Rule::exists('metodos_pago', 'id')->where('estado', 1)],
             'form.monto_pagado' => 'nullable|numeric|min:0',
+            'form.monto_qr' => 'nullable|numeric|min:0',
             'form.observacion' => 'nullable|string',
         ];
     }
@@ -39,6 +43,7 @@ class VentaForm extends Form
             'form.id_metodo_pago.exists' => 'El método de pago seleccionado no es válido.',
             'form.descuento.numeric' => 'El descuento debe ser numérico.',
             'form.monto_pagado.numeric' => 'El monto recibido debe ser numérico.',
+            'form.monto_qr.numeric' => 'El monto por QR debe ser numérico.',
         ];
     }
 
@@ -47,12 +52,15 @@ class VentaForm extends Form
         $this->id = null;
         $this->id_cliente = null;
         $this->fecha_venta = now()->format('Y-m-d');
-        $this->id_metodo_pago = MetodoPago::where('nombre', 'Efectivo')->value('id');
+        // Sin método por defecto: el trabajador debe elegir Efectivo o QR en
+        // cada venta (si venía en Efectivo, se olvidaban de cambiarlo a QR).
+        $this->id_metodo_pago = '';
         $this->subtotal = 0;
         $this->descuento = 0;
         $this->total = 0;
         $this->monto_pagado = '';
         $this->monto_cambio = 0;
+        $this->monto_qr = '';
         $this->observacion = '';
         $this->estado = 1;
     }
@@ -68,6 +76,7 @@ class VentaForm extends Form
         $this->total = $sale->total;
         $this->monto_pagado = $sale->monto_pagado;
         $this->monto_cambio = $sale->monto_cambio;
+        $this->monto_qr = $sale->monto_qr;
         $this->observacion = $sale->observacion;
         $this->estado = $sale->estado;
     }

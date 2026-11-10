@@ -88,7 +88,7 @@
 
                         @can('Ver Inicio')
                         <a href="{{ route('home') }}" wire:navigate title="{{ __('Inicio') }}"
-                            class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('home') ? 'border-l-[3px] border-primary bg-zinc-800 text-white font-medium' : 'text-zinc-700 dark:text-zinc-300' }}"
+                            class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('home') ? 'border-l-[3px] border-primary bg-zinc-800 text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}"
                             :class="sidebarCollapsed ? 'justify-center' : 'gap-2'">
                             <i class="bi bi-house-door-fill shrink-0 text-base"></i>
                             <span class="overflow-hidden whitespace-nowrap transition-all duration-200" :class="sidebarCollapsed ? 'w-0 opacity-0' : 'opacity-100'">{{ __('Inicio') }}</span>
@@ -97,7 +97,7 @@
 
                         @can('Ver Persona')
                         <a href="{{ route('personas') }}" wire:navigate title="{{ __('Personas') }}"
-                            class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('personas*') ? 'border-l-[3px] border-primary bg-zinc-800 text-white font-medium' : 'text-zinc-700 dark:text-zinc-300' }}"
+                            class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('personas*') ? 'border-l-[3px] border-primary bg-zinc-800 text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}"
                             :class="sidebarCollapsed ? 'justify-center' : 'gap-2'">
                             <i class="bi bi-person-badge-fill shrink-0 text-base"></i>
                             <span class="overflow-hidden whitespace-nowrap transition-all duration-200" :class="sidebarCollapsed ? 'w-0 opacity-0' : 'opacity-100'">{{ __('Personas') }}</span>
@@ -106,7 +106,7 @@
 
                         @can('Ver Caja')
                         <a href="{{ route('cash-registers') }}" wire:navigate title="{{ __('Caja') }}"
-                            class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('cash-registers*') ? 'border-l-[3px] border-primary bg-zinc-800 text-white font-medium' : 'text-zinc-700 dark:text-zinc-300' }}"
+                            class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('cash-registers*') ? 'border-l-[3px] border-primary bg-zinc-800 text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}"
                             :class="sidebarCollapsed ? 'justify-center' : 'gap-2'">
                             <i class="bi bi-cash-coin shrink-0 text-base"></i>
                             <span class="overflow-hidden whitespace-nowrap transition-all duration-200" :class="sidebarCollapsed ? 'w-0 opacity-0' : 'opacity-100'">{{ __('Caja') }}</span>
@@ -115,7 +115,7 @@
 
                         @can('Ver Clientes')
                         <a href="{{ route('clientes') }}" wire:navigate title="{{ __('Clientes') }}"
-                            class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('clientes*') ? 'border-l-[3px] border-primary bg-zinc-800 text-white font-medium' : 'text-zinc-700 dark:text-zinc-300' }}"
+                            class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('clientes*') ? 'border-l-[3px] border-primary bg-zinc-800 text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}"
                             :class="sidebarCollapsed ? 'justify-center' : 'gap-2'">
                             <i class="bi bi-people-fill shrink-0 text-base"></i>
                             <span class="overflow-hidden whitespace-nowrap transition-all duration-200" :class="sidebarCollapsed ? 'w-0 opacity-0' : 'opacity-100'">{{ __('Clientes') }}</span>
@@ -124,7 +124,7 @@
 
                         @can('Ver Productos')
                         <a href="{{ route('productos') }}" wire:navigate title="{{ __('Productos') }}"
-                            class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('productos*') ? 'border-l-[3px] border-primary bg-zinc-800 text-white font-medium' : 'text-zinc-700 dark:text-zinc-300' }}"
+                            class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('productos*') ? 'border-l-[3px] border-primary bg-zinc-800 text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}"
                             :class="sidebarCollapsed ? 'justify-center' : 'gap-2'">
                             <i class="bi bi-capsule-pill shrink-0 text-base"></i>
                             <span class="overflow-hidden whitespace-nowrap transition-all duration-200" :class="sidebarCollapsed ? 'w-0 opacity-0' : 'opacity-100'">{{ __('Productos') }}</span>
@@ -133,7 +133,7 @@
 
                         @can('Ver Compras')
                         <a href="{{ route('compras') }}" wire:navigate title="{{ __('Compras') }}"
-                            class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('compras*') ? 'border-l-[3px] border-primary bg-zinc-800 text-white font-medium' : 'text-zinc-700 dark:text-zinc-300' }}"
+                            class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('compras*') ? 'border-l-[3px] border-primary bg-zinc-800 text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}"
                             :class="sidebarCollapsed ? 'justify-center' : 'gap-2'">
                             <i class="bi bi-cart-plus-fill shrink-0 text-base"></i>
                             <span class="overflow-hidden whitespace-nowrap transition-all duration-200" :class="sidebarCollapsed ? 'w-0 opacity-0' : 'opacity-100'">{{ __('Compras') }}</span>
@@ -142,10 +142,29 @@
 
                         @can('Ver Ventas')
                         <a href="{{ route('ventas') }}" wire:navigate title="{{ __('Ventas') }}"
-                            class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('ventas*') ? 'border-l-[3px] border-primary bg-zinc-800 text-white font-medium' : 'text-zinc-700 dark:text-zinc-300' }}"
+                            class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('ventas*') ? 'border-l-[3px] border-primary bg-zinc-800 text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}"
                             :class="sidebarCollapsed ? 'justify-center' : 'gap-2'">
                             <i class="bi bi-bag-check-fill shrink-0 text-base"></i>
                             <span class="overflow-hidden whitespace-nowrap transition-all duration-200" :class="sidebarCollapsed ? 'w-0 opacity-0' : 'opacity-100'">{{ __('Ventas') }}</span>
+                        </a>
+                        @endcan
+
+                        {{-- Notificaciones (alertas de inventario) con el número de pendientes --}}
+                        @can('Ver Alertas Inventario')
+                        @php $alertCount = \App\Support\InventoryAlerts::total(); @endphp
+                        <a href="{{ route('inventory-alerts') }}" wire:navigate title="{{ __('Notificaciones') }}{{ $alertCount ? ' (' . $alertCount . ')' : '' }}"
+                            class="relative flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('inventory-alerts*') ? 'border-l-[3px] border-primary bg-zinc-800 text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}"
+                            :class="sidebarCollapsed ? 'justify-center' : 'gap-2'">
+                            <i class="bi bi-bell-fill shrink-0 text-base"></i>
+                            <span class="overflow-hidden whitespace-nowrap transition-all duration-200" :class="sidebarCollapsed ? 'w-0 opacity-0' : 'opacity-100'">{{ __('Notificaciones') }}</span>
+                            @if($alertCount > 0)
+                                <span x-show="!sidebarCollapsed" class="ml-auto shrink-0 rounded-full bg-red-600 px-2 text-center text-xs font-bold leading-5 text-white">
+                                    {{ $alertCount > 99 ? '99+' : $alertCount }}
+                                </span>
+                                <span x-show="sidebarCollapsed" x-cloak class="absolute top-0 right-0 rounded-full bg-red-600 px-1.5 text-[10px] font-bold leading-5 text-white">
+                                    {{ $alertCount > 99 ? '99+' : $alertCount }}
+                                </span>
+                            @endif
                         </a>
                         @endcan
                     </nav>
@@ -165,7 +184,7 @@
                             || request()->routeIs('lotes*')
                             || request()->routeIs('inventory-adjustments*') || request()->routeIs('invoices*')
                             || request()->routeIs('kardex*') || request()->routeIs('inventory-alerts*')
-                            || request()->routeIs('reports*');
+                            || request()->routeIs('reports*') || request()->routeIs('contabilidad*');
                     @endphp
                     <nav class="mt-4 flex flex-col gap-1">
                         <span class="overflow-hidden whitespace-nowrap px-3 py-1 text-xs font-semibold uppercase tracking-wider text-zinc-400 transition-all duration-200 dark:text-zinc-500"
@@ -176,68 +195,73 @@
                         <!-- Colapsado: solo íconos -->
                         <div x-show="sidebarCollapsed" class="flex flex-col gap-1">
                             @can('Ver Proveedores')
-                            <a href="{{ route('proveedores') }}" wire:navigate title="{{ __('Proveedores') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('proveedores*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 dark:text-zinc-300' }}">
+                            <a href="{{ route('proveedores') }}" wire:navigate title="{{ __('Proveedores') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('proveedores*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                 <i class="bi bi-truck text-base"></i>
                             </a>
                             @endcan
                             @can('Ver Laboratorios')
-                            <a href="{{ route('laboratorios') }}" wire:navigate title="{{ __('Laboratorios') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('laboratorios*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 dark:text-zinc-300' }}">
+                            <a href="{{ route('laboratorios') }}" wire:navigate title="{{ __('Laboratorios') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('laboratorios*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                 <i class="bi bi-building text-base"></i>
                             </a>
                             @endcan
                             @can('Ver Empresa')
-                            <a href="{{ route('company.edit') }}" wire:navigate title="{{ __('Empresa') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('company.edit') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 dark:text-zinc-300' }}">
+                            <a href="{{ route('company.edit') }}" wire:navigate title="{{ __('Empresa') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('company.edit') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                 <i class="bi bi-buildings-fill text-base"></i>
                             </a>
                             @endcan
                             @can('Ver Sucursales')
-                            <a href="{{ route('branches') }}" wire:navigate title="{{ __('Sucursales') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('branches*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 dark:text-zinc-300' }}">
+                            <a href="{{ route('branches') }}" wire:navigate title="{{ __('Sucursales') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('branches*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                 <i class="bi bi-shop text-base"></i>
                             </a>
                             @endcan
                             @can('Ver Metodos Pago')
-                            <a href="{{ route('payment-methods') }}" wire:navigate title="{{ __('Métodos de Pago') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('payment-methods*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 dark:text-zinc-300' }}">
+                            <a href="{{ route('payment-methods') }}" wire:navigate title="{{ __('Métodos de Pago') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('payment-methods*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                 <i class="bi bi-credit-card-2-front-fill text-base"></i>
                             </a>
                             @endcan
                             @can('Ver Servicios')
-                            <a href="{{ route('servicios') }}" wire:navigate title="{{ __('Servicios') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('servicios*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 dark:text-zinc-300' }}">
+                            <a href="{{ route('servicios') }}" wire:navigate title="{{ __('Servicios') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('servicios*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                 <i class="bi bi-clipboard2-pulse-fill text-base"></i>
                             </a>
                             @endcan
                             @can('Ver Categorias')
-                            <a href="{{ route('categorias') }}" wire:navigate title="{{ __('Categorías') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('categorias*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 dark:text-zinc-300' }}">
+                            <a href="{{ route('categorias') }}" wire:navigate title="{{ __('Categorías') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('categorias*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                 <i class="bi bi-tags-fill text-base"></i>
                             </a>
                             @endcan
                             @can('Ver Presentaciones')
-                            <a href="{{ route('presentaciones') }}" wire:navigate title="{{ __('Presentaciones') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('presentaciones*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 dark:text-zinc-300' }}">
+                            <a href="{{ route('presentaciones') }}" wire:navigate title="{{ __('Presentaciones') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('presentaciones*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                 <i class="bi bi-box-seam-fill text-base"></i>
                             </a>
                             @endcan
                             @can('Ver Lotes')
-                            <a href="{{ route('lotes') }}" wire:navigate title="{{ __('Lotes') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('lotes*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 dark:text-zinc-300' }}">
+                            <a href="{{ route('lotes') }}" wire:navigate title="{{ __('Lotes') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('lotes*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                 <i class="bi bi-box-fill text-base"></i>
                             </a>
                             @endcan
                             @can('Ver Ajustes Inventario')
-                            <a href="{{ route('inventory-adjustments') }}" wire:navigate title="{{ __('Ajustes de Inventario') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('inventory-adjustments*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 dark:text-zinc-300' }}">
+                            <a href="{{ route('inventory-adjustments') }}" wire:navigate title="{{ __('Ajustes de Inventario') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('inventory-adjustments*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                 <i class="bi bi-sliders2-vertical text-base"></i>
                             </a>
                             @endcan
                             @can('Ver Facturas')
-                            <a href="{{ route('invoices') }}" wire:navigate title="{{ __('Facturación') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('invoices*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 dark:text-zinc-300' }}">
+                            <a href="{{ route('invoices') }}" wire:navigate title="{{ __('Facturación') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('invoices*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                 <i class="bi bi-receipt text-base"></i>
                             </a>
                             @endcan
                             @can('Ver Kardex')
-                            <a href="{{ route('kardex') }}" wire:navigate title="{{ __('Kardex') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('kardex*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 dark:text-zinc-300' }}">
+                            <a href="{{ route('kardex') }}" wire:navigate title="{{ __('Kardex') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('kardex*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                 <i class="bi bi-journal-medical text-base"></i>
                             </a>
                             @endcan
                             @can('Ver Reportes')
-                            <a href="{{ route('reports') }}" wire:navigate title="{{ __('Reportes') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('reports*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 dark:text-zinc-300' }}">
+                            <a href="{{ route('reports') }}" wire:navigate title="{{ __('Reportes') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('reports*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                 <i class="bi bi-file-earmark-bar-graph-fill text-base"></i>
+                            </a>
+                            @endcan
+                            @can('Ver Contabilidad')
+                            <a href="{{ route('contabilidad') }}" wire:navigate title="{{ __('Contabilidad') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('contabilidad*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
+                                <i class="bi bi-journal-text text-base"></i>
                             </a>
                             @endcan
                         </div>
@@ -316,6 +340,11 @@
                                         <i class="bi bi-file-earmark-bar-graph-fill text-base"></i> {{ __('Reportes') }}
                                     </a>
                                     @endcan
+                                    @can('Ver Contabilidad')
+                                    <a href="{{ route('contabilidad') }}" wire:navigate class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition {{ request()->routeIs('contabilidad*') ? 'border-l-[3px] border-primary bg-zinc-800 text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
+                                        <i class="bi bi-journal-text text-base"></i> {{ __('Contabilidad') }}
+                                    </a>
+                                    @endcan
                                 </div>
                             </details>
                         </div>
@@ -335,22 +364,22 @@
 
                         <div x-show="sidebarCollapsed" class="flex flex-col gap-1">
                             @can('Ver Usuarios')
-                            <a href="{{ route('users') }}" wire:navigate title="{{ __('Usuarios') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('users*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 dark:text-zinc-300' }}">
+                            <a href="{{ route('users') }}" wire:navigate title="{{ __('Usuarios') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('users*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                 <i class="bi bi-person-lines-fill text-base"></i>
                             </a>
                             @endcan
                             @can('Ver Permisos')
-                            <a href="{{ route('permissions') }}" wire:navigate title="{{ __('Permisos') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('permissions*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 dark:text-zinc-300' }}">
+                            <a href="{{ route('permissions') }}" wire:navigate title="{{ __('Permisos') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('permissions*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                 <i class="bi bi-shield-lock-fill text-base"></i>
                             </a>
                             @endcan
                             @can('Ver Roles')
-                            <a href="{{ route('roles') }}" wire:navigate title="{{ __('Roles') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('roles*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 dark:text-zinc-300' }}">
+                            <a href="{{ route('roles') }}" wire:navigate title="{{ __('Roles') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('roles*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                 <i class="bi bi-person-badge-fill text-base"></i>
                             </a>
                             @endcan
                             @can('Ver Logs Acceso')
-                            <a href="{{ route('login-logs') }}" wire:navigate title="{{ __('Logs de Acceso') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 {{ request()->routeIs('login-logs*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 dark:text-zinc-300' }}">
+                            <a href="{{ route('login-logs') }}" wire:navigate title="{{ __('Logs de Acceso') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('login-logs*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
                                 <i class="bi bi-clock-history text-base"></i>
                             </a>
                             @endcan
@@ -384,6 +413,40 @@
                                         <i class="bi bi-clock-history text-base"></i> {{ __('Logs de Acceso') }}
                                     </a>
                                     @endcan
+                                </div>
+                            </details>
+                        </div>
+                    </nav>
+                    @endcan
+
+                    <!-- ✅ CONFIGURACIONES (Solo Super Admin) -->
+                    @can('Super Admin')
+                    @php
+                        $isConfigSection = request()->routeIs('configuraciones*');
+                    @endphp
+                    <nav class="mt-4 flex flex-col gap-1">
+                        <span class="overflow-hidden whitespace-nowrap px-3 py-1 text-xs font-semibold uppercase tracking-wider text-zinc-400 transition-all duration-200 dark:text-zinc-500"
+                            :class="sidebarCollapsed ? 'opacity-0 h-0 py-0' : 'opacity-100'">
+                            {{ __('Configuraciones') }}
+                        </span>
+
+                        <div x-show="sidebarCollapsed" class="flex flex-col gap-1">
+                            <a href="{{ route('configuraciones.sucursales') }}" wire:navigate title="{{ __('Sucursales') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('configuraciones.sucursales*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
+                                <i class="bi bi-diagram-3-fill text-base"></i>
+                            </a>
+                        </div>
+
+                        <div x-show="!sidebarCollapsed">
+                            <details class="group" @if($isConfigSection) open @endif>
+                                <summary class="flex cursor-pointer items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-200 dark:hover:bg-zinc-800 {{ $isConfigSection ? 'bg-[rgb(37_99_235_/_0.12)] dark:bg-[rgb(37_99_235_/_0.18)] text-zinc-900 dark:text-white' : 'text-zinc-700 dark:text-zinc-200' }}">
+                                    <i class="bi bi-gear-fill shrink-0 text-base"></i>
+                                    <span class="flex-1 whitespace-nowrap">{{ __('Configuraciones') }}</span>
+                                    <i class="bi bi-chevron-down text-xs transition-transform duration-200 group-open:rotate-180"></i>
+                                </summary>
+                                <div class="ml-5 mt-1 space-y-1 border-l border-zinc-200 pl-3 dark:border-zinc-700">
+                                    <a href="{{ route('configuraciones.sucursales') }}" wire:navigate class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition {{ request()->routeIs('configuraciones.sucursales*') ? 'border-l-[3px] border-primary bg-zinc-800 text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
+                                        <i class="bi bi-diagram-3-fill text-base"></i> {{ __('Sucursales') }}
+                                    </a>
                                 </div>
                             </details>
                         </div>
@@ -597,6 +660,12 @@
                                 <i class="bi bi-bag-check-fill me-2"></i> {{ __('Ventas') }}
                             </flux:navlist.item>
                             @endcan
+                            @can('Ver Alertas Inventario')
+                            @php $alertCount = \App\Support\InventoryAlerts::total(); @endphp
+                            <flux:navlist.item :href="route('inventory-alerts')" :current="request()->routeIs('inventory-alerts*')" :badge="$alertCount > 0 ? ($alertCount > 99 ? '99+' : $alertCount) : null" badge:color="red" wire:navigate class="rounded-xl px-3 py-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                                <i class="bi bi-bell-fill me-2"></i> {{ __('Notificaciones') }}
+                            </flux:navlist.item>
+                            @endcan
                         </flux:navlist.group>
 
                         @canany([
@@ -678,6 +747,11 @@
                                         <i class="bi bi-file-earmark-bar-graph-fill me-2"></i> {{ __('Reportes') }}
                                     </flux:navlist.item>
                                     @endcan
+                                    @can('Ver Contabilidad')
+                                    <flux:navlist.item :href="route('contabilidad')" :current="request()->routeIs('contabilidad*')" wire:navigate class="rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                                        <i class="bi bi-journal-text me-2"></i> {{ __('Contabilidad') }}
+                                    </flux:navlist.item>
+                                    @endcan
                                 </div>
                             </details>
                         </flux:navlist.group>
@@ -705,6 +779,14 @@
                                 <i class="bi bi-clock-history me-2"></i> {{ __('Logs de Acceso') }}
                             </flux:navlist.item>
                             @endcan
+                        </flux:navlist.group>
+                        @endcan
+
+                        @can('Super Admin')
+                        <flux:navlist.group :heading="__('Configuraciones')" class="grid mt-3">
+                            <flux:navlist.item :href="route('configuraciones.sucursales')" :current="request()->routeIs('configuraciones.sucursales*')" wire:navigate class="rounded-xl px-3 py-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                                <i class="bi bi-diagram-3-fill me-2"></i> {{ __('Sucursales') }}
+                            </flux:navlist.item>
                         </flux:navlist.group>
                         @endcan
                     </flux:navlist>

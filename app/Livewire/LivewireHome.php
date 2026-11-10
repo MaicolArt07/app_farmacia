@@ -2,12 +2,15 @@
 
 namespace App\Livewire;
 
+use App\Models\Caja;
 use App\Models\Cliente;
 use App\Models\Producto;
 use App\Models\Venta;
 use App\Models\DetalleVenta;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class LivewireHome extends Component
@@ -17,19 +20,41 @@ class LivewireHome extends Component
     public $to = '';
     public $hasFilter = false;
 
+    /**
+     * Trabajador: sin filtros de fecha; solo ve lo vendido en SU caja abierta
+     * del día (misma regla que el listado de ventas). El admin ve todo.
+     */
+    #[Locked] // no se puede cambiar desde el navegador
+    public $workerMode = false;
+
     public function mount()
     {
-        $this->applyRange('30d');
+        $user = Auth::user();
+        $this->workerMode = $user?->hasRole('Trabajador') && !$user?->hasRole('admin');
+
+        $this->applyRange($this->workerMode ? 'today' : '30d');
+    }
+
+    protected function workerOpenCash(): ?Caja
+    {
+        return Caja::where('id_usuario', Auth::id())
+            ->where('status', 'OPEN')
+            ->where('estado', 1)
+            ->first();
     }
 
     public function setPreset($range)
     {
+        if ($this->workerMode) return;
+
         $this->hasFilter = false;
         $this->applyRange($range);
     }
 
     public function applyFilter()
     {
+        if ($this->workerMode) return;
+
         if (!$this->from || !$this->to) {
             return;
         }
@@ -40,6 +65,8 @@ class LivewireHome extends Component
 
     public function clearFilter()
     {
+        if ($this->workerMode) return;
+
         $this->hasFilter = false;
         $this->applyRange('30d');
     }
@@ -64,10 +91,25 @@ class LivewireHome extends Component
 
     public function render()
     {
-        $from = Carbon::parse($this->from)->startOfDay();
-        $to = Carbon::parse($this->to)->endOfDay();
+        $workerCash = null;
 
-        $salesQuery = Venta::whereBetween('fecha_venta', [$from, $to])
+        if ($this->workerMode) {
+            // Ignora cualquier fecha que llegue del navegador: siempre hoy + su caja abierta.
+            $workerCash = $this->workerOpenCash();
+            $from = Carbon::today();
+            $to = Carbon::today()->endOfDay();
+
+            $scope = fn ($q, $prefix = '') => $q
+                ->where($prefix . 'id_caja', $workerCash?->id ?? 0)
+                ->whereDate($prefix . 'created_at', $from->toDateString());
+        } else {
+            $from = Carbon::parse($this->from)->startOfDay();
+            $to = Carbon::parse($this->to)->endOfDay();
+
+            $scope = fn ($q, $prefix = '') => $q->whereBetween($prefix . 'fecha_venta', [$from, $to]);
+        }
+
+        $salesQuery = $scope(Venta::query())
             ->where('status', '!=', 'CANCELLED');
 
         $salesCount = (clone $salesQuery)->count();
@@ -86,10 +128,9 @@ class LivewireHome extends Component
             ->get(['productos.id'])
             ->count();
 
-        $topProducts = DetalleVenta::query()
+        $topProducts = $scope(DetalleVenta::query()
             ->join('ventas', 'ventas.id', '=', 'detalles_venta.id_venta')
-            ->join('productos', 'productos.id', '=', 'detalles_venta.id_producto')
-            ->whereBetween('ventas.fecha_venta', [$from, $to])
+            ->join('productos', 'productos.id', '=', 'detalles_venta.id_producto'), 'ventas.')
             ->where('ventas.status', '!=', 'CANCELLED')
             ->groupBy('productos.id', 'productos.nombre', 'productos.code', 'productos.stock_minimo')
             ->orderByDesc(DB::raw('SUM(detalles_venta.quantity)'))
@@ -143,6 +184,8 @@ class LivewireHome extends Component
             ->pluck('total', 'metodo_pago');
 
         return view('livewire.inicio.index', [
+            'workerCash' => $workerCash,
+            'periodLabel' => $this->workerMode ? 'en tu caja de hoy' : 'en el periodo',
             'totalProducts' => $totalProducts,
             'totalClients' => $totalClients,
             'salesCount' => $salesCount,

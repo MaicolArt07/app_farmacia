@@ -34,18 +34,5 @@ document.addEventListener('livewire:init', () => {
         });
     });
 
-    Livewire.on('confirm-session-override', () => {
-        confirmAction({
-            title: 'Sesión activa en otro dispositivo',
-            text: 'Estás a punto de cerrar la sesión abierta en otro dispositivo. ¿Deseas continuar e iniciar sesión aquí?',
-            confirmText: 'Sí, continuar',
-            danger: false,
-        }).then((confirmed) => {
-            if (confirmed) {
-                Livewire.dispatch('confirmLogin');
-            }
-        });
-    });
-
 });
 

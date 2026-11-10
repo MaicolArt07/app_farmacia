@@ -16,8 +16,7 @@ class CajaForm extends Form
     public function rulesOpen()
     {
         return [
-            'openForm.opening_amount' => 'required|numeric|min:0',
-            'openForm.validity_period' => 'required|in:DAILY,WEEKLY,MONTHLY',
+            'openForm.opening_amount' => 'required|numeric|min:0.1',
             'openForm.observation' => 'nullable|string',
         ];
     }
@@ -25,9 +24,9 @@ class CajaForm extends Form
     public function messages()
     {
         return [
-            'openForm.opening_amount.required' => 'El monto inicial es obligatorio.',
+            'openForm.opening_amount.required' => 'Debe registrar los cortes (monedas y billetes) de la caja.',
             'openForm.opening_amount.numeric' => 'El monto inicial debe ser numérico.',
-            'openForm.validity_period.required' => 'Debe seleccionar la duración de la caja.',
+            'openForm.opening_amount.min' => 'Debe registrar los cortes (monedas y billetes) de la caja.',
         ];
     }
 
@@ -35,7 +34,7 @@ class CajaForm extends Form
     {
         $this->id = null;
         $this->opening_date = now()->toDateString();
-        $this->opening_amount = 0;
+        $this->opening_amount = '';
         $this->validity_period = 'DAILY';
         $this->closing_amount = '';
         $this->observation = '';

@@ -11,14 +11,14 @@
 
     <form wire:submit="login" class="flex flex-col gap-5">
         <div class="space-y-1">
-            <label class="text-sm font-medium text-zinc-700 dark:text-zinc-200">{{ __('Correo electrónico') }}</label>
+            <label class="text-sm font-medium text-zinc-700 dark:text-zinc-200">{{ __('Correo o nombre de usuario') }}</label>
             <input
                 wire:model="email"
-                type="email"
+                type="text"
                 required
                 autofocus
-                autocomplete="email"
-                placeholder="correo@ejemplo.com"
+                autocomplete="username"
+                placeholder="correo@ejemplo.com o tu nombre de usuario"
                 class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
             >
             @error('email')
@@ -26,16 +26,26 @@
             @enderror
         </div>
 
-        <div class="space-y-1">
+        <div class="space-y-1" x-data="{ showPassword: false }">
             <label class="text-sm font-medium text-zinc-700 dark:text-zinc-200">{{ __('Contraseña') }}</label>
-            <input
-                wire:model="password"
-                type="password"
-                required
-                autocomplete="current-password"
-                placeholder="{{ __('Contraseña') }}"
-                class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
-            >
+            <div class="relative">
+                <input
+                    wire:model="password"
+                    :type="showPassword ? 'text' : 'password'"
+                    required
+                    autocomplete="current-password"
+                    placeholder="{{ __('Contraseña') }}"
+                    class="w-full rounded border border-zinc-400 bg-white px-3 py-2 pr-10 text-sm text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                >
+                <button
+                    type="button"
+                    x-on:click="showPassword = !showPassword"
+                    class="absolute inset-y-0 right-0 flex items-center px-3 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 cursor-pointer"
+                    tabindex="-1"
+                >
+                    <i class="bi" :class="showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'"></i>
+                </button>
+            </div>
             @error('password')
                 <span class="text-sm text-red-500">{{ $message }}</span>
             @enderror

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\DB;
 
 class Caja extends Model
 {
@@ -19,6 +20,7 @@ class Caja extends Model
 
     protected $fillable = [
         'id_usuario',
+        'id_sucursal',
         'fecha_apertura',
         'monto_apertura',
         'periodo_validez',
@@ -27,6 +29,9 @@ class Caja extends Model
         'monto_cierre',
         'monto_esperado',
         'diferencia',
+        'monto_qr_esperado',
+        'monto_qr_verificado',
+        'diferencia_qr',
         'status',
         'observacion',
         'estado',
@@ -40,6 +45,9 @@ class Caja extends Model
         'monto_esperado' => 'decimal:2',
         'monto_cierre' => 'decimal:2',
         'diferencia' => 'decimal:2',
+        'monto_qr_esperado' => 'decimal:2',
+        'monto_qr_verificado' => 'decimal:2',
+        'diferencia_qr' => 'decimal:2',
         'estado' => 'integer',
     ];
 
@@ -114,6 +122,57 @@ class Caja extends Model
         return $this;
     }
 
+    /**
+     * Desglose del dinero de la caja. El "esperado" es SOLO el EFECTIVO que
+     * debe haber físicamente en el cajón: los pagos por QR van a la cuenta
+     * bancaria y no se cuentan en los cortes.
+     *
+     *   esperado = monto inicial + ventas en efectivo + ingresos manuales
+     *              - egresos manuales
+     *
+     * Se calcula desde las ventas activas (las canceladas no suman), así que
+     * los movimientos automáticos de venta/anulación no se cuentan aparte.
+     */
+    public function cashBreakdown(): array
+    {
+        $sales = Venta::where('id_caja', $this->id)->where('status', 'ACTIVE');
+
+        // Mixto: su parte en efectivo suma al cajón y su parte QR a la cuenta.
+        $cash = (float) (clone $sales)->sum(DB::raw(Venta::SQL_CASH));
+        $qr = (float) (clone $sales)->sum(DB::raw(Venta::SQL_QR));
+        $other = max(0, round((float) (clone $sales)->sum('total') - $cash - $qr, 2));
+
+        // Movimientos manuales: excluye los automáticos de ventas y anulaciones.
+        $manual = MovimientoCaja::where('id_caja', $this->id)
+            ->where(fn ($q) => $q->whereNull('reference_type')->orWhereNotIn('reference_type', ['SALE', 'SALE_CANCEL']))
+            ->where('concepto', 'not like', 'Anulación venta #%');
+
+        $incomes = (float) (clone $manual)->where('type', 'INCOME')->sum('monto');
+        $expenses = (float) (clone $manual)->where('type', 'EXPENSE')->sum('monto');
+
+        $opening = (float) $this->monto_apertura;
+
+        return [
+            'opening' => $opening,
+            'cash_sales' => $cash,
+            'qr_sales' => $qr,
+            'other_sales' => $other,
+            'total_sales' => $cash + $qr + $other,
+            'incomes' => $incomes,
+            'expenses' => $expenses,
+            'expected_cash' => round($opening + $cash + $incomes - $expenses, 2),
+        ];
+    }
+
+    /** Recalcula y guarda monto_esperado (efectivo esperado en el cajón). */
+    public function recalculateExpected(): self
+    {
+        $this->monto_esperado = $this->cashBreakdown()['expected_cash'];
+        $this->save();
+
+        return $this;
+    }
+
     public static function calculateExpiration(string $period, $from = null)
     {
         $from = $from ? \Illuminate\Support\Carbon::parse($from) : now();
@@ -123,5 +182,10 @@ class Caja extends Model
             'MONTHLY' => $from->copy()->addMonth(),
             default => $from->copy()->addDay(),
         };
+    }
+
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class, 'id_sucursal');
     }
 }

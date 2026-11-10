@@ -383,6 +383,7 @@ class LivewireCompra extends Component
 
                     $lot = Lote::create([
                         'id_producto' => $detail['id_producto'],
+                        'id_sucursal' => Auth::user()->id_sucursal,
                         'codigo_lote' => $detail['batch_code'],
                         'precio_compra' => $detail['purchase_price'],
                         'precio_venta' => $detail['sale_price'],
@@ -409,6 +410,14 @@ class LivewireCompra extends Component
                     'descripcion' => 'Ingreso por compra #' . $purchase->id,
                 ]);
             }
+
+            \App\Models\MovimientoContable::registrarAutomatico('COMPRA', $purchase->id, [
+                'fecha' => $purchase->fecha_compra,
+                'tipo' => \App\Models\MovimientoContable::DEBE,
+                'concepto' => 'Compra #' . $purchase->id . ($purchase->supplier?->razon_social ? ' - ' . $purchase->supplier->razon_social : ''),
+                'monto' => $purchase->total,
+                'id_usuario' => Auth::id(),
+            ]);
 
             DB::commit();
 
@@ -506,6 +515,8 @@ class LivewireCompra extends Component
             $purchase->cancelled_by = auth()->id();
             $purchase->cancel_reason = 'Compra anulada desde el módulo de compras.';
             $purchase->save();
+
+            \App\Models\MovimientoContable::eliminarAutomatico('COMPRA', $purchase->id);
 
             DB::commit();
 

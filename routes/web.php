@@ -23,6 +23,8 @@ use App\Livewire\LivewireInventoryAlerts;
 use App\Livewire\LivewireKardex;
 use App\Livewire\LivewireFactura;
 use App\Livewire\LivewireReports;
+use App\Livewire\LivewireContabilidad;
+use App\Livewire\LivewireConfiguracionSucursales;
 use App\Livewire\LivewireLoginLogs;
 use App\Livewire\LivewireRoles;
 use App\Models\Factura;
@@ -132,9 +134,20 @@ Route::middleware(['auth', 'single.session'])->group(function () {
     ->middleware('can:Ver Ventas')
     ->name('ventas.view');
 
+    // Editar el pago de una venta (solo monto/método): solo administrador y
+    // solo mientras la caja de esa venta siga abierta.
+    Route::get('/ventas/{sale}/edit', LivewireVenta::class)
+    ->middleware('role:admin')
+    ->name('ventas.edit');
+
     Route::get('/cash-registers', LivewireCaja::class)
     ->middleware('can:Ver Caja')
     ->name('cash-registers');
+
+    // Ventas detalladas de UNA caja (qué se vendió): solo administrador.
+    Route::get('/cash-registers/{caja}/sales', \App\Livewire\LivewireCajaVentas::class)
+        ->middleware('role:admin')
+        ->name('cash-registers.sales');
 
 
     Route::get('/inventory-adjustments', LivewireAjusteInventario::class)
@@ -164,6 +177,21 @@ Route::middleware(['auth', 'single.session'])->group(function () {
     Route::get('/reports', LivewireReports::class)
         ->middleware('can:Ver Reportes')
         ->name('reports');
+
+    Route::get('/contabilidad', LivewireContabilidad::class)
+        ->middleware('can:Ver Contabilidad')
+        ->name('contabilidad');
+
+    Route::get('/configuraciones/sucursales', LivewireConfiguracionSucursales::class)
+        ->middleware('can:Super Admin')
+        ->name('configuraciones.sucursales');
+
+    // Productos más vendidos: solo administrador.
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/reports/top-products', \App\Livewire\LivewireTopProducts::class)->name('reports.top-products');
+        Route::get('/reports/top-products/pdf', [ReportExportController::class, 'topProductsPdf'])->name('reports.top-products.pdf');
+        Route::get('/reports/top-products/excel', [ReportExportController::class, 'topProductsExcel'])->name('reports.top-products.excel');
+    });
 
     Route::middleware('can:Exportar Reportes')->group(function () {
         Route::get('/reports/daily-book/export', [ReportExportController::class, 'dailyBook'])->name('reports.daily-book.export');

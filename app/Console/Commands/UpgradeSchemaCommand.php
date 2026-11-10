@@ -513,6 +513,7 @@ class UpgradeSchemaCommand extends Command
             'Ver Presentaciones',
             'Ver Productos',
             'Ver Lotes',
+            'Editar Lotes',
             'Ver Compras',
             'Cambiar Estado Compras',
             'Ver Ventas',
@@ -533,6 +534,8 @@ class UpgradeSchemaCommand extends Command
             'Cambiar Estado Facturas',
             'Ver Reportes',
             'Exportar Reportes',
+            'Ver Contabilidad',
+            'Super Admin',
             'Ver Gestion de Usuarios',
             'Ver Usuarios',
             'Ver Permisos',
@@ -550,6 +553,15 @@ class UpgradeSchemaCommand extends Command
             }
         }
 
-        $this->info("  -> catálogo verificado ({$created} permiso(s) nuevo(s) creados).");
+        // "Super Admin" es un permiso que se asigna a mano a usuarios puntuales
+        // (ve/administra TODAS las sucursales), no se reparte automáticamente
+        // al rol admin: cada admin de sucursal solo debe ver la suya.
+        $admin = Role::where('name', 'admin')->where('guard_name', 'web')->first();
+
+        if ($admin) {
+            $admin->givePermissionTo(array_diff($permissions, ['Super Admin']));
+        }
+
+        $this->info("  -> catálogo verificado ({$created} permiso(s) nuevo(s) creados, rol admin sincronizado).");
     }
 }

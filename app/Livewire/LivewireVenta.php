@@ -25,10 +25,20 @@ class LivewireVenta extends Component
 
     public $search = '';
 
+    /** Filtro del listado por método de pago: '', EFECTIVO, QR o MIXTO. */
+    public $paymentFilter = '';
+
+    /** Filtro de fechas del listado (solo administrador). */
+    public $dateFrom = '';
+    public $dateTo = '';
+
     public $mode = 'list';
     public VentaForm $form;
 
     public $viewMode = false;
+
+    /** Editar solo el pago (método/monto) de una venta con caja aún abierta. */
+    public $editMode = false;
 
     public $clientSearch = '';
     public $clientResults = [];
@@ -45,22 +55,46 @@ class LivewireVenta extends Component
     public $openCash = null;
     public $cashExpired = false;
 
+    // Solo en modo "ver venta": fecha/hora, estado y motivo de cancelación.
+    public $saleInfo = null;
+
     protected $paginationTheme = 'tailwind';
 
     public function mount($sale = null)
     {
         $this->refreshCashStatus();
 
-        if (request()->routeIs('ventas.create') || request()->routeIs('ventas.view')) {
+        if (request()->routeIs('ventas.create') || request()->routeIs('ventas.view') || request()->routeIs('ventas.edit')) {
             $this->mode = 'form';
-            $this->viewMode = request()->routeIs('ventas.view');
+            $this->viewMode = request()->routeIs('ventas.view') || request()->routeIs('ventas.edit');
+            $this->editMode = request()->routeIs('ventas.edit');
 
             $this->form->resetForm();
             $this->details = [];
 
             if ($sale) {
-                $sale = Venta::with(['client.person', 'details.product', 'details.lot', 'details.service'])->findOrFail($sale);
+                $sale = Venta::with(['client.person', 'details.product', 'details.lot', 'details.service', 'cashRegister'])->findOrFail($sale);
+
+                if ($this->editMode) {
+                    if (!Auth::user()?->hasRole('admin')) {
+                        abort(403);
+                    }
+
+                    if ($sale->status !== 'ACTIVE' || $sale->cashRegister?->status !== 'OPEN') {
+                        $this->dispatch('toast', type: 'warning', message: 'Esta venta ya no se puede editar: su caja está cerrada.');
+                        $this->redirectRoute('ventas.view', $sale->id, navigate: true);
+                        return;
+                    }
+                }
+
                 $this->form->fillForm($sale);
+
+                $this->saleInfo = [
+                    'fecha_hora' => $sale->created_at?->format('d/m/Y H:i'),
+                    'cancelled' => $sale->status === 'CANCELLED',
+                    'cancel_reason' => $sale->cancel_reason,
+                    'cancelled_at' => $sale->cancelled_at?->format('d/m/Y H:i'),
+                ];
 
                 if ($sale->client) {
                     $this->selectedClientLabel = trim(($sale->client->person?->nombre ?? '') . ' ' . ($sale->client->person?->apellido ?? '')) .
@@ -104,6 +138,29 @@ class LivewireVenta extends Component
         $this->resetPage();
     }
 
+    public function setPaymentFilter($value)
+    {
+        $this->paymentFilter = in_array($value, ['EFECTIVO', 'QR', 'MIXTO'], true) ? $value : '';
+        $this->resetPage();
+    }
+
+    public function updatedDateFrom()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedDateTo()
+    {
+        $this->resetPage();
+    }
+
+    public function clearDateFilter()
+    {
+        $this->dateFrom = '';
+        $this->dateTo = '';
+        $this->resetPage();
+    }
+
     public function render()
     {
         if ($this->mode === 'form') {
@@ -112,24 +169,72 @@ class LivewireVenta extends Component
             ]);
         }
 
-        $query = Venta::with(['client.person', 'user', 'invoice']);
+        $isAdmin = (bool) Auth::user()?->hasRole('admin');
 
-        if (!empty($this->search)) {
-            $query->where(function ($q) {
-                $q->where('fecha_venta', 'like', "%{$this->search}%")
-                    ->orWhere('metodo_pago', 'like', "%{$this->search}%")
-                    ->orWhereHas('client.person', function ($sub) {
-                        $sub->where('nombre', 'like', "%{$this->search}%")
-                            ->orWhere('apellido', 'like', "%{$this->search}%")
-                            ->orWhere('ci', 'like', "%{$this->search}%");
+        if ($isAdmin) {
+            // El administrador ve el historial completo (todas las cajas,
+            // abiertas o cerradas, cualquier fecha) y puede filtrar por rango.
+            $query = Venta::with(['client.person', 'user', 'invoice', 'details.product', 'details.service', 'cashRegister']);
+
+            if ($this->dateFrom !== '') {
+                $query->whereDate('fecha_venta', '>=', $this->dateFrom);
+            }
+            if ($this->dateTo !== '') {
+                $query->whereDate('fecha_venta', '<=', $this->dateTo);
+            }
+        } else {
+            // Sin historial: solo se listan las ventas de SU caja ABIERTA y del
+            // DÍA de hoy. Al cerrar la caja o terminar el día dejan de aparecer
+            // (siguen disponibles en el detalle de la caja).
+            $openCashIds = Caja::where('status', 'OPEN')
+                ->where('estado', 1)
+                ->where('id_usuario', Auth::id())
+                ->pluck('id');
+
+            $query = Venta::with(['client.person', 'user', 'invoice', 'details.product', 'details.service', 'cashRegister'])
+                ->whereIn('id_caja', $openCashIds)
+                ->whereDate('created_at', now()->toDateString());
+        }
+
+        $term = trim((string) $this->search);
+        if ($term !== '') {
+            $query->where(function ($q) use ($term) {
+                $q->where('fecha_venta', 'like', "%{$term}%")
+                    ->orWhere('metodo_pago', 'like', "%{$term}%")
+                    ->when(ctype_digit(ltrim($term, '#')), fn ($q) => $q->orWhere('id', (int) ltrim($term, '#')))
+                    // Por PRODUCTO (nombre, código o barras) o servicio vendido.
+                    ->orWhereHas('details.product', fn ($p) => $p->where('nombre', 'like', "%{$term}%")
+                        ->orWhere('code', 'like', "%{$term}%")
+                        ->orWhere('barcode', 'like', "%{$term}%"))
+                    ->orWhereHas('details.service', fn ($s) => $s->where('nombre', 'like', "%{$term}%"))
+                    ->orWhereHas('client.person', function ($sub) use ($term) {
+                        $sub->where('nombre', 'like', "%{$term}%")
+                            ->orWhere('apellido', 'like', "%{$term}%")
+                            ->orWhere('ci', 'like', "%{$term}%");
                     });
             });
         }
 
+        if ($this->paymentFilter !== '') {
+            $query->whereRaw('UPPER(metodo_pago) = ?', [$this->paymentFilter]);
+        }
+
+        // Totales de lo vendido (sin contar ventas canceladas).
+        $sold = (clone $query)->where('status', 'ACTIVE');
+        $totals = [
+            // Mixto reparte: su efectivo suma a Efectivo y su QR a QR.
+            'efectivo' => (float) (clone $sold)->sum(DB::raw(Venta::SQL_CASH)),
+            'qr' => (float) (clone $sold)->sum(DB::raw(Venta::SQL_QR)),
+            'total' => (float) (clone $sold)->sum('total'),
+            'cantidad' => (clone $sold)->count(),
+        ];
+
         return view('livewire.venta.index', [
+            'totals' => $totals,
             'sales' => $query->orderBy('id', 'desc')->paginate(10),
             'openCash' => $this->openCash,
             'cashExpired' => $this->cashExpired,
+            'isAdmin' => $isAdmin,
         ]);
     }
 
@@ -145,6 +250,11 @@ class LivewireVenta extends Component
 
     public function extendCash()
     {
+        if (!Auth::user()?->can('Editar Caja')) {
+            $this->dispatch('toast', type: 'error', message: 'No tiene permiso para ampliar la vigencia de la caja.');
+            return;
+        }
+
         if (!$this->openCash) {
             return;
         }
@@ -233,34 +343,75 @@ class LivewireVenta extends Component
 
     public function updatedProductSearch()
     {
-        if (strlen(trim($this->productSearch)) < 2) {
+        $term = trim(preg_replace('/\s+/', ' ', (string) $this->productSearch));
+
+        if (mb_strlen($term) < 2) {
             $this->productResults = [];
             return;
         }
 
+        // Cada palabra debe aparecer (en cualquier orden) en el nombre, genérico,
+        // laboratorio, código o barras. Ej: "refrianex noche", "amoxi sae".
+        $words = array_slice(explode(' ', $term), 0, 5);
+
         $this->productResults = Producto::query()
             ->with(['laboratory', 'presentation'])
             ->where('estado', 1)
-            ->where(function ($q) {
-                $q->where('code', 'like', "%{$this->productSearch}%")
-                    ->orWhere('barcode', 'like', "%{$this->productSearch}%")
-                    ->orWhere('nombre', 'like', "%{$this->productSearch}%")
-                    ->orWhere('nombre_generico', 'like', "%{$this->productSearch}%");
+            ->where(function ($q) use ($term) {
+                // Código/barras exacto o parcial (lector de código de barras).
+                $q->where('code', 'like', "%{$term}%")
+                    ->orWhere('barcode', 'like', "%{$term}%")
+                    ->orWhere(function ($q) {
+                        foreach (array_slice(explode(' ', trim(preg_replace('/\s+/', ' ', (string) $this->productSearch))), 0, 5) as $w) {
+                            // Una letra suelta (ej. la "D" de "DIA D") solo como palabra completa.
+                            if (mb_strlen($w) === 1) {
+                                $q->where(fn ($q) => $q->where('nombre', 'like', "% {$w}")
+                                    ->orWhere('nombre', 'like', "% {$w} %")
+                                    ->orWhere('nombre', 'like', "{$w} %"));
+                                continue;
+                            }
+                            $q->where(fn ($q) => $q->where('nombre', 'like', "%{$w}%")
+                                ->orWhere('nombre_generico', 'like', "%{$w}%")
+                                ->orWhereHas('laboratory', fn ($l) => $l->where('nombre', 'like', "%{$w}%")));
+                        }
+                    });
             })
-            ->limit(10)
+            // Primero los que EMPIEZAN con lo escrito, luego por nombre.
+            ->orderByRaw('CASE WHEN nombre LIKE ? THEN 0 ELSE 1 END', [$words[0] . '%'])
+            ->orderBy('nombre')
+            ->limit(15)
             ->get()
             ->map(function ($product) {
-                $stock = Lote::where('id_producto', $product->id)
+                // Cada lote (ingreso) es un stock con su propio precio.
+                $lots = Lote::where('id_producto', $product->id)
                     ->where('estado', 1)
                     ->where('cantidad_disponible', '>', 0)
                     ->where(function ($q) {
                         $q->whereNull('fecha_vencimiento')
                             ->orWhereDate('fecha_vencimiento', '>=', now()->toDateString());
                     })
-                    ->sum('cantidad_disponible');
+                    ->orderBy('id') // primero el stock que entró antes
+                    ->get()
+                    ->map(fn ($l) => [
+                        'id' => $l->id,
+                        'price' => self::lotPrice($l, $product),
+                        'stock' => (int) $l->cantidad_disponible,
+                        'label' => str_starts_with($l->codigo_lote, 'INGRESO-')
+                            ? 'Ingreso ' . \Carbon\Carbon::parse(substr($l->codigo_lote, 8, 10))->format('d/m/Y')
+                            : (str_starts_with($l->codigo_lote, 'CARGA-INICIAL') ? 'Stock inicial' : $l->codigo_lote),
+                    ])
+                    ->values()
+                    ->all();
+
+                $stock = array_sum(array_column($lots, 'stock'));
+
+                // Producto "unidad" sin sueltos: ¿hay paquetes cerrados para abrir?
+                $packsClosed = $stock > 0 ? 0 : Producto::where('id_producto_unidad', $product->id)
+                    ->where('estado', 1)->get()->sum(fn ($p) => $p->availableStock());
 
                 return [
                     'id' => $product->id,
+                    'packs_closed' => $packsClosed,
                     'code' => $product->code,
                     'name' => $product->nombre . ($product->concentracion ? ' | ' . $product->concentracion : ''),
                     'laboratory' => $product->laboratory?->nombre,
@@ -268,16 +419,31 @@ class LivewireVenta extends Component
                     'label' => $product->code . ' - ' . $product->nombre .
                         ($product->concentracion ? ' | ' . $product->concentracion : '') .
                         ' | Stock: ' . $stock,
-                    'sale_price' => (float) $product->precio_venta,
+                    // Precio del lote que se vende primero (el más antiguo).
+                    'sale_price' => $lots[0]['price'] ?? (float) $product->precio_venta,
                     'stock' => $stock,
+                    'lots' => $lots,
                 ];
             })
             ->toArray();
     }
 
-    public function addProductToDetail($id)
+    /**
+     * Agrega un producto al detalle. Con $lotId se vende ese stock (precio de
+     * ese ingreso); sin él, el lote más antiguo que quede disponible.
+     */
+    public function addProductToDetail($id, $lotId = null)
     {
         $product = Producto::findOrFail($id);
+
+        // Lo que ya está en el detalle de cada lote (para pasar al siguiente
+        // lote cuando el más antiguo ya se usó completo en esta venta).
+        $usedByLot = [];
+        foreach ($this->details as $d) {
+            if (!empty($d['id_lote'])) {
+                $usedByLot[$d['id_lote']] = ($usedByLot[$d['id_lote']] ?? 0) + (int) ($d['quantity'] ?? 0);
+            }
+        }
 
         $availableLot = Lote::where('id_producto', $product->id)
             ->where('estado', 1)
@@ -286,33 +452,93 @@ class LivewireVenta extends Component
                 $q->whereNull('fecha_vencimiento')
                     ->orWhereDate('fecha_vencimiento', '>=', now()->toDateString());
             })
-            ->orderByRaw('fecha_vencimiento IS NULL')
-            ->orderBy('fecha_vencimiento', 'asc')
-            ->first();
+            ->orderBy('id', 'asc') // primero el stock que ENTRÓ antes (el más antiguo)
+            ->when($lotId, fn ($q) => $q->whereKey($lotId))
+            ->get()
+            ->first(fn ($l) => $l->cantidad_disponible - ($usedByLot[$l->id] ?? 0) > 0);
+
+        if (!$availableLot && $lotId) {
+            $this->dispatch('toast', type: 'warning', message: 'Ese stock ya está agregado completo o no tiene unidades.');
+            return;
+        }
+
+        if (!$availableLot && !empty($usedByLot) && Lote::where('id_producto', $product->id)->where('cantidad_disponible', '>', 0)->exists()) {
+            $this->dispatch('toast', type: 'warning', message: 'Ya agregó todo el stock disponible de este producto.');
+            return;
+        }
 
         if (!$availableLot) {
+            // Producto "unidad" sin sueltos: ofrecer abrir un paquete cerrado.
+            $pack = Producto::where('id_producto_unidad', $product->id)
+                ->where('estado', 1)
+                ->get()
+                ->first(fn ($p) => $p->isPack() && $p->availableStock() > 0);
+
+            if ($pack) {
+                $this->dispatch(
+                    'confirm-open-package',
+                    packId: $pack->id,
+                    unitId: $product->id,
+                    packName: $pack->nombre,
+                    factor: (int) $pack->unidades_por_paquete,
+                    packsLeft: $pack->availableStock(),
+                );
+                return;
+            }
+
             $this->dispatch('toast', type: 'warning', message: 'El producto no tiene lote disponible o no vencido.');
             return;
         }
 
         $lotExpirationLabel = optional($availableLot->fecha_vencimiento)->format('d/m/Y') ?? 'Sin vencimiento';
+        $lotPrice = self::lotPrice($availableLot, $product);
+        $lotLeft = $availableLot->cantidad_disponible - ($usedByLot[$availableLot->id] ?? 0);
 
-        $this->details[] = [
+        // Lo último agregado va arriba, para no tener que bajar a buscarlo.
+        array_unshift($this->details, [
             'type' => 'producto',
             'id_producto' => $product->id,
             'id_lote' => $availableLot->id,
             'product_label' => $product->code . ' - ' . $product->nombre . ($product->concentracion ? ' | ' . $product->concentracion : ''),
-            'lot_label' => $availableLot->codigo_lote . ' | Vence: ' . $lotExpirationLabel . ' | Stock: ' . $availableLot->cantidad_disponible,
+            'lot_label' => $availableLot->codigo_lote . ' | Vence: ' . $lotExpirationLabel . ' | Stock: ' . $lotLeft,
             'quantity' => 1,
-            'available' => $availableLot->cantidad_disponible,
-            'sale_price' => (float) $availableLot->precio_venta,
-            'subtotal' => (float) $availableLot->precio_venta,
-        ];
+            'available' => $lotLeft,
+            // Se cobra el precio del LOTE (cada ingreso tiene su propio precio).
+            'sale_price' => $lotPrice,
+            'subtotal' => $lotPrice,
+        ]);
 
         $this->productSearch = '';
         $this->productResults = [];
 
         $this->calculateTotals();
+    }
+
+    /**
+     * Abre 1 paquete cerrado (ej. Huggies x20) en unidades sueltas y agrega la
+     * unidad al detalle. Lo puede hacer quien puede vender (Trabajador incluido).
+     */
+    public function openPackage($packId, $unitId)
+    {
+        if (!Auth::user()?->can('Crear Ventas')) {
+            $this->dispatch('toast', type: 'error', message: 'No tiene permiso para abrir paquetes.');
+            return;
+        }
+
+        try {
+            $pack = Producto::findOrFail($packId);
+
+            if ((int) $pack->id_producto_unidad !== (int) $unitId) {
+                throw new \RuntimeException('El paquete no corresponde a ese producto.');
+            }
+
+            app(\App\Services\AperturaPaquete::class)->abrir($pack, Auth::id());
+
+            $this->dispatch('toast', type: 'success', message: 'Paquete abierto: ' . $pack->unidades_por_paquete . ' unidades sueltas disponibles.');
+            $this->addProductToDetail($unitId);
+        } catch (\Throwable $e) {
+            $this->dispatch('toast', type: 'error', message: 'No se pudo abrir el paquete. ' . $e->getMessage());
+        }
     }
 
     public function updatedServiceSearch()
@@ -341,7 +567,8 @@ class LivewireVenta extends Component
     {
         $service = Servicio::findOrFail($id);
 
-        $this->details[] = [
+        // Lo último agregado va arriba, para no tener que bajar a buscarlo.
+        array_unshift($this->details, [
             'type' => 'servicio',
             'id_servicio' => $service->id,
             'product_label' => $service->nombre,
@@ -350,7 +577,7 @@ class LivewireVenta extends Component
             'available' => null,
             'sale_price' => (float) $service->precio,
             'subtotal' => (float) $service->precio,
-        ];
+        ]);
 
         $this->serviceSearch = '';
         $this->serviceResults = [];
@@ -382,20 +609,54 @@ class LivewireVenta extends Component
                 $this->details[$i]['quantity'] = 1;
             } elseif ($quantity > $available) {
                 $this->details[$i]['quantity'] = $available;
+                $this->dispatch(
+                    'toast',
+                    type: 'warning',
+                    message: 'Solo hay ' . $available . ' unidades disponibles de "' . ($detail['product_label'] ?? 'este producto') . '". Se ajustó la cantidad al máximo disponible.'
+                );
             }
         }
 
         $this->calculateTotals();
     }
 
-    public function updatedFormDescuento()
+    public function updatedFormIdMetodoPago()
     {
+        $this->resetErrorBag('form.id_metodo_pago');
+        if (!$this->isMixedPayment()) {
+            $this->form->monto_qr = '';
+        }
         $this->calculateTotals();
     }
 
     public function updatedFormMontoPagado()
     {
+        $this->resetErrorBag('form.monto_pagado');
         $this->calculateTotals();
+    }
+
+    public function updatedFormMontoQr()
+    {
+        $this->resetErrorBag('form.monto_qr');
+        $this->calculateTotals();
+    }
+
+    /** ¿El método elegido es Mixto (efectivo + QR)? */
+    protected function isMixedPayment(): bool
+    {
+        if (!$this->form->id_metodo_pago) return false;
+
+        return strtoupper((string) MetodoPago::whereKey($this->form->id_metodo_pago)->value('nombre')) === 'MIXTO';
+    }
+
+    /** Parte que se cobra en EFECTIVO (en Mixto = total - QR). */
+    protected function cashDue(): float
+    {
+        if (!$this->isMixedPayment()) return (float) $this->form->total;
+
+        $qr = is_numeric($this->form->monto_qr) ? (float) $this->form->monto_qr : 0;
+
+        return max(0, round((float) $this->form->total - $qr, 2));
     }
 
     public function calculateTotals()
@@ -412,23 +673,57 @@ class LivewireVenta extends Component
             $subtotal += $lineSubtotal;
         }
 
-        $discount = (float) ($this->form->descuento ?? 0);
-
-        if ($discount > $subtotal) {
-            $discount = $subtotal;
-            $this->form->descuento = $discount;
-        }
+        // Por ahora no se manejan descuentos.
+        $discount = 0;
+        $this->form->descuento = 0;
 
         $this->form->subtotal = $subtotal;
         $this->form->total = $subtotal - $discount;
 
-        $amountPaid = (float) ($this->form->monto_pagado ?? 0);
-        $this->form->monto_cambio = $amountPaid > $this->form->total ? $amountPaid - $this->form->total : 0;
+        // El cambio sale de lo que se paga en efectivo (en Mixto, solo esa parte).
+        $amountPaid = (float) ($this->form->monto_pagado ?: 0);
+        $due = $this->cashDue();
+        $this->form->monto_cambio = $amountPaid > $due ? round($amountPaid - $due, 2) : 0;
+    }
+
+    /** Precio de un lote; si no tiene precio, el del producto. */
+    public static function lotPrice(?Lote $lot, ?Producto $product = null): float
+    {
+        $price = (float) ($lot?->precio_venta ?? 0);
+
+        if ($price <= 0) {
+            $product ??= $lot ? Producto::find($lot->id_producto) : null;
+            $price = (float) ($product?->precio_venta ?? 0);
+        }
+
+        return $price;
+    }
+
+    /**
+     * El precio de venta no se puede modificar: siempre se toma el registrado
+     * (precio del LOTE para productos —cada ingreso puede tener su precio—,
+     * precio del servicio para servicios). Si el admin cambia el precio del
+     * producto, se copia a sus lotes y se cobra el nuevo.
+     */
+    protected function applyRegisteredPrices(): void
+    {
+        foreach ($this->details as $i => $detail) {
+            $price = ($detail['type'] ?? 'producto') === 'servicio'
+                ? (float) Servicio::whereKey($detail['id_servicio'] ?? 0)->value('precio')
+                : self::lotPrice(Lote::find($detail['id_lote'] ?? 0), Producto::find($detail['id_producto'] ?? 0));
+
+            $this->details[$i]['sale_price'] = (float) $price;
+        }
     }
 
     public function save()
     {
+        // La fecha de venta es siempre la de hoy y no se puede cambiar.
+        $this->form->fecha_venta = now()->toDateString();
+
         $this->validate($this->form->rules(), $this->form->messages());
+
+        $this->applyRegisteredPrices();
 
         if (count($this->details) === 0) {
             $this->dispatch('toast', type: 'warning', message: 'Debe agregar al menos un producto a la venta.');
@@ -473,12 +768,34 @@ class LivewireVenta extends Component
         $amountPaid = $this->form->monto_pagado === '' ? null : (float) $this->form->monto_pagado;
 
         $paymentMethod = MetodoPago::findOrFail($this->form->id_metodo_pago);
+        $methodName = strtoupper($paymentMethod->nombre);
+        $total = round((float) $this->form->total, 2);
 
-        if (strtoupper($paymentMethod->nombre) === 'EFECTIVO') {
-            if ($amountPaid === null || $amountPaid < $this->form->total) {
+        // Reparto del cobro: efectivo (al cajón) y QR (a la cuenta).
+        if ($methodName === 'EFECTIVO') {
+            if ($amountPaid === null || $amountPaid < $total) {
+                $this->addError('form.monto_pagado', 'El monto recibido debe ser mayor o igual al total.');
                 $this->dispatch('toast', type: 'warning', message: 'El monto recibido debe ser mayor o igual al total de la venta.');
                 return;
             }
+            $cashPart = $total;
+            $qrPart = 0.0;
+        } elseif ($methodName === 'MIXTO') {
+            $qrPart = is_numeric($this->form->monto_qr) ? round((float) $this->form->monto_qr, 2) : 0;
+            if ($qrPart <= 0 || $qrPart >= $total) {
+                $this->addError('form.monto_qr', 'En pago mixto el monto por QR debe ser mayor a 0 y menor al total (' . number_format($total, 2) . ').');
+                $this->dispatch('toast', type: 'warning', message: 'Indique cuánto paga por QR (mayor a 0 y menor al total).');
+                return;
+            }
+            $cashPart = round($total - $qrPart, 2);
+            if ($amountPaid === null || $amountPaid < $cashPart) {
+                $this->addError('form.monto_pagado', 'El efectivo recibido debe cubrir la parte en efectivo (' . number_format($cashPart, 2) . ').');
+                $this->dispatch('toast', type: 'warning', message: 'El efectivo recibido debe cubrir la parte en efectivo (' . number_format($cashPart, 2) . ').');
+                return;
+            }
+        } else { // QR
+            $cashPart = 0.0;
+            $qrPart = $total;
         }
 
         DB::beginTransaction();
@@ -495,14 +812,18 @@ class LivewireVenta extends Component
                 'id_cliente' => $this->form->id_cliente ?: null,
                 'id_usuario' => Auth::id(),
                 'id_caja' => $cash->id,
+                'id_sucursal' => $cash->id_sucursal,
                 'fecha_venta' => $this->form->fecha_venta,
                 'id_metodo_pago' => $paymentMethod->id,
                 'metodo_pago' => $paymentMethod->nombre,
                 'subtotal' => $this->form->subtotal,
                 'descuento' => $this->form->descuento ?: 0,
                 'total' => $this->form->total,
+                'monto_efectivo' => $cashPart,
+                'monto_qr' => $qrPart,
                 'monto_pagado' => $amountPaid,
-                'monto_cambio' => $amountPaid !== null ? round($amountPaid - $this->form->total, 2) : null,
+                // El cambio se da solo sobre la parte en efectivo.
+                'monto_cambio' => $amountPaid !== null ? max(0, round($amountPaid - $cashPart, 2)) : null,
                 'observacion' => $this->form->observacion ?: null,
                 'estado' => 1,
                 'status' => 'ACTIVE',
@@ -575,8 +896,8 @@ class LivewireVenta extends Component
                 'observacion' => 'Ingreso automático por venta.',
             ]);
 
-            $cash->monto_esperado += $sale->total;
-            $cash->save();
+            // Esperado = solo efectivo (el QR no entra al cajón).
+            $cash->recalculateExpected();
 
             DB::commit();
 
@@ -589,13 +910,99 @@ class LivewireVenta extends Component
         }
     }
 
+    /**
+     * Edita solo el pago (método, monto QR/efectivo recibido) de una venta ya
+     * registrada. El detalle de productos/servicios y el total no cambian.
+     * Solo admin, y solo mientras la caja de esa venta siga ABIERTA.
+     */
+    public function saveEdit()
+    {
+        if (!Auth::user()?->hasRole('admin')) {
+            $this->dispatch('toast', type: 'error', message: 'No tiene permiso para editar ventas.');
+            return;
+        }
+
+        $this->validate($this->form->rules(), $this->form->messages());
+
+        DB::beginTransaction();
+
+        try {
+            $sale = Venta::with('cashRegister')->where('id', $this->form->id)->lockForUpdate()->firstOrFail();
+
+            if ($sale->status !== 'ACTIVE' || $sale->cashRegister?->status !== 'OPEN') {
+                DB::rollBack();
+                $this->dispatch('toast', type: 'warning', message: 'Esta venta ya no se puede editar: su caja está cerrada.');
+                $this->redirectRoute('ventas.view', $sale->id, navigate: true);
+                return;
+            }
+
+            $paymentMethod = MetodoPago::findOrFail($this->form->id_metodo_pago);
+            $methodName = strtoupper($paymentMethod->nombre);
+            $total = round((float) $sale->total, 2);
+            $amountPaid = $this->form->monto_pagado === '' ? null : (float) $this->form->monto_pagado;
+
+            if ($methodName === 'EFECTIVO') {
+                if ($amountPaid === null || $amountPaid < $total) {
+                    DB::rollBack();
+                    $this->addError('form.monto_pagado', 'El monto recibido debe ser mayor o igual al total.');
+                    return;
+                }
+                $cashPart = $total;
+                $qrPart = 0.0;
+            } elseif ($methodName === 'MIXTO') {
+                $qrPart = is_numeric($this->form->monto_qr) ? round((float) $this->form->monto_qr, 2) : 0;
+                if ($qrPart <= 0 || $qrPart >= $total) {
+                    DB::rollBack();
+                    $this->addError('form.monto_qr', 'En pago mixto el monto por QR debe ser mayor a 0 y menor al total (' . number_format($total, 2) . ').');
+                    return;
+                }
+                $cashPart = round($total - $qrPart, 2);
+                if ($amountPaid === null || $amountPaid < $cashPart) {
+                    DB::rollBack();
+                    $this->addError('form.monto_pagado', 'El efectivo recibido debe cubrir la parte en efectivo (' . number_format($cashPart, 2) . ').');
+                    return;
+                }
+            } else { // QR
+                $cashPart = 0.0;
+                $qrPart = $total;
+            }
+
+            $sale->id_metodo_pago = $paymentMethod->id;
+            $sale->metodo_pago = $paymentMethod->nombre;
+            $sale->monto_efectivo = $cashPart;
+            $sale->monto_qr = $qrPart;
+            $sale->monto_pagado = $amountPaid;
+            $sale->monto_cambio = $amountPaid !== null ? max(0, round($amountPaid - $cashPart, 2)) : null;
+            $sale->save();
+
+            $sale->cashRegister?->recalculateExpected();
+
+            DB::commit();
+
+            $this->dispatch('toast', type: 'success', message: 'Pago de la venta actualizado correctamente.');
+
+            $this->redirectRoute('ventas.view', $sale->id, navigate: true);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            $this->dispatch('toast', type: 'error', message: 'No se pudo actualizar la venta. ' . $e->getMessage());
+        }
+    }
+
     public function cancel()
     {
         return redirect()->route('ventas');
     }
 
-    public function cancelSale($id)
+    public function cancelSale($id, $reason = null)
     {
+        // El motivo de la cancelación es obligatorio.
+        $reason = mb_substr(trim((string) $reason), 0, 255);
+
+        if ($reason === '') {
+            $this->dispatch('toast', type: 'warning', message: 'Debe escribir el motivo de la cancelación.');
+            return;
+        }
+
         DB::beginTransaction();
 
         try {
@@ -606,7 +1013,7 @@ class LivewireVenta extends Component
 
             if ($sale->status === 'CANCELLED') {
                 DB::rollBack();
-                $this->dispatch('toast', type: 'warning', message: 'La venta ya está anulada.');
+                $this->dispatch('toast', type: 'warning', message: 'La venta ya está cancelada.');
                 return;
             }
 
@@ -661,27 +1068,32 @@ class LivewireVenta extends Component
                     'type' => 'EXPENSE',
                     'concepto' => 'Anulación venta #' . $sale->id,
                     'monto' => $sale->total,
+                    'reference_type' => 'SALE_CANCEL',
+                    'reference_id' => $sale->id,
                     'observacion' => 'Reversión automática por anulación de venta.',
                 ]);
-
-                $cash->monto_esperado -= $sale->total;
-                $cash->save();
             }
 
             $sale->status = 'CANCELLED';
             $sale->estado = 0;
             $sale->cancelled_at = now();
             $sale->cancelled_by = Auth::id();
-            $sale->cancel_reason = 'Venta anulada desde el módulo de ventas.';
+            $sale->cancel_reason = $reason;
             $sale->save();
+
+            // Recalcula el efectivo esperado de la caja de la venta (ya sin ella).
+            Caja::find($sale->id_caja)?->recalculateExpected();
+            if ($cash && $cash->id !== $sale->id_caja) {
+                $cash->recalculateExpected();
+            }
 
             DB::commit();
 
-            $this->dispatch('toast', type: 'success', message: 'Venta anulada, stock restaurado y caja ajustada.');
+            $this->dispatch('toast', type: 'success', message: 'Venta cancelada, stock restaurado y caja ajustada.');
 
         } catch (\Throwable $e) {
             DB::rollBack();
-            $this->dispatch('toast', type: 'error', message: 'No se pudo anular la venta. ' . $e->getMessage());
+            $this->dispatch('toast', type: 'error', message: 'No se pudo cancelar la venta. ' . $e->getMessage());
         }
     }
 
