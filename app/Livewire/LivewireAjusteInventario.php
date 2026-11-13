@@ -10,6 +10,7 @@ use App\Models\MovimientoInventario;
 use Illuminate\Support\Facades\DB;
 use App\Models\AjusteInventario;
 use App\Livewire\Form\AjusteInventarioForm;
+use Illuminate\Support\Facades\Auth;
 
 class LivewireAjusteInventario extends Component
 {
@@ -41,6 +42,11 @@ class LivewireAjusteInventario extends Component
     public function render()
     {
         $query = AjusteInventario::with(['product', 'lot', 'user']);
+
+        $user = Auth::user();
+        if ($user && ! $user->can('Super Admin')) {
+            $query->whereHas('lot', fn ($q) => $q->where('id_sucursal', $user->id_sucursal));
+        }
 
         if ($this->search) {
             $query->whereHas('product', function ($q) {
@@ -130,8 +136,11 @@ class LivewireAjusteInventario extends Component
             return;
         }
 
+        $user = Auth::user();
+
         $this->lotResults = Lote::where('id_producto', $this->form->id_producto)
             ->where('estado', 1)
+            ->when($user && ! $user->can('Super Admin'), fn ($q) => $q->where('id_sucursal', $user->id_sucursal))
             ->where(function ($q) {
                 $q->where('codigo_lote', 'like', "%{$this->lotSearch}%")
                   ->orWhere('fecha_vencimiento', 'like', "%{$this->lotSearch}%");

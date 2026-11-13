@@ -41,6 +41,7 @@ class UpgradeSchemaCommand extends Command
         $this->seedLoginLogsPermission();
         $this->seedRolesPermission();
         $this->seedCorePermissions();
+        $this->seedSuperAdminPermission();
 
         $this->newLine();
         $this->info('Listo.');
@@ -551,5 +552,15 @@ class UpgradeSchemaCommand extends Command
         }
 
         $this->info("  -> catálogo verificado ({$created} permiso(s) nuevo(s) creados).");
+    }
+
+    /**
+     * "Super Admin" es un permiso suelto, NUNCA asignado al rol admin
+     * compartido: habilita ver/operar todas las sucursales a la vez.
+     * Se asigna a mano, directo al usuario, no por rol.
+     */
+    private function seedSuperAdminPermission(): void
+    {
+        Permission::firstOrCreate(['name' => 'Super Admin', 'guard_name' => 'web']);
     }
 }

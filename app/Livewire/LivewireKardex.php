@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\MovimientoInventario;
+use Illuminate\Support\Facades\Auth;
 
 class LivewireKardex extends Component
 {
@@ -17,6 +18,11 @@ class LivewireKardex extends Component
     public function render()
     {
         $query = MovimientoInventario::with(['product', 'lot', 'user']);
+
+        $user = Auth::user();
+        if ($user && ! $user->can('Super Admin')) {
+            $query->whereHas('lot', fn ($q) => $q->where('id_sucursal', $user->id_sucursal));
+        }
 
         if ($this->search) {
             $query->whereHas('product', function ($q) {

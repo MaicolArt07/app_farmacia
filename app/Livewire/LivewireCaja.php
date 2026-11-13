@@ -12,10 +12,11 @@ use App\Livewire\Form\MovimientoCajaForm;
 use App\Livewire\Form\CierreCajaForm;
 use App\Livewire\Form\ExtenderCajaForm;
 use App\Livewire\Form\CajaForm;
+use App\Support\ScopedToSucursal;
 
 class LivewireCaja extends Component
 {
-    use WithPagination;
+    use WithPagination, ScopedToSucursal;
 
     public $search = '';
     public $openModalVisible = false;
@@ -76,7 +77,9 @@ class LivewireCaja extends Component
 
     protected function visibleCashQuery()
     {
-        return Caja::query()->when(!$this->isAdmin(), fn ($q) => $q->where('id_usuario', Auth::id()));
+        $query = Caja::query()->when(!$this->isAdmin(), fn ($q) => $q->where('id_usuario', Auth::id()));
+
+        return $this->scopeToUserSucursal($query);
     }
 
     protected function findVisibleCash($id): Caja
@@ -156,6 +159,7 @@ class LivewireCaja extends Component
         try {
             Caja::create([
                 'id_usuario' => Auth::id(),
+                'id_sucursal' => Auth::user()->id_sucursal,
                 'fecha_apertura' => now()->toDateString(),
                 'monto_apertura' => $this->openForm->opening_amount,
                 // La caja siempre es del día: vence al final del día de apertura.

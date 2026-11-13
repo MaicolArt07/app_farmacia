@@ -7,10 +7,11 @@ use App\Models\Producto;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Livewire\Form\LoteForm;
+use App\Support\ScopedToSucursal;
 
 class LivewireLote extends Component
 {
-    use WithPagination;
+    use WithPagination, ScopedToSucursal;
 
     public $search = '';
 
@@ -33,7 +34,7 @@ class LivewireLote extends Component
 
     public function render()
     {
-        $query = Lote::with('product');
+        $query = $this->scopeToUserSucursal(Lote::with('product'));
 
         if (!empty($this->search)) {
             $query->where(function ($q) {
@@ -265,6 +266,7 @@ class LivewireLote extends Component
                     return;
                 }
 
+                $data['id_sucursal'] = auth()->user()->id_sucursal;
                 $lot = Lote::create($data);
                 $message = 'Lote registrado correctamente.';
 

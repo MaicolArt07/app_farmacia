@@ -364,6 +364,7 @@ class LivewireCompra extends Component
                 $lot = Lote::where('id_producto', $detail['id_producto'])
                     ->where('codigo_lote', $detail['batch_code'])
                     ->where('fecha_vencimiento', $detail['expiration_date'])
+                    ->where('id_sucursal', auth()->user()->id_sucursal)
                     ->lockForUpdate()
                     ->first();
 
@@ -383,6 +384,7 @@ class LivewireCompra extends Component
 
                     $lot = Lote::create([
                         'id_producto' => $detail['id_producto'],
+                        'id_sucursal' => auth()->user()->id_sucursal,
                         'codigo_lote' => $detail['batch_code'],
                         'precio_compra' => $detail['purchase_price'],
                         'precio_venta' => $detail['sale_price'],

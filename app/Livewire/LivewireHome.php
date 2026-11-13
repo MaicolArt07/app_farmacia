@@ -92,6 +92,9 @@ class LivewireHome extends Component
     public function render()
     {
         $workerCash = null;
+        $user = Auth::user();
+        $sucursalId = $user?->id_sucursal;
+        $scopedToSucursal = $user && ! $user->can('Super Admin');
 
         if ($this->workerMode) {
             // Ignora cualquier fecha que llegue del navegador: siempre hoy + su caja abierta.
@@ -110,7 +113,8 @@ class LivewireHome extends Component
         }
 
         $salesQuery = $scope(Venta::query())
-            ->where('status', '!=', 'CANCELLED');
+            ->where('status', '!=', 'CANCELLED')
+            ->when($scopedToSucursal, fn ($q) => $q->where('id_sucursal', $sucursalId));
 
         $salesCount = (clone $salesQuery)->count();
         $salesTotal = (float) (clone $salesQuery)->sum('total');
@@ -120,8 +124,11 @@ class LivewireHome extends Component
 
         $lowStockCount = DB::table('productos')
             ->where('productos.estado', 1)
-            ->leftJoin('lotes', function ($join) {
+            ->leftJoin('lotes', function ($join) use ($scopedToSucursal, $sucursalId) {
                 $join->on('lotes.id_producto', '=', 'productos.id')->where('lotes.estado', 1);
+                if ($scopedToSucursal) {
+                    $join->where('lotes.id_sucursal', $sucursalId);
+                }
             })
             ->groupBy('productos.id', 'productos.stock_minimo')
             ->havingRaw('COALESCE(SUM(lotes.cantidad_disponible), 0) <= productos.stock_minimo')
@@ -132,6 +139,7 @@ class LivewireHome extends Component
             ->join('ventas', 'ventas.id', '=', 'detalles_venta.id_venta')
             ->join('productos', 'productos.id', '=', 'detalles_venta.id_producto'), 'ventas.')
             ->where('ventas.status', '!=', 'CANCELLED')
+            ->when($scopedToSucursal, fn ($q) => $q->where('ventas.id_sucursal', $sucursalId))
             ->groupBy('productos.id', 'productos.nombre', 'productos.code', 'productos.stock_minimo')
             ->orderByDesc(DB::raw('SUM(detalles_venta.quantity)'))
             ->limit(8)
@@ -146,10 +154,11 @@ class LivewireHome extends Component
 
         $maxQuantity = $topProducts->max('total_quantity') ?: 1;
 
-        $topProducts = $topProducts->map(function ($row) use ($maxQuantity) {
+        $topProducts = $topProducts->map(function ($row) use ($maxQuantity, $scopedToSucursal, $sucursalId) {
             $stock = DB::table('lotes')
                 ->where('id_producto', $row->id)
                 ->where('estado', 1)
+                ->when($scopedToSucursal, fn ($q) => $q->where('id_sucursal', $sucursalId))
                 ->sum('cantidad_disponible');
 
             return [

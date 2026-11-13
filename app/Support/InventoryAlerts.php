@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\Lote;
 use App\Models\Producto;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Conteo de alertas de inventario (lotes vencidos, por vencer en 30 días y
@@ -18,17 +19,22 @@ class InventoryAlerts
         return once(function () {
             $today = now()->toDateString();
             $limitDate = now()->addDays(30)->toDateString();
+            $user = Auth::user();
+            $sucursalId = $user?->id_sucursal;
+            $scoped = $user && ! $user->can('Super Admin');
 
             $expiredCount = Lote::whereDate('fecha_vencimiento', '<', $today)
                 ->where('cantidad_disponible', '>', 0)
+                ->when($scoped, fn ($q) => $q->where('id_sucursal', $sucursalId))
                 ->count();
 
             $nearExpirationCount = Lote::whereDate('fecha_vencimiento', '>=', $today)
                 ->whereDate('fecha_vencimiento', '<=', $limitDate)
                 ->where('cantidad_disponible', '>', 0)
+                ->when($scoped, fn ($q) => $q->where('id_sucursal', $sucursalId))
                 ->count();
 
-            $lowStockProducts = Producto::with('lots')
+            $lowStockProducts = Producto::with(['lots' => fn ($q) => $q->when($scoped, fn ($q2) => $q2->where('id_sucursal', $sucursalId))])
                 ->where('estado', 1)
                 ->get()
                 ->filter(function ($product) {
@@ -63,6 +69,9 @@ class InventoryAlerts
         $term = trim($term);
         $today = now()->startOfDay();
         $limitDate = now()->addDays(30)->toDateString();
+        $user = Auth::user();
+        $sucursalId = $user?->id_sucursal;
+        $scoped = $user && ! $user->can('Super Admin');
 
         $productFilter = function ($q) use ($term) {
             $q->where('nombre', 'like', "%{$term}%")
@@ -72,6 +81,7 @@ class InventoryAlerts
 
         $lotQuery = fn () => Lote::with('product.laboratory')
             ->where('cantidad_disponible', '>', 0)
+            ->when($scoped, fn ($q) => $q->where('id_sucursal', $sucursalId))
             ->when($term !== '', fn ($q) => $q->whereHas('product', $productFilter));
 
         // Vencidos: el que venció hace más tiempo primero.
@@ -96,7 +106,7 @@ class InventoryAlerts
             });
 
         // Stock bajo: agotados primero, luego menor stock, luego por nombre.
-        $low = Producto::with(['lots', 'laboratory'])
+        $low = Producto::with(['lots' => fn ($q) => $q->when($scoped, fn ($q2) => $q2->where('id_sucursal', $sucursalId)), 'laboratory'])
             ->where('estado', 1)
             ->when($term !== '', fn ($q) => $q->where($productFilter))
             ->get()

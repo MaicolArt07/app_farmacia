@@ -18,10 +18,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Services\Facturacion\FacturacionServiceInterface;
 use App\Livewire\Form\VentaForm;
+use App\Support\ScopedToSucursal;
 
 class LivewireVenta extends Component
 {
-    use WithPagination;
+    use WithPagination, ScopedToSucursal;
 
     public $search = '';
 
@@ -174,7 +175,7 @@ class LivewireVenta extends Component
         if ($isAdmin) {
             // El administrador ve el historial completo (todas las cajas,
             // abiertas o cerradas, cualquier fecha) y puede filtrar por rango.
-            $query = Venta::with(['client.person', 'user', 'invoice', 'details.product', 'details.service', 'cashRegister']);
+            $query = $this->scopeToUserSucursal(Venta::with(['client.person', 'user', 'invoice', 'details.product', 'details.service', 'cashRegister']));
 
             if ($this->dateFrom !== '') {
                 $query->whereDate('fecha_venta', '>=', $this->dateFrom);
@@ -383,13 +384,13 @@ class LivewireVenta extends Component
             ->get()
             ->map(function ($product) {
                 // Cada lote (ingreso) es un stock con su propio precio.
-                $lots = Lote::where('id_producto', $product->id)
+                $lots = $this->scopeToUserSucursal(Lote::where('id_producto', $product->id)
                     ->where('estado', 1)
                     ->where('cantidad_disponible', '>', 0)
                     ->where(function ($q) {
                         $q->whereNull('fecha_vencimiento')
                             ->orWhereDate('fecha_vencimiento', '>=', now()->toDateString());
-                    })
+                    }))
                     ->orderBy('id') // primero el stock que entró antes
                     ->get()
                     ->map(fn ($l) => [
@@ -445,13 +446,13 @@ class LivewireVenta extends Component
             }
         }
 
-        $availableLot = Lote::where('id_producto', $product->id)
+        $availableLot = $this->scopeToUserSucursal(Lote::where('id_producto', $product->id)
             ->where('estado', 1)
             ->where('cantidad_disponible', '>', 0)
             ->where(function ($q) {
                 $q->whereNull('fecha_vencimiento')
                     ->orWhereDate('fecha_vencimiento', '>=', now()->toDateString());
-            })
+            }))
             ->orderBy('id', 'asc') // primero el stock que ENTRÓ antes (el más antiguo)
             ->when($lotId, fn ($q) => $q->whereKey($lotId))
             ->get()
@@ -462,7 +463,7 @@ class LivewireVenta extends Component
             return;
         }
 
-        if (!$availableLot && !empty($usedByLot) && Lote::where('id_producto', $product->id)->where('cantidad_disponible', '>', 0)->exists()) {
+        if (!$availableLot && !empty($usedByLot) && $this->scopeToUserSucursal(Lote::where('id_producto', $product->id)->where('cantidad_disponible', '>', 0))->exists()) {
             $this->dispatch('toast', type: 'warning', message: 'Ya agregó todo el stock disponible de este producto.');
             return;
         }

@@ -13,6 +13,7 @@ class Lote extends Model
 
     protected $fillable = [
         'id_producto',
+        'id_sucursal',
         'codigo_lote',
         'precio_compra',
         'precio_venta',
@@ -35,6 +36,10 @@ class Lote extends Model
     public function product()
     {
         return $this->belongsTo(Producto::class, 'id_producto');
+    }
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class, 'id_sucursal');
     }
     public function saleDetails()
     {

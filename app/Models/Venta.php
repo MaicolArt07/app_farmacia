@@ -15,6 +15,7 @@ class Venta extends Model
         'id_cliente',
         'id_usuario',
         'id_caja',
+        'id_sucursal',
         'id_metodo_pago',
         'fecha_venta',
         'metodo_pago',
@@ -70,6 +71,11 @@ class Venta extends Model
     public function cashRegister()
     {
         return $this->belongsTo(Caja::class, 'id_caja');
+    }
+
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class, 'id_sucursal');
     }
 
     public function paymentMethod()
