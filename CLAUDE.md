@@ -16,22 +16,6 @@ Si se retoma la idea de app de escritorio más adelante, hay que evaluar otra
 estrategia (ver conversación de esa fecha para el detalle de lo que se probó
 y por qué no funcionó).
 
-## Multi-sucursal (Casa Matriz + Sucursal La Moscú) — en progreso
-
-Desde noviembre 2026 el sistema soporta dos sucursales reales bajo el mismo
-NIT: "Casa Matriz" y "Sucursal La Moscú". El catálogo de productos sigue
-compartido; lo que se separa por sucursal es `users`/`lotes`/`cajas`/`ventas`
-(columna `id_sucursal`, FK nullable). Permiso `Super Admin` (no un rol —
-permiso suelto asignado directo al usuario, nunca al rol `admin` compartido)
-ve/administra todas las sucursales; los demás quedan limitados a la suya.
-Herramienta de migración inicial (un solo uso, solo Super Admin): menú
-**Configuraciones > Sucursales**. Todavía falta que los módulos existentes
-(Lotes, Compras, Ventas, Caja, Kardex, Contabilidad, Reportes, Inicio)
-filtren realmente por la sucursal del usuario logueado — por ahora solo se
-guarda el dato en los registros nuevos. Detalle completo y qué falta: ver
-memoria del proyecto (`multisucursal_migracion`) o
-`database/sql/2026_11_09_multisucursal_setup.sql`.
-
 ## Instalación en una máquina nueva (auto-arranque)
 
 En noviembre 2026 se definió la forma de dejar el sistema andando en una
@@ -83,8 +67,22 @@ el acceso directo del escritorio `FarmaFamilia.lnk` abre
   sin descuento, precio no editable (se toma del LOTE / servicio), fecha
   siempre la de hoy, campo cliente oculto (consumidor final), sin campo
   observación (el único texto es el motivo obligatorio al cancelar).
-  Listado sin historial: solo ventas de cajas abiertas y del día de hoy,
-  con totales Efectivo / QR / total. El detalle agrega lo nuevo arriba.
+  Listado: el TRABAJADOR solo ve ventas de su caja abierta y del día de hoy;
+  el ADMIN ve el historial completo con filtro de fechas desde/hasta
+  (actualización 2026-11-10, aplicada el 11/11). Totales Efectivo / QR /
+  total. El detalle agrega lo nuevo arriba. La cantidad del detalle usa
+  `wire:model.blur` (antes `.live` corregía a 1 al borrar y quedaba "15").
+  Editar pago de una venta: solo admin, ruta `ventas.edit`, solo con la caja
+  de la venta ABIERTA (`saveEdit()` recalcula la caja). Anular venta registra
+  el movimiento en la caja ORIGINAL de la venta (`$sale->id_caja`).
+- Login: entra directo (sin el falso aviso de "sesión activa en otro
+  dispositivo"); acepta correo o nombre de usuario.
+- Contabilidad (permiso `Ver Contabilidad`, solo admin): libro DEBE/HABER y
+  gastos comunes (`LivewireContabilidad`, `MovimientoContable`). Se registra
+  solo: compras (DEBE, se borra si se anula) y cierres de caja (HABER).
+- Multi-sucursal de la actualización 2026-11-10 NO se aplicó (columnas
+  `id_sucursal`, pantalla Configuraciones > Sucursales): quedó en
+  `app_nueva_actualizacion/` por estar incompleta.
 - Caja: `monto_esperado` es SOLO el efectivo del cajón = monto inicial +
   ventas en efectivo + ingresos manuales − egresos manuales. El QR va a la
   cuenta y NO se cuenta en los cortes. Se calcula siempre con

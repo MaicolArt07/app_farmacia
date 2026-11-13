@@ -16,6 +16,25 @@
         >
     </div>
 
+    {{-- Colores de las columnas de ventas (lo más importante de la tabla) --}}
+    <style>
+        .col-ef  { background: #ecfdf5; color: #047857; }   /* Efectivo: verde */
+        .col-qr  { background: #f0f9ff; color: #0369a1; }   /* QR: celeste */
+        .col-tot { background: #fffbeb; color: #b45309; }   /* Total: ámbar */
+        th.col-ef  { background: #a7f3d0; color: #065f46; }
+        th.col-qr  { background: #bae6fd; color: #075985; }
+        th.col-tot { background: #fde68a; color: #92400e; }
+        tfoot .col-ef  { background: #a7f3d0; color: #065f46; }
+        tfoot .col-qr  { background: #bae6fd; color: #075985; }
+        tfoot .col-tot { background: #fde68a; color: #92400e; }
+        .dark .col-ef  { background: rgba(16,185,129,.12); color: #6ee7b7; }
+        .dark .col-qr  { background: rgba(14,165,233,.12); color: #7dd3fc; }
+        .dark .col-tot { background: rgba(245,158,11,.12); color: #fcd34d; }
+        .dark th.col-ef, .dark tfoot .col-ef   { background: rgba(16,185,129,.30); color: #a7f3d0; }
+        .dark th.col-qr, .dark tfoot .col-qr   { background: rgba(14,165,233,.30); color: #bae6fd; }
+        .dark th.col-tot, .dark tfoot .col-tot { background: rgba(245,158,11,.30); color: #fde68a; }
+    </style>
+
     {{-- Tabla (md en adelante) --}}
     <div class="hidden overflow-auto rounded border border-zinc-300 md:block dark:border-zinc-700">
         <table class="min-w-full border-collapse text-sm">
@@ -24,13 +43,14 @@
                     <th class="border-b border-zinc-400 px-3 py-1.5 text-left font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">INICIO</th>
                     <th class="border-b border-zinc-400 px-3 py-1.5 text-left font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">USUARIO</th>
                     <th class="border-b border-zinc-400 px-3 py-1.5 text-right font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">INICIAL</th>
-                    <th class="border-b border-zinc-400 px-3 py-1.5 text-right font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">ESPERADO</th>
+                    <th class="col-ef border-b border-zinc-400 px-3 py-1.5 text-right font-semibold dark:border-zinc-600"><i class="bi bi-cash-stack"></i> EFECTIVO</th>
+                    <th class="col-qr border-b border-zinc-400 px-3 py-1.5 text-right font-semibold dark:border-zinc-600"><i class="bi bi-qr-code"></i> QR</th>
+                    <th class="col-tot border-b border-zinc-400 px-3 py-1.5 text-right font-semibold dark:border-zinc-600">TOTAL</th>
                     <th class="border-b border-zinc-400 px-3 py-1.5 text-right font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">CONTADO</th>
                     <th class="border-b border-zinc-400 px-3 py-1.5 text-right font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">DIF.</th>
-                    <th class="border-b border-zinc-400 px-3 py-1.5 text-center font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">ESTADO</th>
                     <th class="border-b border-zinc-400 px-3 py-1.5 text-center font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">FIN</th>
                     @role('admin')
-                    <th class="border-b border-zinc-400 px-3 py-1.5 text-left font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">OBSERVACIÓN</th>
+                    <th class="border-b border-zinc-400 px-3 py-1.5 text-center font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">OBS.</th>
                     @endrole
                     <th class="border-b border-zinc-400 px-3 py-1.5 text-center font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">OPCIONES</th>
                 </tr>
@@ -52,8 +72,17 @@
                             {{ number_format($item->monto_apertura, 2) }}
                         </td>
 
-                        <td class="px-3 py-1.5 text-right text-zinc-800 dark:text-zinc-100">
-                            {{ number_format($item->monto_esperado, 2) }}
+                        {{-- Ventas de la caja: efectivo, QR y total --}}
+                        <td class="col-ef px-3 py-1.5 text-right font-medium">
+                            {{ number_format((float) $item->ventas_efectivo, 2) }}
+                        </td>
+
+                        <td class="col-qr px-3 py-1.5 text-right font-medium">
+                            {{ number_format((float) $item->ventas_qr, 2) }}
+                        </td>
+
+                        <td class="col-tot px-3 py-1.5 text-right font-bold">
+                            {{ number_format((float) $item->ventas_efectivo + (float) $item->ventas_qr, 2) }}
                         </td>
 
                         <td class="px-3 py-1.5 text-right text-zinc-800 dark:text-zinc-100">
@@ -69,18 +98,6 @@
                                     {{ $dif > 0 ? '+' : '' }}{{ number_format($dif, 2) }}
                                 </span>
                                 <div class="text-xs text-zinc-500 dark:text-zinc-400">{{ $dif == 0 ? 'Cuadra' : ($dif > 0 ? 'Sobrante' : 'Faltante') }}</div>
-                            @endif
-                        </td>
-
-                        <td class="px-3 py-1.5 text-center">
-                            @if($item->status === 'OPEN')
-                                <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
-                                    Abierta
-                                </span>
-                            @else
-                                <span class="rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-                                    Cerrada
-                                </span>
                             @endif
                         </td>
 
@@ -111,12 +128,13 @@
                         </td>
 
                         @role('admin')
-                        <td class="px-3 py-1.5 text-zinc-700 dark:text-zinc-300" style="max-width: 16rem">
+                        {{-- Solo indica si tiene observación (el texto se ve al pasar el mouse o al hacer clic) --}}
+                        <td class="px-3 py-1.5 text-center">
                             @if($item->observacion)
                                 <button type="button" wire:click="openNoteModal({{ $item->id }})"
-                                    class="block w-full cursor-pointer truncate text-left text-xs hover:text-primary"
+                                    class="cursor-pointer rounded-full bg-sky-100 px-2 py-0.5 text-xs font-medium text-sky-700 dark:bg-sky-900/30 dark:text-sky-300"
                                     title="{{ $item->observacion }}">
-                                    <i class="bi bi-journal-text mr-1 text-primary"></i>{{ $item->observacion }}
+                                    <i class="bi bi-journal-text"></i> Sí
                                 </button>
                             @else
                                 <span class="text-xs text-zinc-400 dark:text-zinc-500">—</span>
@@ -198,6 +216,29 @@
                     </tr>
                 @endforelse
             </tbody>
+
+            @if($cashRegisters->count())
+                @php $restCols = auth()->user()?->hasRole('admin') ? 6 : 5; @endphp
+                {{-- Totales de ventas (sin el monto inicial): efectivo y QR, y debajo el total de ambos --}}
+                <tfoot class="bg-zinc-300 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">
+                    <tr class="border-t border-zinc-400 dark:border-zinc-600">
+                        <td colspan="3" class="px-3 py-2 font-semibold">
+                            Total efectivo / QR
+                            <span class="text-xs font-normal text-zinc-600 dark:text-zinc-400">({{ $grandTotals['cajas'] }} cajas{{ trim($search) !== '' ? ', según la búsqueda' : '' }})</span>
+                        </td>
+                        <td class="col-ef px-3 py-2 text-right font-bold">{{ number_format($grandTotals['efectivo'], 2) }}</td>
+                        <td class="col-qr px-3 py-2 text-right font-bold">{{ number_format($grandTotals['qr'], 2) }}</td>
+                        <td colspan="{{ $restCols }}"></td>
+                    </tr>
+                    <tr class="border-t border-zinc-400 dark:border-zinc-600">
+                        <td colspan="3" class="px-3 py-2 font-bold">TOTAL (efectivo + QR)</td>
+                        <td colspan="2" class="col-tot px-3 py-2 text-center text-lg font-bold">
+                            {{ number_format($grandTotals['efectivo'] + $grandTotals['qr'], 2) }}
+                        </td>
+                        <td colspan="{{ $restCols }}" class="px-3 py-2 text-xs text-zinc-600 dark:text-zinc-400">Solo ventas, sin el monto inicial</td>
+                    </tr>
+                </tfoot>
+            @endif
         </table>
     </div>
 
@@ -283,8 +324,11 @@
                         <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ number_format($item->monto_apertura, 2) }}</p>
                     </div>
                     <div>
-                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Esperado</span>
-                        <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ number_format($item->monto_esperado, 2) }}</p>
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Ventas</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">
+                            Ef. {{ number_format((float) $item->ventas_efectivo, 2) }} · QR {{ number_format((float) $item->ventas_qr, 2) }}
+                            <span class="block font-semibold">Total {{ number_format((float) $item->ventas_efectivo + (float) $item->ventas_qr, 2) }}</span>
+                        </p>
                     </div>
                     <div>
                         <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Contado</span>

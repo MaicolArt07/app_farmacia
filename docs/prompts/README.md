@@ -22,7 +22,3 @@ carpeta para entender decisiones de diseño/arquitectura ya tomadas.
 
 - [responsive-tablas.md](responsive-tablas.md) — patrón de tabla responsive (tabla en
   desktop + tarjetas con botón "+" en móvil), sin usar DataTables.
-- [verificar-sesion-unica-y-ventas-2026-11-10.md](verificar-sesion-unica-y-ventas-2026-11-10.md)
-  — prompt para verificar en otra sesión los cambios del 2026-11-10 (login sin
-  falso aviso de sesión activa, historial/filtro de fechas en Ventas y edición
-  de pago de venta).

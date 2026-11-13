@@ -174,7 +174,7 @@
                         'Ver Proveedores', 'Ver Laboratorios', 'Ver Empresa', 'Ver Sucursales', 'Ver Metodos Pago', 'Ver Categorias',
                         'Ver Presentaciones', 'Ver Lotes',
                         'Ver Ajustes Inventario', 'Ver Kardex',
-                        'Ver Facturas', 'Ver Reportes'
+                        'Ver Facturas', 'Ver Reportes', 'Ver Contabilidad'
                     ])
                     @php
                         $isFarmaciaSection = request()->routeIs('proveedores*') || request()->routeIs('laboratorios*')
@@ -419,40 +419,6 @@
                     </nav>
                     @endcan
 
-                    <!-- ✅ CONFIGURACIONES (Solo Super Admin) -->
-                    @can('Super Admin')
-                    @php
-                        $isConfigSection = request()->routeIs('configuraciones*');
-                    @endphp
-                    <nav class="mt-4 flex flex-col gap-1">
-                        <span class="overflow-hidden whitespace-nowrap px-3 py-1 text-xs font-semibold uppercase tracking-wider text-zinc-400 transition-all duration-200 dark:text-zinc-500"
-                            :class="sidebarCollapsed ? 'opacity-0 h-0 py-0' : 'opacity-100'">
-                            {{ __('Configuraciones') }}
-                        </span>
-
-                        <div x-show="sidebarCollapsed" class="flex flex-col gap-1">
-                            <a href="{{ route('configuraciones.sucursales') }}" wire:navigate title="{{ __('Sucursales') }}" class="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs('configuraciones.sucursales*') ? 'bg-primary text-white shadow-sm' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
-                                <i class="bi bi-diagram-3-fill text-base"></i>
-                            </a>
-                        </div>
-
-                        <div x-show="!sidebarCollapsed">
-                            <details class="group" @if($isConfigSection) open @endif>
-                                <summary class="flex cursor-pointer items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-zinc-200 dark:hover:bg-zinc-800 {{ $isConfigSection ? 'bg-[rgb(37_99_235_/_0.12)] dark:bg-[rgb(37_99_235_/_0.18)] text-zinc-900 dark:text-white' : 'text-zinc-700 dark:text-zinc-200' }}">
-                                    <i class="bi bi-gear-fill shrink-0 text-base"></i>
-                                    <span class="flex-1 whitespace-nowrap">{{ __('Configuraciones') }}</span>
-                                    <i class="bi bi-chevron-down text-xs transition-transform duration-200 group-open:rotate-180"></i>
-                                </summary>
-                                <div class="ml-5 mt-1 space-y-1 border-l border-zinc-200 pl-3 dark:border-zinc-700">
-                                    <a href="{{ route('configuraciones.sucursales') }}" wire:navigate class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition {{ request()->routeIs('configuraciones.sucursales*') ? 'border-l-[3px] border-primary bg-zinc-800 text-white font-medium' : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' }}">
-                                        <i class="bi bi-diagram-3-fill text-base"></i> {{ __('Sucursales') }}
-                                    </a>
-                                </div>
-                            </details>
-                        </div>
-                    </nav>
-                    @endcan
-
                     <div class="flex-1"></div>
 
                     <!-- ✅ PERFIL DE USUARIO (Desktop) -->
@@ -672,7 +638,7 @@
                             'Ver Proveedores', 'Ver Laboratorios', 'Ver Empresa', 'Ver Sucursales', 'Ver Metodos Pago', 'Ver Categorias',
                             'Ver Presentaciones', 'Ver Lotes',
                             'Ver Ajustes Inventario', 'Ver Kardex',
-                            'Ver Facturas', 'Ver Reportes'
+                            'Ver Facturas', 'Ver Reportes', 'Ver Contabilidad'
                         ])
                         <flux:navlist.group :heading="__('Farmacia')" class="grid mt-3">
                             <details class="group" @if($isFarmaciaSection ?? false) open @endif>
@@ -779,14 +745,6 @@
                                 <i class="bi bi-clock-history me-2"></i> {{ __('Logs de Acceso') }}
                             </flux:navlist.item>
                             @endcan
-                        </flux:navlist.group>
-                        @endcan
-
-                        @can('Super Admin')
-                        <flux:navlist.group :heading="__('Configuraciones')" class="grid mt-3">
-                            <flux:navlist.item :href="route('configuraciones.sucursales')" :current="request()->routeIs('configuraciones.sucursales*')" wire:navigate class="rounded-xl px-3 py-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800">
-                                <i class="bi bi-diagram-3-fill me-2"></i> {{ __('Sucursales') }}
-                            </flux:navlist.item>
                         </flux:navlist.group>
                         @endcan
                     </flux:navlist>

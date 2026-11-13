@@ -13,7 +13,6 @@ class Lote extends Model
 
     protected $fillable = [
         'id_producto',
-        'id_sucursal',
         'codigo_lote',
         'precio_compra',
         'precio_venta',
@@ -44,10 +43,5 @@ class Lote extends Model
     public function inventoryMovements()
     {
         return $this->hasMany(MovimientoInventario::class, 'id_lote');
-    }
-
-    public function sucursal()
-    {
-        return $this->belongsTo(Sucursal::class, 'id_sucursal');
     }
 }

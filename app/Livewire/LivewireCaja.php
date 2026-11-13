@@ -98,8 +98,28 @@ class LivewireCaja extends Component
             });
         }
 
+        // Total general (todas las cajas que coinciden con el filtro, no solo
+        // la página): ventas en efectivo y QR, sin el monto inicial.
+        $cajaIds = (clone $query)->pluck('id');
+        $sold = \App\Models\Venta::whereIn('id_caja', $cajaIds)->where('status', 'ACTIVE');
+        $grandTotals = [
+            'efectivo' => (float) (clone $sold)->sum(DB::raw(\App\Models\Venta::SQL_CASH)),
+            'qr' => (float) (clone $sold)->sum(DB::raw(\App\Models\Venta::SQL_QR)),
+            'cajas' => $cajaIds->count(),
+        ];
+
+        // Ventas de cada caja separadas en efectivo / QR (Mixto se reparte),
+        // solo ventas activas.
+        $query->addSelect([
+            'ventas_efectivo' => \App\Models\Venta::selectRaw('COALESCE(SUM(' . \App\Models\Venta::SQL_CASH . '), 0)')
+                ->whereColumn('ventas.id_caja', 'cajas.id')->where('status', 'ACTIVE'),
+            'ventas_qr' => \App\Models\Venta::selectRaw('COALESCE(SUM(' . \App\Models\Venta::SQL_QR . '), 0)')
+                ->whereColumn('ventas.id_caja', 'cajas.id')->where('status', 'ACTIVE'),
+        ]);
+
         return view('livewire.caja.index', [
             'cashRegisters' => $query->orderBy('id', 'desc')->paginate(10),
+            'grandTotals' => $grandTotals,
         ]);
     }
 
@@ -136,7 +156,6 @@ class LivewireCaja extends Component
         try {
             Caja::create([
                 'id_usuario' => Auth::id(),
-                'id_sucursal' => Auth::user()->id_sucursal,
                 'fecha_apertura' => now()->toDateString(),
                 'monto_apertura' => $this->openForm->opening_amount,
                 // La caja siempre es del día: vence al final del día de apertura.
@@ -393,6 +412,7 @@ class LivewireCaja extends Component
             $cash->closed_at = now();
             $cash->save();
 
+            // Contabilidad: el cierre registra lo vendido como HABER (ingreso).
             if ($breakdown['total_sales'] > 0) {
                 \App\Models\MovimientoContable::registrarAutomatico('CIERRE_CAJA', $cash->id, [
                     'fecha' => $cash->closed_at->toDateString(),

@@ -55,19 +55,7 @@ class LivewireLote extends Component
                             ->paginate(10),
             'viewing' => $this->viewingId ? Lote::with('product')->find($this->viewingId) : null,
             'cuadre' => $this->cuadreLotId ? $this->cuadre($this->cuadreLotId) : null,
-            'canEditFull' => $this->canEditFull(),
         ]);
-    }
-
-    /**
-     * Edición completa (producto, precios, cantidades, ubicación) requiere
-     * "Editar Lotes". Sin ese permiso, un usuario con "Ver Lotes" solo puede
-     * corregir el código de lote y la fecha de vencimiento de un lote ya
-     * existente (ver save()).
-     */
-    public function canEditFull(): bool
-    {
-        return (bool) auth()->user()?->can('Editar Lotes');
     }
 
     /* ---------- Cuadre del lote: entradas, ventas, ajustes vs. disponible ---------- */
@@ -144,11 +132,6 @@ class LivewireLote extends Component
 
     public function create()
     {
-        if (!$this->canEditFull()) {
-            $this->dispatch('toast', type: 'warning', message: 'No tienes permiso para crear lotes nuevos.');
-            return;
-        }
-
         $this->form->resetForm();
         $this->selectedProductLabel = '';
         $this->productSearch = '';
@@ -174,12 +157,6 @@ class LivewireLote extends Component
 
     public function updatedProductSearch()
     {
-        if (!$this->canEditFull()) {
-            $this->productSearch = '';
-            $this->productResults = [];
-            return;
-        }
-
         if (strlen(trim($this->productSearch)) < 2) {
             $this->productResults = [];
             return;
@@ -207,10 +184,6 @@ class LivewireLote extends Component
 
     public function selectProduct($id)
     {
-        if (!$this->canEditFull()) {
-            return;
-        }
-
         $product = Producto::findOrFail($id);
 
         $this->form->id_producto = $product->id;
@@ -235,28 +208,6 @@ class LivewireLote extends Component
 
     public function save()
     {
-        $canEditFull = $this->canEditFull();
-
-        if (!$canEditFull && !$this->form->id) {
-            $this->dispatch('toast', type: 'warning', message: 'No tienes permiso para crear lotes nuevos.');
-            return;
-        }
-
-        // Sin "Editar Lotes" solo se puede corregir el código de lote y la
-        // fecha de vencimiento: se ignora cualquier otro campo que haya
-        // llegado en el formulario (precios, cantidades, producto, ubicación)
-        // y se usan los valores que ya tenía el lote en base de datos.
-        if (!$canEditFull) {
-            $existing = Lote::findOrFail($this->form->id);
-            $this->form->id_producto = $existing->id_producto;
-            $this->form->precio_compra = $existing->precio_compra;
-            $this->form->precio_venta = $existing->precio_venta;
-            $this->form->cantidad_ingresada = $existing->cantidad_ingresada;
-            $this->form->cantidad_disponible = $existing->cantidad_disponible;
-            $this->form->ubicacion = $existing->ubicacion;
-            $this->form->estado = $existing->estado;
-        }
-
         $this->validate($this->form->rules(), $this->form->messages());
 
         if ($this->form->cantidad_disponible > $this->form->cantidad_ingresada) {
@@ -314,7 +265,7 @@ class LivewireLote extends Component
                     return;
                 }
 
-                $lot = Lote::create($data + ['id_sucursal' => auth()->user()->id_sucursal]);
+                $lot = Lote::create($data);
                 $message = 'Lote registrado correctamente.';
 
                 // Ingreso registrado en el Kardex.

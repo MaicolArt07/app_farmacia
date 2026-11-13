@@ -32,24 +32,4 @@ class Sucursal extends Model
     {
         return $this->belongsTo(Empresa::class, 'id_empresa');
     }
-
-    public function users()
-    {
-        return $this->hasMany(User::class, 'id_sucursal');
-    }
-
-    public function lots()
-    {
-        return $this->hasMany(Lote::class, 'id_sucursal');
-    }
-
-    public function cashRegisters()
-    {
-        return $this->hasMany(Caja::class, 'id_sucursal');
-    }
-
-    public function sales()
-    {
-        return $this->hasMany(Venta::class, 'id_sucursal');
-    }
 }

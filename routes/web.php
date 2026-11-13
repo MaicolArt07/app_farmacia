@@ -24,7 +24,6 @@ use App\Livewire\LivewireKardex;
 use App\Livewire\LivewireFactura;
 use App\Livewire\LivewireReports;
 use App\Livewire\LivewireContabilidad;
-use App\Livewire\LivewireConfiguracionSucursales;
 use App\Livewire\LivewireLoginLogs;
 use App\Livewire\LivewireRoles;
 use App\Models\Factura;
@@ -181,10 +180,6 @@ Route::middleware(['auth', 'single.session'])->group(function () {
     Route::get('/contabilidad', LivewireContabilidad::class)
         ->middleware('can:Ver Contabilidad')
         ->name('contabilidad');
-
-    Route::get('/configuraciones/sucursales', LivewireConfiguracionSucursales::class)
-        ->middleware('can:Super Admin')
-        ->name('configuraciones.sucursales');
 
     // Productos más vendidos: solo administrador.
     Route::middleware('role:admin')->group(function () {

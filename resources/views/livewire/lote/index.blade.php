@@ -1,13 +1,9 @@
 <div class="flex flex-col bg-zinc-200 p-4 dark:bg-zinc-950">
     <div class="mb-3 flex flex-wrap items-center justify-between gap-3 rounded border border-zinc-300 bg-zinc-100 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900">
-        @if ($canEditFull)
         <button type="button" wire:click="create"
             class="flex items-center gap-2 rounded border border-zinc-400 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-100 cursor-pointer dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700">
             <i class="bi bi-box2-heart text-primary"></i> Nuevo lote
         </button>
-        @else
-        <div></div>
-        @endif
 
         <input
             type="text"
@@ -226,13 +222,6 @@
                 </button>
             </div>
 
-            @unless ($canEditFull)
-            <div class="mx-4 mt-4 flex items-center gap-2 rounded border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-300">
-                <i class="bi bi-info-circle-fill"></i>
-                Solo puedes corregir el <strong>código de lote</strong> y la <strong>fecha de vencimiento</strong>. El resto de los campos están bloqueados.
-            </div>
-            @endunless
-
             <div class="grid grid-cols-1 gap-4 px-4 py-5 md:grid-cols-2 xl:grid-cols-3">
                 <div class="space-y-1 md:col-span-2 xl:col-span-3">
                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Buscar producto <span class="text-red-600">*</span></label>
@@ -242,13 +231,11 @@
                             <span class="text-sm text-zinc-700 dark:text-zinc-200">
                                 {{ $selectedProductLabel }}
                             </span>
-                            @if ($canEditFull)
                             <button wire:click="clearProduct" type="button" class="cursor-pointer text-zinc-500 hover:text-red-600 dark:text-zinc-400">
                                 <i class="bi bi-x-circle"></i>
                             </button>
-                            @endif
                         </div>
-                    @elseif ($canEditFull)
+                    @else
                         <div class="relative">
                             <input
                                 type="text"
@@ -294,36 +281,36 @@
 
                 <div class="space-y-1">
                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Ubicación (Opcional)</label>
-                    <input type="text" wire:model="form.ubicacion" @disabled(!$canEditFull)
-                        class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-100 disabled:text-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:disabled:bg-zinc-900 dark:disabled:text-zinc-500">
+                    <input type="text" wire:model="form.ubicacion"
+                        class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
                     @error('form.ubicacion') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="space-y-1">
                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Precio compra</label>
-                    <input type="number" step="0.01" wire:model="form.precio_compra" @disabled(!$canEditFull)
-                        class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-100 disabled:text-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:disabled:bg-zinc-900 dark:disabled:text-zinc-500">
+                    <input type="number" step="0.01" wire:model="form.precio_compra"
+                        class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
                     @error('form.precio_compra') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="space-y-1">
                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Precio venta</label>
-                    <input type="number" step="0.01" wire:model="form.precio_venta" @disabled(!$canEditFull)
-                        class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-100 disabled:text-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:disabled:bg-zinc-900 dark:disabled:text-zinc-500">
+                    <input type="number" step="0.01" wire:model="form.precio_venta"
+                        class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
                     @error('form.precio_venta') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="space-y-1">
                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Cantidad ingresada</label>
-                    <input type="number" wire:model="form.cantidad_ingresada" @disabled(!$canEditFull)
-                        class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-100 disabled:text-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:disabled:bg-zinc-900 dark:disabled:text-zinc-500">
+                    <input type="number" wire:model="form.cantidad_ingresada"
+                        class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
                     @error('form.cantidad_ingresada') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="space-y-1">
                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Cantidad disponible</label>
-                    <input type="number" wire:model="form.cantidad_disponible" @disabled(!$canEditFull)
-                        class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none disabled:cursor-not-allowed disabled:bg-zinc-100 disabled:text-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:disabled:bg-zinc-900 dark:disabled:text-zinc-500">
+                    <input type="number" wire:model="form.cantidad_disponible"
+                        class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
                     @error('form.cantidad_disponible') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                 </div>
             </div>

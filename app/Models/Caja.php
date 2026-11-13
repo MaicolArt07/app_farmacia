@@ -20,7 +20,6 @@ class Caja extends Model
 
     protected $fillable = [
         'id_usuario',
-        'id_sucursal',
         'fecha_apertura',
         'monto_apertura',
         'periodo_validez',
@@ -182,10 +181,5 @@ class Caja extends Model
             'MONTHLY' => $from->copy()->addMonth(),
             default => $from->copy()->addDay(),
         };
-    }
-
-    public function sucursal()
-    {
-        return $this->belongsTo(Sucursal::class, 'id_sucursal');
     }
 }

@@ -1055,11 +1055,12 @@ class LivewireVenta extends Component
                 ]);
             }
 
-            $cash = Caja::where('id_usuario', Auth::id())
-                ->where('status', 'OPEN')
-                ->where('estado', 1)
-                ->lockForUpdate()
-                ->first();
+            // La anulación se registra en la caja ORIGINAL de la venta (no en la
+            // de quien anula: si el admin anula una venta del trabajador, la
+            // caja del admin no tiene nada que ver).
+            $cash = $sale->id_caja
+                ? Caja::whereKey($sale->id_caja)->lockForUpdate()->first()
+                : null;
 
             if ($cash) {
                 MovimientoCaja::create([

@@ -48,9 +48,12 @@ class ReportExportController extends Controller
         return Excel::download(new StockExport(), 'stock-actual_' . now()->format('Y-m-d') . '.xlsx');
     }
 
-    public function inventoryAlerts()
+    public function inventoryAlerts(Request $request)
     {
-        return Excel::download(new InventoryAlertsExport(), 'alertas-inventario_' . now()->format('Y-m-d') . '.xlsx');
+        // Mismo filtro de búsqueda que la pantalla de Notificaciones (opcional).
+        $term = mb_substr(trim((string) $request->query('q', '')), 0, 100);
+
+        return Excel::download(new InventoryAlertsExport($term), 'alertas-inventario_' . now()->format('Y-m-d') . '.xlsx');
     }
 
     /* ---------- Productos más vendidos (solo admin, ver rutas) ---------- */

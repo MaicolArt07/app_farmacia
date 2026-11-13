@@ -20,9 +20,7 @@ class UsersForm extends Form
     {
         $rules = [
             'form.id_persona' => 'nullable|exists:personas,id',
-            'form.name' => $this->updateMode
-                ? 'required|string|max:255|unique:users,name,' . $this->id
-                : 'required|string|max:255|unique:users,name',
+            'form.name' => 'required|string|max:255',
             'form.email' => $this->updateMode
                 ? 'required|email|max:255|unique:users,email,' . $this->id
                 : 'required|email|max:255|unique:users,email',
@@ -44,7 +42,6 @@ class UsersForm extends Form
         return [
             'form.id_persona.exists' => 'La persona seleccionada no es válida.',
             'form.name.required' => 'El nombre es obligatorio.',
-            'form.name.unique' => 'Ya existe un usuario con ese nombre (se usa también para iniciar sesión).',
             'form.email.required' => 'El correo electrónico es obligatorio.',
             'form.email.email' => 'El correo debe ser válido.',
             'form.email.unique' => 'Este correo ya está registrado.',

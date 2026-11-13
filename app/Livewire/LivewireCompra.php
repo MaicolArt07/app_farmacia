@@ -383,7 +383,6 @@ class LivewireCompra extends Component
 
                     $lot = Lote::create([
                         'id_producto' => $detail['id_producto'],
-                        'id_sucursal' => Auth::user()->id_sucursal,
                         'codigo_lote' => $detail['batch_code'],
                         'precio_compra' => $detail['purchase_price'],
                         'precio_venta' => $detail['sale_price'],
@@ -411,6 +410,7 @@ class LivewireCompra extends Component
                 ]);
             }
 
+            // Contabilidad: la compra se registra como DEBE (egreso).
             \App\Models\MovimientoContable::registrarAutomatico('COMPRA', $purchase->id, [
                 'fecha' => $purchase->fecha_compra,
                 'tipo' => \App\Models\MovimientoContable::DEBE,

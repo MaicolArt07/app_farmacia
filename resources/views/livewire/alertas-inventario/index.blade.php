@@ -9,9 +9,19 @@
         <h1 class="text-lg font-bold text-zinc-800 dark:text-zinc-100">
             <i class="bi bi-bell-fill mr-1 text-primary"></i> Alertas de inventario
         </h1>
-        <input type="text" wire:model.live.debounce.300ms="search"
-            placeholder="Buscar por nombre o código..."
-            class="w-full rounded border border-zinc-400 bg-white px-3 py-1.5 text-sm text-zinc-800 placeholder:text-zinc-400 focus:border-primary focus:outline-none md:w-80 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500">
+        <div class="flex w-full flex-col gap-2 md:w-auto md:flex-row md:items-center">
+            <input type="text" wire:model.live.debounce.300ms="search"
+                placeholder="Buscar por nombre o código..."
+                class="w-full rounded border border-zinc-400 bg-white px-3 py-1.5 text-sm text-zinc-800 placeholder:text-zinc-400 focus:border-primary focus:outline-none md:w-80 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500">
+            @can('Exportar Reportes')
+                {{-- Exporta lo mismo que se ve (respeta la búsqueda), con laboratorio --}}
+                <a href="{{ route('reports.inventory-alerts.export', array_filter(['q' => trim($search)])) }}"
+                    class="flex shrink-0 items-center justify-center gap-1 rounded border border-emerald-300 bg-white px-3 py-1.5 text-sm font-medium text-emerald-700 hover:bg-emerald-50 dark:border-emerald-800 dark:bg-zinc-800 dark:text-emerald-300"
+                    title="Descargar las alertas en Excel (stock bajo, vencidos y por vencer)">
+                    <i class="bi bi-file-earmark-excel"></i> Exportar Excel
+                </a>
+            @endcan
+        </div>
     </div>
 
     {{-- Resumen: clic para ir a cada sección --}}

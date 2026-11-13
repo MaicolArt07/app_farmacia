@@ -154,6 +154,7 @@ automáticamente el navegador con el sistema cargado.
 |---|---|---|
 | Administrador | `maicolarteaga0711@gmail.com` | `Admin123!` |
 | Trabajador | `trabajador@farmafamilia.com` | `63568888` |
+| Trabajador 2 | `trabajador2@farmafamilia.com` | `63568888` |
 
 > Recomendado: cambiar estas contraseñas desde **Usuarios → Editar** una vez
 > el sistema esté en producción, sobre todo si más de una persona conoce la
