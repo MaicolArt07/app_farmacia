@@ -24,10 +24,9 @@ class DailyBookSummarySheet implements FromArray, WithTitle, ShouldAutoSize
                 ->whereBetween('fecha_venta', [$this->from . ' 00:00:00', $this->to . ' 23:59:59'])
         )->get();
 
-        $purchases = SucursalScope::applyToRelation(
+        $purchases = SucursalScope::apply(
             Compra::where('status', 'ACTIVE')
-                ->whereBetween('fecha_compra', [$this->from, $this->to]),
-            'user'
+                ->whereBetween('fecha_compra', [$this->from, $this->to])
         )->get();
 
         $movements = SucursalScope::applyToRelation(

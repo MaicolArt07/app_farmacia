@@ -17,10 +17,9 @@ class PurchasesExport implements FromCollection, WithHeadings, WithMapping, Shou
 
     public function collection()
     {
-        return SucursalScope::applyToRelation(
+        return SucursalScope::apply(
             Compra::with(['supplier.person', 'user'])
-                ->whereBetween('fecha_compra', [$this->from, $this->to]),
-            'user'
+                ->whereBetween('fecha_compra', [$this->from, $this->to])
         )->orderBy('fecha_compra')
             ->get();
     }

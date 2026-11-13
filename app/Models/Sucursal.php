@@ -52,4 +52,9 @@ class Sucursal extends Model
     {
         return $this->hasMany(Venta::class, 'id_sucursal');
     }
+
+    public function purchases()
+    {
+        return $this->hasMany(Compra::class, 'id_sucursal');
+    }
 }

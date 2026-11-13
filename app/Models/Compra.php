@@ -14,6 +14,7 @@ class Compra extends Model
     protected $fillable = [
         'id_proveedor',
         'id_usuario',
+        'id_sucursal',
         'numero_factura',
         'fecha_compra',
         'subtotal',
@@ -42,6 +43,11 @@ class Compra extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'id_usuario');
+    }
+
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class, 'id_sucursal');
     }
 
     public function cancelledBy()

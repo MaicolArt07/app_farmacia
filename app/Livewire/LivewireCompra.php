@@ -14,10 +14,11 @@ use App\Models\DetalleCompra;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Livewire\Form\CompraForm;
+use App\Support\ScopedToSucursal;
 
 class LivewireCompra extends Component
 {
-    use WithPagination;
+    use WithPagination, ScopedToSucursal;
 
     public $search = '';
 
@@ -82,7 +83,7 @@ class LivewireCompra extends Component
             return view('livewire.compra.form');
         }
 
-        $query = Compra::with(['supplier.person', 'user']);
+        $query = $this->scopeToUserSucursal(Compra::with(['supplier.person', 'user']));
 
         if (!empty($this->search)) {
             $query->where(function ($q) {
@@ -340,6 +341,7 @@ class LivewireCompra extends Component
                 $purchase = Compra::create([
                     'id_proveedor' => $this->form->id_proveedor,
                     'id_usuario' => Auth::id(),
+                    'id_sucursal' => Auth::user()->id_sucursal,
                     'numero_factura' => $this->form->numero_factura ?: null,
                     'fecha_compra' => $this->form->fecha_compra,
                     'subtotal' => $this->form->subtotal,
