@@ -12,6 +12,7 @@ class Servicio extends Model
     protected $table = 'servicios';
 
     protected $fillable = [
+        'id_sucursal',
         'nombre',
         'descripcion',
         'precio',
@@ -26,5 +27,10 @@ class Servicio extends Model
     public function details()
     {
         return $this->hasMany(DetalleVenta::class, 'id_servicio');
+    }
+
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class, 'id_sucursal');
     }
 }

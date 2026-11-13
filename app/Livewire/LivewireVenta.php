@@ -549,7 +549,7 @@ class LivewireVenta extends Component
             return;
         }
 
-        $this->serviceResults = Servicio::query()
+        $this->serviceResults = $this->scopeToUserSucursal(Servicio::query())
             ->where('estado', 1)
             ->where('nombre', 'like', "%{$this->serviceSearch}%")
             ->limit(10)
@@ -566,7 +566,7 @@ class LivewireVenta extends Component
 
     public function addServiceToDetail($id)
     {
-        $service = Servicio::findOrFail($id);
+        $service = $this->scopeToUserSucursal(Servicio::query())->findOrFail($id);
 
         // Lo último agregado va arriba, para no tener que bajar a buscarlo.
         array_unshift($this->details, [
@@ -710,7 +710,7 @@ class LivewireVenta extends Component
     {
         foreach ($this->details as $i => $detail) {
             $price = ($detail['type'] ?? 'producto') === 'servicio'
-                ? (float) Servicio::whereKey($detail['id_servicio'] ?? 0)->value('precio')
+                ? (float) $this->scopeToUserSucursal(Servicio::query())->whereKey($detail['id_servicio'] ?? 0)->value('precio')
                 : self::lotPrice(Lote::find($detail['id_lote'] ?? 0), Producto::find($detail['id_producto'] ?? 0));
 
             $this->details[$i]['sale_price'] = (float) $price;

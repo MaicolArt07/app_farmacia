@@ -6,10 +6,12 @@ use App\Models\Servicio;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Livewire\Form\ServicioForm;
+use App\Support\ScopedToSucursal;
+use Illuminate\Support\Facades\Auth;
 
 class LivewireServicio extends Component
 {
-    use WithPagination;
+    use WithPagination, ScopedToSucursal;
 
     public $search = '';
 
@@ -28,7 +30,7 @@ class LivewireServicio extends Component
 
     public function render()
     {
-        $query = Servicio::query();
+        $query = $this->scopeToUserSucursal(Servicio::query());
 
         if (!empty($this->search)) {
             $query->where('nombre', 'like', "%{$this->search}%");
@@ -36,7 +38,7 @@ class LivewireServicio extends Component
 
         return view('livewire.servicio.index', [
             'services' => $query->orderBy('nombre')->paginate(10),
-            'viewing' => $this->viewingId ? Servicio::find($this->viewingId) : null,
+            'viewing' => $this->viewingId ? $this->scopeToUserSucursal(Servicio::query())->find($this->viewingId) : null,
         ]);
     }
 
@@ -48,7 +50,7 @@ class LivewireServicio extends Component
 
     public function edit($id)
     {
-        $service = Servicio::findOrFail($id);
+        $service = $this->scopeToUserSucursal(Servicio::query())->findOrFail($id);
         $this->form->fillForm($service);
         $this->modalVisible = true;
     }
@@ -70,6 +72,7 @@ class LivewireServicio extends Component
                 $service->update($data);
                 $message = 'Servicio actualizado correctamente.';
             } else {
+                $data['id_sucursal'] = Auth::user()->id_sucursal;
                 Servicio::create($data);
                 $message = 'Servicio registrado correctamente.';
             }
@@ -101,7 +104,7 @@ class LivewireServicio extends Component
     public function delete($id)
     {
         try {
-            $service = Servicio::findOrFail($id);
+            $service = $this->scopeToUserSucursal(Servicio::query())->findOrFail($id);
             $service->estado = $service->estado ? 0 : 1;
             $service->save();
 
