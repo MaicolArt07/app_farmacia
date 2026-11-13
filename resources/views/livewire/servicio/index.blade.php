@@ -18,6 +18,9 @@
             <thead class="sticky top-0 bg-zinc-300 dark:bg-zinc-800">
                 <tr>
                     <th class="border-b border-zinc-400 px-3 py-1.5 text-left font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">Nombre</th>
+                    @if ($isSuperAdmin)
+                        <th class="border-b border-zinc-400 px-3 py-1.5 text-left font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">Sucursal</th>
+                    @endif
                     <th class="border-b border-zinc-400 px-3 py-1.5 text-center font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">Precio (Bs.)</th>
                     <th class="border-b border-zinc-400 px-3 py-1.5 text-center font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">Estado</th>
                     <th class="border-b border-zinc-400 px-3 py-1.5 text-center font-semibold text-zinc-700 dark:border-zinc-600 dark:text-zinc-200">Opciones</th>
@@ -30,6 +33,11 @@
                         <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
                             {{ $item->nombre }}
                         </td>
+                        @if ($isSuperAdmin)
+                            <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
+                                {{ $item->sucursal?->nombre ?? '-' }}
+                            </td>
+                        @endif
                         <td class="px-3 py-1.5 text-center text-zinc-800 dark:text-zinc-100">
                             {{ number_format($item->precio, 2) }}
                         </td>
@@ -59,7 +67,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="px-3 py-4 text-center text-zinc-500 dark:text-zinc-400">
+                        <td colspan="{{ $isSuperAdmin ? 5 : 4 }}" class="px-3 py-4 text-center text-zinc-500 dark:text-zinc-400">
                             No hay servicios registrados.
                         </td>
                     </tr>
@@ -146,6 +154,19 @@
             </div>
 
             <div class="space-y-5 px-4 py-5">
+                @if ($isSuperAdmin)
+                    <div class="space-y-1">
+                        <label class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Sucursal</label>
+                        <select wire:model="form.id_sucursal"
+                            class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
+                            @foreach ($sucursales as $sucursal)
+                                <option value="{{ $sucursal->id }}">{{ $sucursal->nombre }}</option>
+                            @endforeach
+                        </select>
+                        @error('form.id_sucursal') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                    </div>
+                @endif
+
                 <div class="space-y-1">
                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Nombre</label>
                     <input type="text" wire:model="form.nombre" placeholder="Ej: Inyectable, Curación, Nebulización..."
@@ -207,6 +228,12 @@
                         <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Precio</span>
                         <p class="text-sm text-zinc-800 dark:text-zinc-100">Bs. {{ number_format($viewing->precio, 2) }}</p>
                     </div>
+                    @if ($isSuperAdmin)
+                        <div class="space-y-1">
+                            <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Sucursal</span>
+                            <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->sucursal?->nombre ?? '-' }}</p>
+                        </div>
+                    @endif
                     <div class="space-y-1">
                         <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Descripción</span>
                         <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->descripcion ?: '-' }}</p>

@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Servicio;
+use App\Models\Sucursal;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Livewire\Form\ServicioForm;
@@ -28,9 +29,14 @@ class LivewireServicio extends Component
         $this->resetPage();
     }
 
+    protected function isSuperAdmin(): bool
+    {
+        return (bool) Auth::user()?->can('Super Admin');
+    }
+
     public function render()
     {
-        $query = $this->scopeToUserSucursal(Servicio::query());
+        $query = $this->scopeToUserSucursal(Servicio::with('sucursal'));
 
         if (!empty($this->search)) {
             $query->where('nombre', 'like', "%{$this->search}%");
@@ -38,13 +44,16 @@ class LivewireServicio extends Component
 
         return view('livewire.servicio.index', [
             'services' => $query->orderBy('nombre')->paginate(10),
-            'viewing' => $this->viewingId ? $this->scopeToUserSucursal(Servicio::query())->find($this->viewingId) : null,
+            'viewing' => $this->viewingId ? $this->scopeToUserSucursal(Servicio::with('sucursal'))->find($this->viewingId) : null,
+            'isSuperAdmin' => $this->isSuperAdmin(),
+            'sucursales' => $this->isSuperAdmin() ? Sucursal::orderBy('nombre')->get() : collect(),
         ]);
     }
 
     public function create()
     {
         $this->form->resetForm();
+        $this->form->id_sucursal = Auth::user()->id_sucursal;
         $this->modalVisible = true;
     }
 
@@ -67,12 +76,18 @@ class LivewireServicio extends Component
                 'estado' => $this->form->estado,
             ];
 
+            // El Super Admin puede elegir la sucursal; cualquier otro usuario
+            // siempre guarda/edita en la suya propia, sin importar lo que
+            // traiga el formulario (defensa en profundidad).
+            $data['id_sucursal'] = $this->isSuperAdmin() && $this->form->id_sucursal
+                ? $this->form->id_sucursal
+                : Auth::user()->id_sucursal;
+
             if ($this->form->id) {
-                $service = Servicio::findOrFail($this->form->id);
+                $service = $this->scopeToUserSucursal(Servicio::query())->findOrFail($this->form->id);
                 $service->update($data);
                 $message = 'Servicio actualizado correctamente.';
             } else {
-                $data['id_sucursal'] = Auth::user()->id_sucursal;
                 Servicio::create($data);
                 $message = 'Servicio registrado correctamente.';
             }

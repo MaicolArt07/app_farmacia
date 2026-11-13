@@ -11,6 +11,7 @@ class ServicioForm extends Form
     public $descripcion = '';
     public $precio = '';
     public $estado = 1;
+    public $id_sucursal = null;
 
     public function rules()
     {
@@ -18,6 +19,7 @@ class ServicioForm extends Form
             'form.nombre' => 'required|string|max:150',
             'form.descripcion' => 'nullable|string',
             'form.precio' => 'required|numeric|min:0',
+            'form.id_sucursal' => 'nullable|exists:sucursales,id',
         ];
     }
 
@@ -38,6 +40,7 @@ class ServicioForm extends Form
         $this->descripcion = '';
         $this->precio = '';
         $this->estado = 1;
+        $this->id_sucursal = null;
     }
 
     public function fillForm($service)
@@ -47,5 +50,6 @@ class ServicioForm extends Form
         $this->descripcion = $service->descripcion;
         $this->precio = $service->precio;
         $this->estado = $service->estado;
+        $this->id_sucursal = $service->id_sucursal;
     }
 }
