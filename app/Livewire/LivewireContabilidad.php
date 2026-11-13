@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Livewire\Form\GastoComunForm;
+use App\Support\SucursalScope;
 
 class LivewireContabilidad extends Component
 {
@@ -52,7 +53,10 @@ class LivewireContabilidad extends Component
         $desde = \Illuminate\Support\Carbon::parse($this->mes . '-01')->startOfMonth();
         $hasta = (clone $desde)->endOfMonth();
 
-        $query = MovimientoContable::with(['gastoComun', 'user'])->enPeriodo($desde, $hasta);
+        $query = SucursalScope::applyToRelation(
+            MovimientoContable::with(['gastoComun', 'user'])->enPeriodo($desde, $hasta),
+            'user'
+        );
 
         $debe = (clone $query)->debe()->sum('monto');
         $haber = (clone $query)->haber()->sum('monto');

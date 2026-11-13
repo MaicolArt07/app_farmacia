@@ -6,6 +6,7 @@ use App\Models\MovimientoCaja;
 use App\Models\Caja;
 use App\Models\Compra;
 use App\Models\Venta;
+use App\Support\SucursalScope;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithTitle;
@@ -18,24 +19,31 @@ class DailyBookSummarySheet implements FromArray, WithTitle, ShouldAutoSize
 
     public function array(): array
     {
-        $sales = Venta::where('status', 'ACTIVE')
-            ->whereBetween('fecha_venta', [$this->from . ' 00:00:00', $this->to . ' 23:59:59'])
-            ->get();
+        $sales = SucursalScope::apply(
+            Venta::where('status', 'ACTIVE')
+                ->whereBetween('fecha_venta', [$this->from . ' 00:00:00', $this->to . ' 23:59:59'])
+        )->get();
 
-        $purchases = Compra::where('status', 'ACTIVE')
-            ->whereBetween('fecha_compra', [$this->from, $this->to])
-            ->get();
+        $purchases = SucursalScope::applyToRelation(
+            Compra::where('status', 'ACTIVE')
+                ->whereBetween('fecha_compra', [$this->from, $this->to]),
+            'user'
+        )->get();
 
-        $movements = MovimientoCaja::whereHas('cashRegister', function ($q) {
-            $q->whereBetween('fecha_apertura', [$this->from, $this->to]);
-        })->get();
+        $movements = SucursalScope::applyToRelation(
+            MovimientoCaja::whereHas('cashRegister', function ($q) {
+                $q->whereBetween('fecha_apertura', [$this->from, $this->to]);
+            }),
+            'cashRegister'
+        )->get();
 
         $income = $movements->where('type', 'INCOME')->sum('monto');
         $expense = $movements->where('type', 'EXPENSE')->sum('monto');
 
-        $registers = Caja::with('user')
-            ->whereBetween('fecha_apertura', [$this->from, $this->to])
-            ->orderBy('fecha_apertura')
+        $registers = SucursalScope::apply(
+            Caja::with('user')
+                ->whereBetween('fecha_apertura', [$this->from, $this->to])
+        )->orderBy('fecha_apertura')
             ->get();
 
         // Todos los montos se envían como string: PhpSpreadsheet trata un

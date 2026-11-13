@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\MovimientoInventario;
+use App\Support\SucursalScope;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -16,10 +17,12 @@ class KardexExport implements FromCollection, WithHeadings, WithMapping, ShouldA
 
     public function collection()
     {
-        return MovimientoInventario::with(['product', 'lot', 'user'])
-            ->whereBetween('created_at', [$this->from . ' 00:00:00', $this->to . ' 23:59:59'])
-            ->when($this->productId, fn ($q) => $q->where('id_producto', $this->productId))
-            ->orderBy('created_at')
+        return SucursalScope::applyToRelation(
+            MovimientoInventario::with(['product', 'lot', 'user'])
+                ->whereBetween('created_at', [$this->from . ' 00:00:00', $this->to . ' 23:59:59'])
+                ->when($this->productId, fn ($q) => $q->where('id_producto', $this->productId)),
+            'lot'
+        )->orderBy('created_at')
             ->get();
     }
 

@@ -3,6 +3,7 @@
 namespace App\Exports\Sheets;
 
 use App\Models\Venta;
+use App\Support\SucursalScope;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -17,9 +18,10 @@ class DailyBookSalesSheet implements FromCollection, WithHeadings, WithMapping, 
 
     public function collection()
     {
-        return Venta::with(['client.person', 'user'])
-            ->whereBetween('fecha_venta', [$this->from . ' 00:00:00', $this->to . ' 23:59:59'])
-            ->orderBy('fecha_venta')
+        return SucursalScope::apply(
+            Venta::with(['client.person', 'user'])
+                ->whereBetween('fecha_venta', [$this->from . ' 00:00:00', $this->to . ' 23:59:59'])
+        )->orderBy('fecha_venta')
             ->get();
     }
 

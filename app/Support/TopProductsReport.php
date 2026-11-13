@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -34,6 +35,7 @@ class TopProductsReport
             ->whereNotNull('d.id_producto')
             ->where('v.status', 'ACTIVE')
             ->whereBetween('v.fecha_venta', [$from . ' 00:00:00', $to . ' 23:59:59'])
+            ->when(($user = Auth::user()) && ! $user->can('Super Admin'), fn ($q) => $q->where('v.id_sucursal', $user->id_sucursal))
             ->groupBy('p.id', 'p.code', 'p.nombre', 'lab.nombre')
             ->selectRaw('
                 p.id,

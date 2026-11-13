@@ -3,6 +3,7 @@
 namespace App\Exports\Sheets;
 
 use App\Models\Compra;
+use App\Support\SucursalScope;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -17,9 +18,11 @@ class DailyBookPurchasesSheet implements FromCollection, WithHeadings, WithMappi
 
     public function collection()
     {
-        return Compra::with(['supplier.person', 'user'])
-            ->whereBetween('fecha_compra', [$this->from, $this->to])
-            ->orderBy('fecha_compra')
+        return SucursalScope::applyToRelation(
+            Compra::with(['supplier.person', 'user'])
+                ->whereBetween('fecha_compra', [$this->from, $this->to]),
+            'user'
+        )->orderBy('fecha_compra')
             ->get();
     }
 

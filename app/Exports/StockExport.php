@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Producto;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -12,8 +13,12 @@ class StockExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
 {
     public function collection()
     {
-        return Producto::with(['category', 'laboratory', 'lots' => function ($q) {
-            $q->where('estado', 1);
+        $user = Auth::user();
+        $scoped = $user && ! $user->can('Super Admin');
+        $sucursalId = $user?->id_sucursal;
+
+        return Producto::with(['category', 'laboratory', 'lots' => function ($q) use ($scoped, $sucursalId) {
+            $q->where('estado', 1)->when($scoped, fn ($q2) => $q2->where('id_sucursal', $sucursalId));
         }])
             ->where('estado', 1)
             ->orderBy('nombre')

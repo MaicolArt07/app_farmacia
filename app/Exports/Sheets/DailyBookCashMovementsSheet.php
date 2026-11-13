@@ -3,6 +3,7 @@
 namespace App\Exports\Sheets;
 
 use App\Models\MovimientoCaja;
+use App\Support\SucursalScope;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -17,11 +18,13 @@ class DailyBookCashMovementsSheet implements FromCollection, WithHeadings, WithM
 
     public function collection()
     {
-        return MovimientoCaja::with(['cashRegister', 'user'])
-            ->whereHas('cashRegister', function ($q) {
-                $q->whereBetween('fecha_apertura', [$this->from, $this->to]);
-            })
-            ->orderBy('created_at')
+        return SucursalScope::applyToRelation(
+            MovimientoCaja::with(['cashRegister', 'user'])
+                ->whereHas('cashRegister', function ($q) {
+                    $q->whereBetween('fecha_apertura', [$this->from, $this->to]);
+                }),
+            'cashRegister'
+        )->orderBy('created_at')
             ->get();
     }
 
