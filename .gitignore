@@ -29,9 +29,6 @@ yarn-error.log
 /Manual de Usuario - Sistema de Farmacia.docx
 /schema_dump.sql
 
-# Dumps y backups de base de datos (contienen datos reales y hashes de contraseña)
-/database/*.sql
-/database/backups/
 /storage/backups/
 .playwright-mcp/
 
