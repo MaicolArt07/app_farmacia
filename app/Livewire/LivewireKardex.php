@@ -25,12 +25,12 @@ class LivewireKardex extends Component
         }
 
         if ($this->search) {
-            $query->whereHas('product', function ($q) {
-                $q->where('nombre', 'like', "%{$this->search}%")
-                  ->orWhere('code', 'like', "%{$this->search}%");
-            })->orWhereHas('lot', function ($q) {
-                $q->where('codigo_lote', 'like', "%{$this->search}%");
-            });
+            // Agrupado para que el "o" no se salte el filtro de sucursal de arriba.
+            $query->where(fn ($w) => $w
+                ->whereHas('product', fn ($q) => $q->buscarNombre($this->search, ['code']))
+                ->orWhereHas('lot', function ($q) {
+                    $q->where('codigo_lote', 'like', "%{$this->search}%");
+                }));
         }
 
         return view('livewire.kardex.index', [

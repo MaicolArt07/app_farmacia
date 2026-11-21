@@ -40,7 +40,7 @@
                         </td>
 
                         <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
-                            <div class="font-medium">{{ $item->nombre }}</div>
+                            <div class="font-medium">{{ $item->nombre_completo }}</div>
                             <div class="text-xs text-zinc-500 dark:text-zinc-400">
                                 {{ $item->nombre_generico ?: '-' }}
                                 @if($item->concentracion)
@@ -131,7 +131,7 @@
                     </button>
 
                     <div class="min-w-0 flex-1">
-                        <p class="truncate text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ $item->nombre }}</p>
+                        <p class="truncate text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ $item->nombre_completo }}</p>
                         <p class="truncate text-xs text-zinc-500 dark:text-zinc-400">{{ $item->code }} &middot; {{ number_format($item->precio_venta, 2) }}</p>
                     </div>
 
@@ -231,17 +231,38 @@
                 @error('form.barcode') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
 
                 <div class="xl:col-span-2">
-                    <flux:input label="Nombre comercial" wire:model="form.nombre" />
+                    <flux:input label="Nombre comercial (sin laboratorio ni marca)" wire:model.live.debounce.400ms="form.nombre" class:input="uppercase" />
                     @error('form.nombre') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                    @if (trim((string) $form->nombre) !== '')
+                        <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                            Se verá como: <span class="font-semibold text-zinc-800 dark:text-zinc-100">{{ $this->nombrePreview }}</span>
+                        </p>
+                    @endif
                 </div>
 
                 <div class="xl:col-span-2">
-                    <flux:input label="Nombre genérico (Opcional)" wire:model="form.nombre_generico" />
+                    <flux:input label="Principio activo / nombre genérico (Opcional)" wire:model="form.nombre_generico"
+                        placeholder="Ej: PARACETAMOL  ·  combinaciones: CAFEINA + PARACETAMOL" />
+                    <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                        Con el principio activo y la vía, si este producto se queda sin stock, en Ventas se ofrecen sus equivalentes.
+                    </p>
                     @error('form.nombre_generico') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                 </div>
 
                 <flux:input label="Concentración (Opcional)" wire:model="form.concentracion" />
                 @error('form.concentracion') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Vía / forma <span class="text-xs font-normal text-zinc-400 dark:text-zinc-500">(Opcional)</span></label>
+                    <select wire:model="form.via"
+                        class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
+                        <option value="">— Sin indicar —</option>
+                        @foreach(\App\Models\Producto::VIAS as $valor => $etiqueta)
+                            <option value="{{ $valor }}">{{ $etiqueta }}</option>
+                        @endforeach
+                    </select>
+                    @error('form.via') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                </div>
 
                 <flux:input type="number" step="0.01" label="Precio venta" wire:model="form.precio_venta" />
                 @error('form.precio_venta') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
@@ -270,11 +291,11 @@
                 </div>
 
                 <div>
-                    <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Laboratorio <span class="text-xs font-normal text-zinc-400 dark:text-zinc-500">(Opcional)</span></label>
+                    <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">Laboratorio / Marca <span class="text-xs font-normal text-zinc-400 dark:text-zinc-500">(Opcional)</span></label>
                     <x-search-select
                         model="form.id_laboratorio"
                         :value="$form->id_laboratorio"
-                        :options="$laboratories->map(fn ($l) => ['value' => $l->id, 'label' => $l->nombre])->values()"
+                        :options="$laboratories->map(fn ($l) => ['value' => $l->id, 'label' => $l->sufijo . ($l->tipo === 'MARCA' ? ' (marca)' : '')])->values()"
                     />
                     @error('form.id_laboratorio') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                 </div>
@@ -409,11 +430,14 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div class="space-y-1">
                             <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Nombre comercial</span>
-                            <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->nombre }}</p>
+                            <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->nombre_completo }}</p>
                         </div>
                         <div class="space-y-1">
-                            <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Nombre genérico</span>
+                            <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Principio activo</span>
                             <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->nombre_generico ?: '-' }}</p>
+                            @if($viewing->via)
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400">Vía: {{ \App\Models\Producto::VIAS[$viewing->via] ?? $viewing->via }}</p>
+                            @endif
                         </div>
                     </div>
 
@@ -442,7 +466,7 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div class="space-y-1">
                             <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Laboratorio</span>
-                            <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->laboratory?->nombre ?? '-' }}</p>
+                            <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->laboratory?->sufijo ?: '-' }}</p>
                         </div>
                         <div class="space-y-1">
                             <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Código de Producto SIN</span>

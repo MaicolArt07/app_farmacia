@@ -44,19 +44,14 @@ class LivewireProducto extends Component
         $query = Producto::with(['category', 'laboratory', 'presentation']);
 
         if (!empty($this->search)) {
+            // Nombre O laboratorio/marca palabra por palabra ("refrianex bago"),
+            // más código, barras, genérico, concentración, categoría y presentación.
             $query->where(function ($q) {
-                $q->where('code', 'like', "%{$this->search}%")
-                  ->orWhere('barcode', 'like', "%{$this->search}%")
-                  ->orWhere('nombre', 'like', "%{$this->search}%")
-                  ->orWhere('nombre_generico', 'like', "%{$this->search}%")
-                  ->orWhere('concentracion', 'like', "%{$this->search}%")
+                $q->buscarNombre($this->search, ['code', 'barcode', 'nombre_generico', 'concentracion'])
                   ->orWhereHas('category', function ($sub) {
                       $sub->where('nombre', 'like', "%{$this->search}%");
                   })
                   ->orWhereHas('presentation', function ($sub) {
-                      $sub->where('nombre', 'like', "%{$this->search}%");
-                  })
-                  ->orWhereHas('laboratory', function ($sub) {
                       $sub->where('nombre', 'like', "%{$this->search}%");
                   });
             });
@@ -71,11 +66,19 @@ class LivewireProducto extends Component
             // Solo al abrir el modal: lista de productos para "se abre en (unidad)".
             'unitOptions' => $this->modalVisible
                 ? Producto::where('estado', 1)->when($this->form->id, fn ($q) => $q->where('id', '!=', $this->form->id))
-                    ->orderBy('nombre')->get(['id', 'code', 'nombre'])
-                    ->map(fn ($p) => ['value' => $p->id, 'label' => $p->nombre . ' (' . $p->code . ')'])->values()
+                    ->orderBy('nombre')->get(['id', 'code', 'nombre', 'id_laboratorio'])
+                    ->map(fn ($p) => ['value' => $p->id, 'label' => $p->nombre_completo . ' (' . $p->code . ')'])->values()
                 : collect(),
             'viewing' => $this->viewingId ? Producto::with(['category', 'laboratory', 'presentation', 'sinProductCode'])->find($this->viewingId) : null,
         ]);
+    }
+
+    /** Vista previa del nombre que se verá en ventas, facturas y reportes. */
+    public function getNombrePreviewProperty(): string
+    {
+        $lab = $this->form->id_laboratorio ? Laboratorio::find($this->form->id_laboratorio) : null;
+
+        return Producto::armarNombreCompleto($this->form->nombreLimpio(), $lab?->nombre, $lab?->tipo);
     }
 
     public function view($id)
@@ -121,7 +124,7 @@ class LivewireProducto extends Component
             app(\App\Services\AperturaPaquete::class)->abrir($pack, Auth::id());
 
             $this->dispatch('toast', type: 'success',
-                message: "Paquete abierto: {$pack->unidades_por_paquete} unidades sueltas de {$pack->unitProduct?->nombre}.");
+                message: "Paquete abierto: {$pack->unidades_por_paquete} unidades sueltas de {$pack->unitProduct?->nombre_completo}.");
         } catch (\Throwable $e) {
             $this->dispatch('toast', type: 'error', message: 'No se pudo abrir el paquete. ' . $e->getMessage());
         }
@@ -166,9 +169,13 @@ class LivewireProducto extends Component
                 'unidades_por_paquete' => $this->form->id_producto_unidad ? (int) $this->form->unidades_por_paquete : null,
                 'code' => $this->form->code,
                 'barcode' => $this->form->barcode ?: null,
-                'nombre' => $this->form->nombre,
-                'nombre_generico' => $this->form->nombre_generico ?: null,
+                // Solo el nombre limpio, en mayúsculas: el laboratorio/marca lo agrega
+                // el sistema al mostrarlo (Producto::nombre_completo).
+                'nombre' => $this->form->nombreLimpio(),
+                // Principio activo normalizado: así coincide exacto entre equivalentes.
+                'nombre_generico' => Producto::normalizarGenerico($this->form->nombre_generico),
                 'concentracion' => $this->form->concentracion ?: null,
+                'via' => $this->form->via ?: null,
                 'descripcion' => $this->form->descripcion ?: null,
                 'precio_venta' => $this->form->precio_venta,
                 'stock_minimo' => $this->form->stock_minimo,
@@ -198,6 +205,7 @@ class LivewireProducto extends Component
                 if ($this->registerInitialStock) {
                     $lot = Lote::create([
                         'id_producto' => $product->id,
+                        'id_sucursal' => Auth::user()->id_sucursal,
                         'codigo_lote' => $this->stockForm->codigo_lote,
                         'precio_compra' => $this->stockForm->precio_compra,
                         'precio_venta' => $this->form->precio_venta,

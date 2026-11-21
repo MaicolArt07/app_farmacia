@@ -28,7 +28,12 @@ administrador y trabajador incluidas: `docs/instalacion-maquina-nueva.md`.
 
 ## Respaldos de la base de datos
 
-Desde noviembre 2026 la base `bd_farmacia` se respalda cada hora en
+Desde el 20/11/2026 `http://farmacia.local` abre ESTE proyecto
+(`app_farmafamilia`, base `bd_farmacia_old`); el proyecto viejo
+`app_farmacia` (base `bd_farmacia`) quedó sin URL y no se toca. Para volver
+atrás: cambiar la ruta en `httpd-vhosts.conf` de WAMP (hay copia `.bak_*`).
+
+Desde noviembre 2026 la base del `.env` (hoy `bd_farmacia_old`) se respalda cada hora en
 `D:\respaldos_farmafamilia` (zip, 30 días de retención) con
 `scripts/backup-db.ps1`, lanzado por la tarea programada de Windows
 "FarmaFamilia - Respaldo BD". Cómo revisar y restaurar:
@@ -124,6 +129,14 @@ el acceso directo del escritorio `FarmaFamilia.lnk` abre
   pantalla y recién ahí se exporta a PDF/Excel con las mismas fechas. Los
   datos salen de `App\Support\TopProductsReport` (pantalla, PDF y Excel
   usan la misma consulta; solo ventas ACTIVAS, sin servicios).
+- Equivalentes genéricos (nov 2026): `productos.nombre_generico` = principio
+  activo normalizado (`Producto::normalizarGenerico`, " + " entre componentes)
+  y `productos.via` (`Producto::VIAS`). En Ventas, si un producto NO tiene
+  stock, se listan otros con el mismo principio activo y stock
+  (`LivewireVenta::equivalentsFor`): misma vía y dosis primero, luego misma
+  vía, luego otras formas (solo referencia); cada grupo del más barato. Datos
+  verificados en internet: `D:\backups_farmacia\principio_activo_verificado.csv`
+  (los de confianza baja quedaron sin principio activo hasta confirmarlos).
 - Campos numéricos sin flechas ni cambio por rueda del mouse (estilo y
   script globales en `partials/head.blade.php`).
 - Comando `php artisan pharmacy:upgrade-schema`: idempotente, endurece/migra

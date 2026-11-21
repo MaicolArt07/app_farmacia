@@ -43,6 +43,14 @@ class LivewireLaboratorio extends Component
         ]);
     }
 
+    /** Aviso en vivo mientras se escribe el nombre: ¿ya existe (sin puntos, comas ni espacios)? */
+    public function getAvisoDuplicadoProperty(): ?string
+    {
+        $existing = $this->form->duplicado();
+
+        return $existing ? 'Ya existe "' . $existing->sufijo . '". No lo registre de nuevo.' : null;
+    }
+
     public function create()
     {
         $this->form->resetForm();
@@ -64,7 +72,8 @@ class LivewireLaboratorio extends Component
             if ($this->form->id) {
                 $laboratorio = Laboratorio::findOrFail($this->form->id);
                 $laboratorio->update([
-                    'nombre' => $this->form->nombre,
+                    'nombre' => $this->form->nombreLimpio(),
+                    'tipo' => $this->form->tipo,
                     'descripcion' => $this->form->descripcion,
                     'estado' => $this->form->estado,
                 ]);
@@ -72,7 +81,8 @@ class LivewireLaboratorio extends Component
                 $message = 'Laboratorio actualizado correctamente.';
             } else {
                 Laboratorio::create([
-                    'nombre' => $this->form->nombre,
+                    'nombre' => $this->form->nombreLimpio(),
+                    'tipo' => $this->form->tipo,
                     'descripcion' => $this->form->descripcion,
                     'estado' => $this->form->estado,
                 ]);

@@ -31,8 +31,8 @@
                         <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
                             {{ $item->nombre }}
                         </td>
-                        <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
-                            {{ $item->descripcion ?: '-' }}
+                        <td class="px-3 py-1.5 text-xs text-zinc-700 dark:text-zinc-300" style="max-width: 28rem" title="{{ $item->descripcion }}">
+                            <div class="line-clamp-2">{{ $item->descripcion ?: '-' }}</div>
                         </td>
                         <td class="px-3 py-1.5 text-center">
                             <span class="rounded-full px-3 py-1 text-xs font-medium {{ $item->estado ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' }}">

@@ -174,7 +174,7 @@ class DevolucionVenta
 
             if ($qty > (int) $d->quantity) {
                 if ($strict) {
-                    throw new RuntimeException('No puede devolver más de lo vendido (' . ($d->product?->nombre ?? $d->service?->nombre) . ': máximo ' . $d->quantity . ').');
+                    throw new RuntimeException('No puede devolver más de lo vendido (' . ($d->product?->nombre_completo ?? $d->service?->nombre) . ': máximo ' . $d->quantity . ').');
                 }
                 $qty = (int) $d->quantity;
             }
@@ -183,7 +183,7 @@ class DevolucionVenta
             $amount += $sub;
             $lines[] = [
                 'id' => $d->id,
-                'name' => $d->product?->nombre ?? ('SERVICIO: ' . $d->service?->nombre),
+                'name' => $d->product?->nombre_completo ?? ('SERVICIO: ' . $d->service?->nombre),
                 'qty' => $qty,
                 'price' => (float) $d->precio_venta,
                 'subtotal' => $sub,

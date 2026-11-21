@@ -72,7 +72,7 @@
                         @foreach($expiredLots as $lot)
                             <tr class="border-b border-zinc-200 hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-800">
                                 <td class="{{ $td }}">
-                                    <div class="font-medium">{{ $lot->product?->nombre }}</div>
+                                    <div class="font-medium">{{ $lot->product?->nombre_completo }}</div>
                                     <div class="text-xs text-zinc-500 dark:text-zinc-400">{{ $lot->product?->laboratory?->nombre ?? 'Sin laboratorio' }}</div>
                                 </td>
                                 <td class="{{ $td }}">{{ $lot->product?->code }}</td>
@@ -94,7 +94,7 @@
                 @foreach($expiredLots as $lot)
                     <div class="border-b border-zinc-200 px-4 py-2 dark:border-zinc-800">
                         <div class="flex items-start justify-between gap-2">
-                            <span class="text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ $lot->product?->nombre }}</span>
+                            <span class="text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ $lot->product?->nombre_completo }}</span>
                             <span class="shrink-0 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-300">hace {{ $lot->days }} d</span>
                         </div>
                         <div class="text-xs text-zinc-500 dark:text-zinc-400">
@@ -132,7 +132,7 @@
                         @foreach($nearExpirationLots as $lot)
                             <tr class="border-b border-zinc-200 hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-800">
                                 <td class="{{ $td }}">
-                                    <div class="font-medium">{{ $lot->product?->nombre }}</div>
+                                    <div class="font-medium">{{ $lot->product?->nombre_completo }}</div>
                                     <div class="text-xs text-zinc-500 dark:text-zinc-400">{{ $lot->product?->laboratory?->nombre ?? 'Sin laboratorio' }}</div>
                                 </td>
                                 <td class="{{ $td }}">{{ $lot->product?->code }}</td>
@@ -154,7 +154,7 @@
                 @foreach($nearExpirationLots as $lot)
                     <div class="border-b border-zinc-200 px-4 py-2 dark:border-zinc-800">
                         <div class="flex items-start justify-between gap-2">
-                            <span class="text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ $lot->product?->nombre }}</span>
+                            <span class="text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ $lot->product?->nombre_completo }}</span>
                             <span class="shrink-0 rounded-full px-2 py-0.5 text-xs font-medium {{ $lot->days <= 7 ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' }}">
                                 {{ $lot->days === 0 ? 'hoy' : $lot->days . ' d' }}
                             </span>
@@ -193,7 +193,7 @@
                         @foreach($lowStockProducts as $product)
                             <tr class="border-b border-zinc-200 hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-800">
                                 <td class="{{ $td }}">
-                                    <div class="font-medium">{{ $product->nombre }}</div>
+                                    <div class="font-medium">{{ $product->nombre_completo }}</div>
                                     <div class="text-xs text-zinc-500 dark:text-zinc-400">{{ $product->laboratory?->nombre ?? 'Sin laboratorio' }}</div>
                                 </td>
                                 <td class="{{ $td }}">{{ $product->code }}</td>
@@ -216,7 +216,7 @@
                 @foreach($lowStockProducts as $product)
                     <div class="border-b border-zinc-200 px-4 py-2 dark:border-zinc-800">
                         <div class="flex items-start justify-between gap-2">
-                            <span class="text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ $product->nombre }}</span>
+                            <span class="text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ $product->nombre_completo }}</span>
                             @if($product->stock_actual <= 0)
                                 <span class="shrink-0 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-300">Agotado</span>
                             @else

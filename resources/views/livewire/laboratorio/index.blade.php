@@ -29,9 +29,12 @@
                     <tr wire:click="view({{ $item->id }})" class="cursor-pointer border-b border-zinc-200 hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-800">
                         <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
                             {{ $item->nombre }}
+                            <span class="ml-1 rounded-full px-2 py-0.5 text-[10px] font-semibold {{ $item->tipo === 'MARCA' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-zinc-200 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300' }}">
+                                {{ $item->tipo === 'MARCA' ? 'MARCA' : 'LAB.' }}
+                            </span>
                         </td>
-                        <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
-                            {{ $item->descripcion ?: '-' }}
+                        <td class="px-3 py-1.5 text-xs text-zinc-700 dark:text-zinc-300" style="max-width: 28rem" title="{{ $item->descripcion }}">
+                            <div class="line-clamp-2">{{ $item->descripcion ?: '-' }}</div>
                         </td>
                         <td class="px-3 py-1.5 text-center">
                             <span class="rounded-full px-3 py-1 text-xs font-medium {{ $item->estado ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' }}">
@@ -82,7 +85,7 @@
                     </button>
 
                     <div class="min-w-0 flex-1">
-                        <p class="truncate text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ $item->nombre }}</p>
+                        <p class="truncate text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ $item->nombre }} <span class="text-[10px] font-semibold text-zinc-500">{{ $item->tipo === 'MARCA' ? 'MARCA' : 'LAB.' }}</span></p>
                     </div>
 
                     <div class="flex shrink-0 items-center gap-3" onclick="event.stopPropagation()">
@@ -150,9 +153,35 @@
 
             <div class="space-y-5 px-4 py-5">
                 <div class="space-y-1">
+                    <label class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Tipo</label>
+                    <div class="flex gap-4">
+                        @foreach (\App\Models\Laboratorio::TIPOS as $value => $label)
+                            <label class="flex cursor-pointer items-center gap-2 text-sm text-zinc-700 dark:text-zinc-200">
+                                <input type="radio" wire:model.live="form.tipo" value="{{ $value }}" class="text-primary focus:ring-primary">
+                                {{ $label }}
+                            </label>
+                        @endforeach
+                    </div>
+                    @error('form.tipo')
+                        <span class="text-sm text-red-500">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div class="space-y-1">
                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Nombre</label>
-                    <input type="text" wire:model="form.nombre"
-                        class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
+                    <input type="text" wire:model.live.debounce.400ms="form.nombre"
+                        placeholder="{{ $form->tipo === 'MARCA' ? 'Ej: MAMI' : 'Ej: BAGO (sin “LAB.”)' }}"
+                        class="w-full rounded border border-zinc-400 bg-white px-3 py-2 text-sm uppercase text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
+                    @if (trim((string) $form->nombre) !== '')
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400">
+                            En los productos se verá: <span class="font-semibold text-zinc-700 dark:text-zinc-200">PRODUCTO {{ \App\Models\Laboratorio::sufijo($form->nombre, $form->tipo) }}</span>
+                        </p>
+                    @endif
+                    @if ($this->avisoDuplicado)
+                        <p class="text-xs font-medium text-amber-600 dark:text-amber-400">
+                            <i class="bi bi-exclamation-triangle"></i> {{ $this->avisoDuplicado }}
+                        </p>
+                    @endif
                     @error('form.nombre')
                         <span class="text-sm text-red-500">{{ $message }}</span>
                     @enderror
@@ -201,6 +230,10 @@
                     <div class="space-y-1">
                         <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Nombre</span>
                         <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->nombre }}</p>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Tipo</span>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ \App\Models\Laboratorio::TIPOS[$viewing->tipo ?? 'LABORATORIO'] ?? 'Laboratorio' }} — en productos: <span class="font-semibold">{{ $viewing->sufijo }}</span></p>
                     </div>
                     <div class="space-y-1">
                         <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Descripción</span>

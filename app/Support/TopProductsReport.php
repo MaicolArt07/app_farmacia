@@ -36,12 +36,13 @@ class TopProductsReport
             ->where('v.status', 'ACTIVE')
             ->whereBetween('v.fecha_venta', [$from . ' 00:00:00', $to . ' 23:59:59'])
             ->when(($user = Auth::user()) && ! $user->can('Super Admin'), fn ($q) => $q->where('v.id_sucursal', $user->id_sucursal))
-            ->groupBy('p.id', 'p.code', 'p.nombre', 'lab.nombre')
+            ->groupBy('p.id', 'p.code', 'p.nombre', 'lab.nombre', 'lab.tipo')
             ->selectRaw('
                 p.id,
                 p.code,
                 p.nombre,
                 lab.nombre as laboratorio,
+                lab.tipo as laboratorio_tipo,
                 SUM(d.quantity) as cantidad,
                 COUNT(DISTINCT d.id_venta) as num_ventas,
                 SUM(d.subtotal) as total_vendido,
@@ -55,6 +56,9 @@ class TopProductsReport
 
         return $rows->values()->map(function ($r, $i) {
             $r->puesto = $i + 1;
+            // Nombre visible: NOMBRE + LAB.xxx / marca (igual que Producto::nombre_completo).
+            $r->nombre = \App\Models\Producto::armarNombreCompleto($r->nombre, $r->laboratorio, $r->laboratorio_tipo);
+            $r->laboratorio = $r->laboratorio ? \App\Models\Laboratorio::sufijo($r->laboratorio, $r->laboratorio_tipo) : null;
             $r->cantidad = (int) $r->cantidad;
             $r->num_ventas = (int) $r->num_ventas;
             $r->total_vendido = round((float) $r->total_vendido, 2);

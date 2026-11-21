@@ -41,7 +41,7 @@
                         </td>
 
                         <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
-                            {{ $item->product?->nombre ?? '-' }}
+                            {{ $item->product?->nombre_completo ?? '-' }}
                             <div class="text-xs text-zinc-500 dark:text-zinc-400">
                                 {{ $item->product?->code ?? '-' }}
                             </div>
@@ -113,7 +113,7 @@
                     </button>
 
                     <div class="min-w-0 flex-1">
-                        <p class="truncate text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ $item->product?->nombre ?? '-' }}</p>
+                        <p class="truncate text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ $item->product?->nombre_completo ?? '-' }}</p>
                         <p class="truncate text-xs text-zinc-500 dark:text-zinc-400">{{ $item->created_at?->format('d/m/Y H:i') }}</p>
                     </div>
 
@@ -322,7 +322,7 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div class="space-y-1">
                             <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Producto</span>
-                            <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->product?->nombre ?? '-' }}</p>
+                            <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->product?->nombre_completo ?? '-' }}</p>
                         </div>
                         <div class="space-y-1">
                             <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Código</span>

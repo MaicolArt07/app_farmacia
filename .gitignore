@@ -38,3 +38,4 @@ yarn-error.log
 # Empaquetados completos del proyecto (pesan cientos de MB, no van en git)
 /app_far.zip
 /app_farmacia.zip
+.env.bak*

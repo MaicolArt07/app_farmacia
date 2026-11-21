@@ -43,10 +43,10 @@ class LivewireGlobalSearch extends Component
             : [];
 
         $this->products = auth()->user()->can('Ver Productos')
-            ? Producto::where('nombre', 'like', "%{$term}%")
-                ->orWhere('code', 'like', "%{$term}%")
+            ? Producto::buscarNombre($term, ['code'])
                 ->limit(5)
-                ->get(['id', 'nombre as name', 'code'])
+                ->get(['id', 'nombre', 'code', 'id_laboratorio'])
+                ->map(fn ($p) => ['id' => $p->id, 'name' => $p->nombre_completo, 'code' => $p->code])
                 ->toArray()
             : [];
     }

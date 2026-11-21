@@ -122,7 +122,7 @@ class LivewireVenta extends Component
                         'type' => 'producto',
                         'id_producto' => $detail->id_producto,
                         'id_lote' => $detail->id_lote,
-                        'product_label' => $detail->product?->code . ' - ' . $detail->product?->nombre,
+                        'product_label' => $detail->product?->code . ' - ' . $detail->product?->nombre_completo,
                         'lot_label' => $detail->lot?->codigo_lote . ' | Vence: ' . optional($detail->lot?->fecha_vencimiento)->format('d/m/Y'),
                         'quantity' => $detail->quantity,
                         'available' => $detail->lot?->cantidad_disponible ?? 0,
@@ -204,9 +204,7 @@ class LivewireVenta extends Component
                     ->orWhere('metodo_pago', 'like', "%{$term}%")
                     ->when(ctype_digit(ltrim($term, '#')), fn ($q) => $q->orWhere('id', (int) ltrim($term, '#')))
                     // Por PRODUCTO (nombre, código o barras) o servicio vendido.
-                    ->orWhereHas('details.product', fn ($p) => $p->where('nombre', 'like', "%{$term}%")
-                        ->orWhere('code', 'like', "%{$term}%")
-                        ->orWhere('barcode', 'like', "%{$term}%"))
+                    ->orWhereHas('details.product', fn ($p) => $p->buscarNombre($term, ['code', 'barcode']))
                     ->orWhereHas('details.service', fn ($s) => $s->where('nombre', 'like', "%{$term}%"))
                     ->orWhereHas('client.person', function ($sub) use ($term) {
                         $sub->where('nombre', 'like', "%{$term}%")
@@ -371,6 +369,8 @@ class LivewireVenta extends Component
                                     ->orWhere('nombre', 'like', "{$w} %"));
                                 continue;
                             }
+                            // "LAB.BAGO" escrito se busca como "BAGO".
+                            $w = \App\Models\Laboratorio::limpiarNombre($w) ?: $w;
                             $q->where(fn ($q) => $q->where('nombre', 'like', "%{$w}%")
                                 ->orWhere('nombre_generico', 'like', "%{$w}%")
                                 ->orWhereHas('laboratory', fn ($l) => $l->where('nombre', 'like', "%{$w}%")));
@@ -413,12 +413,14 @@ class LivewireVenta extends Component
                 return [
                     'id' => $product->id,
                     'packs_closed' => $packsClosed,
+                    // Sin stock (ni paquetes para abrir): otros con el mismo principio activo.
+                    'generic' => $product->nombre_generico,
+                    'equivalents' => ($stock <= 0 && $packsClosed <= 0) ? $this->equivalentsFor($product) : [],
                     'code' => $product->code,
-                    'name' => $product->nombre . ($product->concentracion ? ' | ' . $product->concentracion : ''),
-                    'laboratory' => $product->laboratory?->nombre,
+                    'name' => $product->nombre_con_concentracion,
+                    'laboratory' => $product->laboratory?->sufijo,
                     'presentation' => $product->presentation?->nombre,
-                    'label' => $product->code . ' - ' . $product->nombre .
-                        ($product->concentracion ? ' | ' . $product->concentracion : '') .
+                    'label' => $product->code . ' - ' . $product->nombre_con_concentracion .
                         ' | Stock: ' . $stock,
                     // Precio del lote que se vende primero (el más antiguo).
                     'sale_price' => $lots[0]['price'] ?? (float) $product->precio_venta,
@@ -427,6 +429,67 @@ class LivewireVenta extends Component
                 ];
             })
             ->toArray();
+    }
+
+    /**
+     * Equivalentes genéricos de un producto sin stock: mismo principio activo
+     * (nombre_generico) con stock en la sucursal. Primero los de la MISMA vía
+     * (intercambiables directo), luego otras presentaciones; del más barato al
+     * más caro. El vendedor decide si lo ofrece.
+     */
+    protected function equivalentsFor(Producto $product, int $limit = 8): array
+    {
+        if (!$product->nombre_generico) {
+            return [];
+        }
+
+        $today = now()->toDateString();
+
+        return Producto::query()
+            ->where('estado', 1)
+            ->where('nombre_generico', $product->nombre_generico)
+            ->whereKeyNot($product->id)
+            ->get()
+            ->map(function ($eq) use ($product, $today) {
+                // El lote que se vendería primero (el más antiguo con stock, no vencido).
+                $lots = $this->scopeToUserSucursal(Lote::where('id_producto', $eq->id)
+                    ->where('estado', 1)
+                    ->where('cantidad_disponible', '>', 0)
+                    ->where(fn ($q) => $q->whereNull('fecha_vencimiento')->orWhereDate('fecha_vencimiento', '>=', $today)))
+                    ->orderBy('id')
+                    ->get();
+
+                if ($lots->isEmpty()) {
+                    return null;
+                }
+
+                $sameVia = $product->via === $eq->via;
+                // Misma dosis = mismos números ("200 MG/5 ML + 40 MG/5 ML" = "200 MG + 40 MG /5 ML").
+                $conc = function ($p) {
+                    preg_match_all('/\d+(?:\.\d+)?/', str_replace(',', '.', (string) $p->concentracion), $m);
+                    $nums = array_unique(array_map('floatval', $m[0]));
+                    sort($nums);
+                    return implode('|', $nums);
+                };
+                $sameConc = $sameVia && $conc($product) !== '' && $conc($product) === $conc($eq);
+
+                return [
+                    'same_conc' => $sameConc,
+                    'id' => $eq->id,
+                    'lot_id' => $lots->first()->id,
+                    'name' => $eq->nombre_con_concentracion,
+                    'price' => self::lotPrice($lots->first(), $eq),
+                    'stock' => (int) $lots->sum('cantidad_disponible'),
+                    'same_via' => $sameVia,
+                    'via' => $eq->via ? trim(strtok(Producto::VIAS[$eq->via] ?? $eq->via, '(')) : null,
+                ];
+            })
+            ->filter()
+            // 1º misma vía y concentración, 2º misma vía, 3º otras formas; cada grupo del más barato.
+            ->sortBy([['same_via', 'desc'], ['same_conc', 'desc'], ['price', 'asc']])
+            ->take($limit)
+            ->values()
+            ->all();
     }
 
     /**
@@ -480,7 +543,7 @@ class LivewireVenta extends Component
                     'confirm-open-package',
                     packId: $pack->id,
                     unitId: $product->id,
-                    packName: $pack->nombre,
+                    packName: $pack->nombre_completo,
                     factor: (int) $pack->unidades_por_paquete,
                     packsLeft: $pack->availableStock(),
                 );
@@ -500,7 +563,7 @@ class LivewireVenta extends Component
             'type' => 'producto',
             'id_producto' => $product->id,
             'id_lote' => $availableLot->id,
-            'product_label' => $product->code . ' - ' . $product->nombre . ($product->concentracion ? ' | ' . $product->concentracion : ''),
+            'product_label' => $product->code . ' - ' . $product->nombre_con_concentracion,
             'lot_label' => $availableLot->codigo_lote . ' | Vence: ' . $lotExpirationLabel . ' | Stock: ' . $lotLeft,
             'quantity' => 1,
             'available' => $lotLeft,
@@ -794,9 +857,10 @@ class LivewireVenta extends Component
                 $this->dispatch('toast', type: 'warning', message: 'El efectivo recibido debe cubrir la parte en efectivo (' . number_format($cashPart, 2) . ').');
                 return;
             }
-        } else { // QR
+        } else { // QR: pago directo a la cuenta, sin cambio.
             $cashPart = 0.0;
             $qrPart = $total;
+            $amountPaid = $total;
         }
 
         DB::beginTransaction();
@@ -823,8 +887,8 @@ class LivewireVenta extends Component
                 'monto_efectivo' => $cashPart,
                 'monto_qr' => $qrPart,
                 'monto_pagado' => $amountPaid,
-                // El cambio se da solo sobre la parte en efectivo.
-                'monto_cambio' => $amountPaid !== null ? max(0, round($amountPaid - $cashPart, 2)) : null,
+                // El cambio se da solo sobre la parte en efectivo (QR = 0).
+                'monto_cambio' => $cashPart > 0 && $amountPaid !== null ? max(0, round($amountPaid - $cashPart, 2)) : 0,
                 'observacion' => $this->form->observacion ?: null,
                 'estado' => 1,
                 'status' => 'ACTIVE',
@@ -963,9 +1027,10 @@ class LivewireVenta extends Component
                     $this->addError('form.monto_pagado', 'El efectivo recibido debe cubrir la parte en efectivo (' . number_format($cashPart, 2) . ').');
                     return;
                 }
-            } else { // QR
+            } else { // QR: pago directo a la cuenta, sin cambio.
                 $cashPart = 0.0;
                 $qrPart = $total;
+                $amountPaid = $total;
             }
 
             $sale->id_metodo_pago = $paymentMethod->id;
@@ -973,7 +1038,7 @@ class LivewireVenta extends Component
             $sale->monto_efectivo = $cashPart;
             $sale->monto_qr = $qrPart;
             $sale->monto_pagado = $amountPaid;
-            $sale->monto_cambio = $amountPaid !== null ? max(0, round($amountPaid - $cashPart, 2)) : null;
+            $sale->monto_cambio = $cashPart > 0 && $amountPaid !== null ? max(0, round($amountPaid - $cashPart, 2)) : 0;
             $sale->save();
 
             $sale->cashRegister?->recalculateExpected();

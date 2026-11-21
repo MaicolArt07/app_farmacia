@@ -153,14 +153,13 @@
                 <table class="min-w-full text-sm">
                     <tbody class="divide-y divide-gray-200 dark:divide-zinc-800">
                         @foreach($sale->details as $d)
-                            @php $hit = $search !== '' && str_contains(mb_strtolower(($d->product?->nombre ?? $d->service?->nombre ?? '') . ' ' . $d->product?->code), mb_strtolower(trim($search))); @endphp
+                            @php $hit = $search !== '' && str_contains(mb_strtolower(($d->product?->nombre_completo ?? $d->service?->nombre ?? '') . ' ' . $d->product?->code), mb_strtolower(trim($search))); @endphp
                             <tr class="{{ $hit ? 'bg-sky-100 dark:bg-sky-900/30' : '' }}">
                                 <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
                                     @if($d->service)
                                         <span class="rounded bg-amber-100 px-1.5 text-xs text-amber-700">Servicio</span> {{ $d->service->nombre }}
                                     @else
-                                        {{ $d->product?->nombre ?? 'Producto eliminado' }}
-                                        <span class="text-xs text-zinc-400">{{ $d->product?->laboratory?->nombre }}</span>
+                                        {{ $d->product?->nombre_completo ?? 'Producto eliminado' }}
                                     @endif
                                 </td>
                                 <td class="px-3 py-1.5 text-xs text-zinc-500 dark:text-zinc-400">{{ $d->lot?->codigo_lote }}</td>
@@ -180,7 +179,7 @@
                     <div class="border-t border-amber-300 bg-amber-50 px-3 py-1.5 text-xs text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-300">
                         <i class="bi bi-arrow-return-left"></i>
                         Devolución {{ $ret->created_at?->format('d/m/Y H:i') }} por {{ $ret->user?->name }}:
-                        {{ $ret->details->map(fn ($x) => $x->cantidad . '× ' . ($x->product?->nombre ?? $x->service?->nombre))->implode(', ') }}
+                        {{ $ret->details->map(fn ($x) => $x->cantidad . '× ' . ($x->product?->nombre_completo ?? $x->service?->nombre))->implode(', ') }}
                         = <strong>{{ number_format($ret->monto, 2) }} Bs</strong>.
                         <strong>Motivo:</strong> {{ $ret->motivo }}
                     </div>
@@ -273,7 +272,7 @@
                                     @php $q = (int) ($returnQty[$d->id] ?? 0); @endphp
                                     <tr>
                                         <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
-                                            {{ $d->product?->nombre ?? ('SERVICIO: ' . $d->service?->nombre) }}
+                                            {{ $d->product?->nombre_completo ?? ('SERVICIO: ' . $d->service?->nombre) }}
                                             <div class="text-xs text-zinc-400">{{ $d->lot?->codigo_lote }}</div>
                                         </td>
                                         <td class="px-3 py-1.5 text-right text-zinc-700 dark:text-zinc-300">{{ $d->quantity }} × {{ number_format($d->precio_venta, 2) }}</td>

@@ -23,6 +23,7 @@ class ProductoForm extends Form
     public $nombre = '';
     public $nombre_generico = '';
     public $concentracion = '';
+    public $via = '';
     public $descripcion = '';
 
     public $precio_venta = '';
@@ -52,6 +53,7 @@ class ProductoForm extends Form
             'form.nombre' => 'required|string|max:150',
             'form.nombre_generico' => 'nullable|string|max:150',
             'form.concentracion' => 'nullable|string|max:100',
+            'form.via' => ['nullable', Rule::in(array_keys(\App\Models\Producto::VIAS))],
             'form.descripcion' => 'nullable|string',
 
             'form.precio_venta' => 'required|numeric|min:0',
@@ -86,6 +88,12 @@ class ProductoForm extends Form
         ];
     }
 
+    /** Nombre como se guarda: mayúsculas, sin espacios dobles, sin laboratorio. */
+    public function nombreLimpio(): string
+    {
+        return trim(preg_replace('/\s+/u', ' ', mb_strtoupper((string) $this->nombre)));
+    }
+
     public function resetForm()
     {
         $this->id = null;
@@ -102,6 +110,7 @@ class ProductoForm extends Form
         $this->nombre = '';
         $this->nombre_generico = '';
         $this->concentracion = '';
+        $this->via = '';
         $this->descripcion = '';
 
         $this->precio_venta = '';
@@ -126,6 +135,7 @@ class ProductoForm extends Form
         $this->nombre = $product->nombre;
         $this->nombre_generico = $product->nombre_generico;
         $this->concentracion = $product->concentracion;
+        $this->via = $product->via ?? '';
         $this->descripcion = $product->descripcion;
 
         $this->precio_venta = $product->precio_venta;

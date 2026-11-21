@@ -8,6 +8,7 @@ class UsersForm extends Form
 {
     public $id = null;
     public $id_persona = null;
+    public $id_sucursal = null;
     public $name = '';
     public $email = '';
     public $password = '';
@@ -20,6 +21,7 @@ class UsersForm extends Form
     {
         $rules = [
             'form.id_persona' => 'nullable|exists:personas,id',
+            'form.id_sucursal' => 'required|exists:sucursales,id',
             'form.name' => 'required|string|max:255',
             'form.email' => $this->updateMode
                 ? 'required|email|max:255|unique:users,email,' . $this->id
@@ -41,6 +43,8 @@ class UsersForm extends Form
     {
         return [
             'form.id_persona.exists' => 'La persona seleccionada no es válida.',
+            'form.id_sucursal.required' => 'Debe asignar una sucursal al usuario.',
+            'form.id_sucursal.exists' => 'La sucursal seleccionada no es válida.',
             'form.name.required' => 'El nombre es obligatorio.',
             'form.email.required' => 'El correo electrónico es obligatorio.',
             'form.email.email' => 'El correo debe ser válido.',
@@ -55,6 +59,7 @@ class UsersForm extends Form
     {
         $this->id = null;
         $this->id_persona = null;
+        $this->id_sucursal = null;
         $this->name = '';
         $this->email = '';
         $this->password = '';
@@ -68,6 +73,7 @@ class UsersForm extends Form
     {
         $this->id = $user->id;
         $this->id_persona = $user->id_persona;
+        $this->id_sucursal = $user->id_sucursal;
         $this->name = $user->name;
         $this->email = $user->email;
         $this->selectedRoles = $user->roles->pluck('name')->toArray();

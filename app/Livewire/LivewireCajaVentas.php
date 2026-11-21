@@ -103,8 +103,7 @@ class LivewireCajaVentas extends Component
             ->when(!$this->showCancelled, fn ($q) => $q->where('status', 'ACTIVE'))
             ->when($this->paymentFilter !== '', fn ($q) => $q->whereRaw('UPPER(metodo_pago) = ?', [$this->paymentFilter]))
             ->when($term !== '', fn ($q) => $q->where(fn ($q) => $q
-                ->whereHas('details.product', fn ($p) => $p->where('nombre', 'like', "%{$term}%")
-                    ->orWhere('code', 'like', "%{$term}%")->orWhere('barcode', 'like', "%{$term}%"))
+                ->whereHas('details.product', fn ($p) => $p->buscarNombre($term, ['code', 'barcode']))
                 ->orWhereHas('details.service', fn ($s) => $s->where('nombre', 'like', "%{$term}%"))
                 ->when(ctype_digit(ltrim($term, '#')), fn ($q) => $q->orWhere('id', (int) ltrim($term, '#')))))
             ->orderBy('id')
@@ -118,13 +117,20 @@ class LivewireCajaVentas extends Component
             ->leftJoin('productos as p', 'p.id', '=', 'd.id_producto')
             ->leftJoin('servicios as s', 's.id', '=', 'd.id_servicio')
             ->leftJoin('lotes as l', 'l.id', '=', 'd.id_lote')
+            ->leftJoin('laboratorios as lab', 'lab.id', '=', 'p.id_laboratorio')
             ->whereIn('v.id', $active->pluck('id'))
-            ->groupBy('d.id_producto', 'd.id_servicio', 'p.nombre', 'p.code', 's.nombre')
-            ->selectRaw("COALESCE(p.nombre, CONCAT('SERVICIO: ', s.nombre)) as nombre, p.code,
+            ->groupBy('d.id_producto', 'd.id_servicio', 'p.nombre', 'p.code', 's.nombre', 'lab.nombre', 'lab.tipo')
+            ->selectRaw("COALESCE(p.nombre, CONCAT('SERVICIO: ', s.nombre)) as nombre, p.code, lab.nombre as lab_nombre, lab.tipo as lab_tipo,
                 SUM(d.quantity) as cantidad, COUNT(DISTINCT d.id_venta) as ventas,
                 SUM(d.subtotal) as total, SUM(d.quantity * COALESCE(l.precio_compra, 0)) as costo")
             ->orderByDesc('cantidad')->orderBy('nombre')
-            ->get();
+            ->get()
+            // Nombre visible del producto: NOMBRE + LAB.xxx / marca (los servicios quedan igual).
+            ->each(function ($row) {
+                if ($row->code !== null) {
+                    $row->nombre = \App\Models\Producto::armarNombreCompleto($row->nombre, $row->lab_nombre, $row->lab_tipo);
+                }
+            });
 
         // Ventana de devolución abierta: datos + vista previa del efecto.
         $returnSale = null;

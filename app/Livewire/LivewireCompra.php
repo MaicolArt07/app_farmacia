@@ -59,7 +59,7 @@ class LivewireCompra extends Component
                 foreach ($purchase->details as $detail) {
                     $this->details[] = [
                         'id_producto' => $detail->id_producto,
-                        'product_label' => $detail->product?->code . ' - ' . $detail->product?->nombre,
+                        'product_label' => $detail->product?->code . ' - ' . $detail->product?->nombre_completo,
                         'batch_code' => $detail->codigo_lote,
                         'expiration_date' => optional($detail->fecha_vencimiento)->format('Y-m-d'),
                         'quantity' => $detail->quantity,
@@ -160,19 +160,13 @@ class LivewireCompra extends Component
 
         $this->productResults = Producto::query()
             ->where('estado', 1)
-            ->where(function ($q) {
-                $q->where('code', 'like', "%{$this->productSearch}%")
-                  ->orWhere('barcode', 'like', "%{$this->productSearch}%")
-                  ->orWhere('nombre', 'like', "%{$this->productSearch}%")
-                  ->orWhere('nombre_generico', 'like', "%{$this->productSearch}%");
-            })
+            ->buscarNombre($this->productSearch, ['code', 'barcode', 'nombre_generico'])
             ->limit(10)
             ->get()
             ->map(function ($product) {
                 return [
                     'id' => $product->id,
-                    'label' => $product->code . ' - ' . $product->nombre .
-                        ($product->concentracion ? ' | ' . $product->concentracion : ''),
+                    'label' => $product->code . ' - ' . $product->nombre_con_concentracion,
                     'sale_price' => (float) $product->precio_venta,
                 ];
             })
@@ -185,7 +179,7 @@ class LivewireCompra extends Component
 
         $this->details[] = [
             'id_producto' => $product->id,
-            'product_label' => $product->code . ' - ' . $product->nombre . ($product->concentracion ? ' | ' . $product->concentracion : ''),
+            'product_label' => $product->code . ' - ' . $product->nombre_con_concentracion,
             'batch_code' => '',
             'expiration_date' => '',
             'quantity' => 1,

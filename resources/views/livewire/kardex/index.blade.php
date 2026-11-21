@@ -34,7 +34,7 @@
                             {{ $item->created_at->format('d/m/Y H:i') }}
                         </td>
                         <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
-                            {{ $item->product?->nombre }}
+                            {{ $item->product?->nombre_completo }}
                         </td>
                         <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
                             {{ $item->lot?->codigo_lote ?? '-' }}
@@ -76,7 +76,7 @@
                     </button>
 
                     <div class="min-w-0 flex-1">
-                        <p class="truncate text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ $item->product?->nombre }}</p>
+                        <p class="truncate text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ $item->product?->nombre_completo }}</p>
                         <p class="truncate text-xs text-zinc-500 dark:text-zinc-400">{{ $item->created_at->format('d/m/Y H:i') }} &middot; {{ $item->tipo_movimiento }}</p>
                     </div>
                 </div>

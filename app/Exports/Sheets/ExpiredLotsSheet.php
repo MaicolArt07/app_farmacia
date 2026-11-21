@@ -28,7 +28,7 @@ class ExpiredLotsSheet implements FromCollection, WithHeadings, WithMapping, Wit
     public function map($lot): array
     {
         return [
-            $lot->product?->nombre,
+            $lot->product?->nombre_completo,
             $lot->codigo_lote,
             optional($lot->fecha_vencimiento)->format('d/m/Y'),
             $lot->cantidad_disponible,

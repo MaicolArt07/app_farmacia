@@ -42,10 +42,7 @@ class LivewireLote extends Component
                   ->orWhere('ubicacion', 'like', "%{$this->search}%")
                   ->orWhere('fecha_vencimiento', 'like', "%{$this->search}%")
                   ->orWhereHas('product', function ($sub) {
-                      $sub->where('code', 'like', "%{$this->search}%")
-                          ->orWhere('barcode', 'like', "%{$this->search}%")
-                          ->orWhere('nombre', 'like', "%{$this->search}%")
-                          ->orWhere('nombre_generico', 'like', "%{$this->search}%");
+                      $sub->buscarNombre($this->search, ['code', 'barcode', 'nombre_generico']);
                   });
             });
         }
@@ -147,8 +144,7 @@ class LivewireLote extends Component
 
         $this->selectedProductLabel = '';
         if ($lot->product) {
-            $this->selectedProductLabel = $lot->product->code . ' - ' . $lot->product->nombre .
-                ($lot->product->concentracion ? ' | ' . $lot->product->concentracion : '');
+            $this->selectedProductLabel = $lot->product->code . ' - ' . $lot->product->nombre_con_concentracion;
         }
 
         $this->productSearch = '';
@@ -165,19 +161,13 @@ class LivewireLote extends Component
 
         $this->productResults = Producto::query()
             ->where('estado', 1)
-            ->where(function ($q) {
-                $q->where('code', 'like', "%{$this->productSearch}%")
-                  ->orWhere('barcode', 'like', "%{$this->productSearch}%")
-                  ->orWhere('nombre', 'like', "%{$this->productSearch}%")
-                  ->orWhere('nombre_generico', 'like', "%{$this->productSearch}%");
-            })
+            ->buscarNombre($this->productSearch, ['code', 'barcode', 'nombre_generico'])
             ->limit(10)
             ->get()
             ->map(function ($product) {
                 return [
                     'id' => $product->id,
-                    'label' => $product->code . ' - ' . $product->nombre .
-                        ($product->concentracion ? ' | ' . $product->concentracion : ''),
+                    'label' => $product->code . ' - ' . $product->nombre_con_concentracion,
                 ];
             })
             ->toArray();
@@ -188,8 +178,7 @@ class LivewireLote extends Component
         $product = Producto::findOrFail($id);
 
         $this->form->id_producto = $product->id;
-        $this->selectedProductLabel = $product->code . ' - ' . $product->nombre .
-            ($product->concentracion ? ' | ' . $product->concentracion : '');
+        $this->selectedProductLabel = $product->code . ' - ' . $product->nombre_con_concentracion;
 
         if (!$this->form->precio_venta || $this->form->precio_venta == 0) {
             $this->form->precio_venta = $product->precio_venta;

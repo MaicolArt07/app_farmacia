@@ -49,12 +49,12 @@ class LivewireAjusteInventario extends Component
         }
 
         if ($this->search) {
-            $query->whereHas('product', function ($q) {
-                $q->where('nombre', 'like', "%{$this->search}%")
-                  ->orWhere('code', 'like', "%{$this->search}%");
-            })->orWhereHas('lot', function ($q) {
-                $q->where('codigo_lote', 'like', "%{$this->search}%");
-            });
+            // Agrupado para que el "o" no se salte el filtro de sucursal de arriba.
+            $query->where(fn ($w) => $w
+                ->whereHas('product', fn ($q) => $q->buscarNombre($this->search, ['code']))
+                ->orWhereHas('lot', function ($q) {
+                    $q->where('codigo_lote', 'like', "%{$this->search}%");
+                }));
         }
 
         return view('livewire.ajuste-inventario.index', [
@@ -93,16 +93,12 @@ class LivewireAjusteInventario extends Component
         }
 
         $this->productResults = Producto::where('estado', 1)
-            ->where(function ($q) {
-                $q->where('code', 'like', "%{$this->productSearch}%")
-                  ->orWhere('nombre', 'like', "%{$this->productSearch}%")
-                  ->orWhere('nombre_generico', 'like', "%{$this->productSearch}%");
-            })
+            ->buscarNombre($this->productSearch, ['code', 'nombre_generico'])
             ->limit(10)
             ->get()
             ->map(fn ($item) => [
                 'id' => $item->id,
-                'label' => $item->code . ' - ' . $item->nombre,
+                'label' => $item->code . ' - ' . $item->nombre_completo,
             ])
             ->toArray();
     }
@@ -112,7 +108,7 @@ class LivewireAjusteInventario extends Component
         $product = Producto::findOrFail($id);
 
         $this->form->id_producto = $product->id;
-        $this->selectedProductLabel = $product->code . ' - ' . $product->nombre;
+        $this->selectedProductLabel = $product->code . ' - ' . $product->nombre_completo;
 
         $this->productSearch = '';
         $this->productResults = [];

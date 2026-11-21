@@ -137,15 +137,18 @@ class LivewireHome extends Component
 
         $topProducts = $scope(DetalleVenta::query()
             ->join('ventas', 'ventas.id', '=', 'detalles_venta.id_venta')
-            ->join('productos', 'productos.id', '=', 'detalles_venta.id_producto'), 'ventas.')
+            ->join('productos', 'productos.id', '=', 'detalles_venta.id_producto')
+            ->leftJoin('laboratorios', 'laboratorios.id', '=', 'productos.id_laboratorio'), 'ventas.')
             ->where('ventas.status', '!=', 'CANCELLED')
             ->when($scopedToSucursal, fn ($q) => $q->where('ventas.id_sucursal', $sucursalId))
-            ->groupBy('productos.id', 'productos.nombre', 'productos.code', 'productos.stock_minimo')
+            ->groupBy('productos.id', 'productos.nombre', 'productos.code', 'productos.stock_minimo', 'laboratorios.nombre', 'laboratorios.tipo')
             ->orderByDesc(DB::raw('SUM(detalles_venta.quantity)'))
             ->limit(8)
             ->get([
                 'productos.id',
                 'productos.nombre as name',
+                'laboratorios.nombre as lab_nombre',
+                'laboratorios.tipo as lab_tipo',
                 'productos.code',
                 'productos.stock_minimo as minimum_stock',
                 DB::raw('SUM(detalles_venta.quantity) as total_quantity'),
@@ -162,7 +165,7 @@ class LivewireHome extends Component
                 ->sum('cantidad_disponible');
 
             return [
-                'name' => $row->name,
+                'name' => \App\Models\Producto::armarNombreCompleto($row->name, $row->lab_nombre, $row->lab_tipo),
                 'code' => $row->code,
                 'quantity' => (int) $row->total_quantity,
                 'revenue' => (float) $row->total_revenue,

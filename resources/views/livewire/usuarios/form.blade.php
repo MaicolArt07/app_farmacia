@@ -98,6 +98,28 @@
                         @enderror
                     </div>
 
+                    <!-- Sucursal -->
+                    <div class="mb-4">
+                        <label class="mb-1 flex items-center gap-2 font-medium text-zinc-700 dark:text-zinc-200">
+                            <i class="bi bi-shop text-zinc-500"></i>
+                            Sucursal <span class="text-red-600">*</span>
+                        </label>
+
+                        <select
+                            wire:model.defer="form.id_sucursal"
+                            class="w-full rounded border border-zinc-400 bg-white px-3 py-1.5 text-sm text-zinc-800 focus:border-primary focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                        >
+                            <option value="">Seleccione una sucursal</option>
+                            @foreach ($sucursales as $sucursal)
+                                <option value="{{ $sucursal['id'] }}">{{ $sucursal['nombre'] }}</option>
+                            @endforeach
+                        </select>
+
+                        @error('form.id_sucursal')
+                            <span class="text-sm text-red-600">{{ $message }}</span>
+                        @enderror
+                    </div>
+
                     <!-- Password -->
                     <div class="mb-4">
                         <label class="mb-1 flex items-center gap-2 font-medium text-zinc-700 dark:text-zinc-200">

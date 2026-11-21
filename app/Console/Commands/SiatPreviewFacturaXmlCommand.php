@@ -42,7 +42,7 @@ class SiatPreviewFacturaXmlCommand extends Command
         if ($faltantes->isNotEmpty()) {
             $this->warn('⚠️ Los siguientes productos de esta venta NO tienen código SIN asignado (se enviaría codigoProductoSin=0, inválido):');
             foreach ($faltantes as $d) {
-                $this->line(' - ' . ($d->product?->nombre ?? 'producto #' . $d->id_producto));
+                $this->line(' - ' . ($d->product?->nombre_completo ?? 'producto #' . $d->id_producto));
             }
         }
 

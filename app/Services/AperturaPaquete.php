@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Lote;
 use App\Models\MovimientoInventario;
 use App\Models\Producto;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -29,9 +30,12 @@ class AperturaPaquete
         return DB::transaction(function () use ($pack, $userId) {
             $unit = Producto::whereKey($pack->id_producto_unidad)->lockForUpdate()->firstOrFail();
             $factor = (int) $pack->unidades_por_paquete;
+            // El paquete se abre en la sucursal del usuario: sale de su stock y las unidades quedan ahí.
+            $sucursalId = User::whereKey($userId)->value('id_sucursal');
 
             // Paquete más antiguo con stock (primero en entrar, primero en abrirse).
             $packLot = Lote::where('id_producto', $pack->id)
+                ->where('id_sucursal', $sucursalId)
                 ->where('estado', 1)
                 ->where('cantidad_disponible', '>', 0)
                 ->orderBy('id')
@@ -39,7 +43,7 @@ class AperturaPaquete
                 ->first();
 
             if (!$packLot) {
-                throw new RuntimeException('No quedan paquetes cerrados de ' . $pack->nombre . '.');
+                throw new RuntimeException('No quedan paquetes cerrados de ' . $pack->nombre_completo . '.');
             }
 
             $packBefore = (int) $packLot->cantidad_disponible;
@@ -49,6 +53,7 @@ class AperturaPaquete
             $momento = now();
             $unitLot = Lote::create([
                 'id_producto' => $unit->id,
+                'id_sucursal' => $packLot->id_sucursal,
                 'codigo_lote' => 'APERTURA-' . $packLot->codigo_lote . '-' . $momento->format('YmdHis'),
                 'precio_compra' => round((float) $packLot->precio_compra / $factor, 2),
                 'precio_venta' => $unit->precio_venta,
@@ -68,7 +73,7 @@ class AperturaPaquete
                 'quantity' => 1,
                 'stock_before' => $packBefore,
                 'stock_after' => $packLot->cantidad_disponible,
-                'descripcion' => "Apertura de paquete: 1 paquete abierto en {$factor} unidades de {$unit->nombre}.",
+                'descripcion' => "Apertura de paquete: 1 paquete abierto en {$factor} unidades de {$unit->nombre_completo}.",
             ]);
 
             MovimientoInventario::create([
@@ -81,7 +86,7 @@ class AperturaPaquete
                 'quantity' => $factor,
                 'stock_before' => 0,
                 'stock_after' => $factor,
-                'descripcion' => "Apertura de paquete: ingreso de {$factor} unidades sueltas desde {$pack->nombre}.",
+                'descripcion' => "Apertura de paquete: ingreso de {$factor} unidades sueltas desde {$pack->nombre_completo}.",
             ]);
 
             return $unitLot;

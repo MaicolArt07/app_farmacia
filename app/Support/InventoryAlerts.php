@@ -74,9 +74,7 @@ class InventoryAlerts
         $scoped = $user && ! $user->can('Super Admin');
 
         $productFilter = function ($q) use ($term) {
-            $q->where('nombre', 'like', "%{$term}%")
-                ->orWhere('code', 'like', "%{$term}%")
-                ->orWhere('barcode', 'like', "%{$term}%");
+            $q->buscarNombre($term, ['code', 'barcode']);
         };
 
         $lotQuery = fn () => Lote::with('product.laboratory')

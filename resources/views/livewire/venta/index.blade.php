@@ -162,7 +162,7 @@
                             @php
                                 $term = mb_strtolower(trim($search));
                                 $lines = $item->details->map(function ($d) use ($term) {
-                                    $name = $d->product?->nombre ?? $d->service?->nombre ?? '—';
+                                    $name = $d->product?->nombre_completo ?? $d->service?->nombre ?? '—';
                                     $hit = $term !== '' && (str_contains(mb_strtolower($name), $term)
                                         || str_contains(mb_strtolower((string) $d->product?->code), $term));
                                     return ['text' => ((int) $d->quantity) . '× ' . $name, 'hit' => $hit];
@@ -283,7 +283,7 @@
                     <div class="min-w-0 flex-1">
                         <p class="truncate text-sm font-medium text-zinc-800 dark:text-zinc-100">
                             #{{ $item->id }} ·
-                            {{ $item->details->map(fn ($d) => ((int) $d->quantity) . '× ' . ($d->product?->nombre ?? $d->service?->nombre ?? '—'))->implode(', ') }}
+                            {{ $item->details->map(fn ($d) => ((int) $d->quantity) . '× ' . ($d->product?->nombre_completo ?? $d->service?->nombre ?? '—'))->implode(', ') }}
                         </p>
                         <p class="truncate text-xs text-zinc-500 dark:text-zinc-400">{{ \Carbon\Carbon::parse($item->fecha_venta)->format('d/m/Y') }} {{ $item->created_at?->format('H:i') }} &middot; {{ number_format($item->total, 2) }}</p>
                     </div>

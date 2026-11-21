@@ -159,8 +159,9 @@
                     >
 
                     @if (!empty($productResults))
-                        <div class="absolute z-10 mt-1 max-h-72 w-full overflow-y-auto rounded-lg border border-zinc-300 bg-zinc-100 shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
+                        <div wire:key="product-results-{{ md5($productSearch) }}" class="absolute z-10 mt-1 max-h-80 w-full overflow-y-auto rounded-lg border border-zinc-300 bg-zinc-100 shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
                             @foreach ($productResults as $product)
+                                <div wire:key="product-result-{{ $product['id'] }}">
                                 {{-- Con stock: una fila por cada stock/ingreso, con su propio precio. --}}
                                 @if (!empty($product['lots']))
                                     @foreach ($product['lots'] as $lot)
@@ -193,8 +194,7 @@
                                             </div>
                                         </button>
                                     @endforeach
-                                    @continue
-                                @endif
+                                @else
                                 <button
                                     type="button"
                                     wire:click="addProductToDetail({{ $product['id'] }})"
@@ -217,6 +217,48 @@
                                         <span class="shrink-0 font-mono text-[11px] text-gray-400 dark:text-zinc-500">{{ $product['code'] }}</span>
                                     </div>
                                 </button>
+
+                                {{-- Sin stock: equivalentes con el mismo principio activo. --}}
+                                @if (!empty($product['equivalents']))
+                                    <div class="border-b border-zinc-300 bg-sky-50 px-3 py-2 dark:border-zinc-700 dark:bg-sky-950/30">
+                                        <div class="mb-1 text-xs font-bold uppercase tracking-wide text-sky-700 dark:text-sky-300">
+                                            <i class="bi bi-arrow-left-right mr-1"></i>Equivalentes con stock
+                                            <span class="font-normal normal-case text-zinc-500 dark:text-zinc-400">· {{ $product['generic'] }}</span>
+                                        </div>
+                                        @foreach ($product['equivalents'] as $eq)
+                                            <button
+                                                type="button"
+                                                wire:click="addProductToDetail({{ $eq['id'] }}, {{ $eq['lot_id'] }})"
+                                                class="mt-1 flex w-full cursor-pointer items-center justify-between gap-2 rounded-md border border-sky-200 bg-white px-2 py-1.5 text-left text-sm transition hover:border-sky-500 hover:bg-sky-100 hover:shadow-sm dark:border-sky-900 dark:bg-zinc-800 dark:hover:border-sky-500 dark:hover:bg-sky-900/50"
+                                                title="{{ $eq['same_via'] ? 'Misma forma: se puede cambiar directo' : 'Otra presentación: confirme con el cliente' }}"
+                                            >
+                                                <span class="min-w-0">
+                                                    @if ($eq['same_via'])
+                                                        <i class="bi bi-check-circle-fill text-emerald-600 dark:text-emerald-400"></i>
+                                                    @else
+                                                        <i class="bi bi-arrow-return-right text-amber-600 dark:text-amber-400"></i>
+                                                    @endif
+                                                    <span class="text-zinc-800 dark:text-zinc-100">{{ $eq['name'] }}</span>
+                                                    @if (!$eq['same_via'])
+                                                        <span class="text-xs text-amber-700 dark:text-amber-300">(otra forma{{ $eq['via'] ? ': ' . $eq['via'] : '' }})</span>
+                                                    @elseif ($eq['same_conc'])
+                                                        <span class="text-xs text-emerald-700 dark:text-emerald-300">(misma dosis)</span>
+                                                    @endif
+                                                </span>
+                                                <span class="flex shrink-0 items-center" style="gap: .25rem">
+                                                    <span class="rounded-full bg-sky-100 px-2 py-0.5 text-xs font-bold text-sky-700 dark:bg-sky-900/30 dark:text-sky-300">Bs {{ number_format($eq['price'], 2) }}</span>
+                                                    <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">Stock: {{ $eq['stock'] }}</span>
+                                                </span>
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                @elseif ($product['stock'] <= 0 && ($product['packs_closed'] ?? 0) <= 0 && $product['generic'])
+                                    <div class="border-b border-zinc-300 px-3 py-1.5 text-xs text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
+                                        Sin equivalentes con stock ({{ $product['generic'] }}).
+                                    </div>
+                                @endif
+                                @endif
+                                </div>
                             @endforeach
                         </div>
                     @endif

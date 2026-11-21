@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Livewire\Form\UsersForm;
 use App\Models\Persona;
+use App\Models\Sucursal;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -28,6 +29,8 @@ class LivewireUsers extends Component
 
     public $roles = [];
 
+    public $sucursales = [];
+
     public $personSearch = '';
     public $personResults = [];
     public $selectedPersonLabel = '';
@@ -42,6 +45,8 @@ class LivewireUsers extends Component
             $this->form->resetForm();
 
             $this->roles = Role::where('guard_name', 'web')->orderBy('name')->get(['id', 'name'])->toArray();
+
+            $this->sucursales = Sucursal::where('estado', 1)->orderBy('numero_sucursal')->get(['id', 'nombre'])->toArray();
 
             $prefixes = ['Cambiar Estado', 'Ver', 'Crear', 'Editar', 'Exportar'];
 
@@ -187,6 +192,7 @@ class LivewireUsers extends Component
         if ($this->form->id) {
             $user = User::findOrFail($this->form->id);
             $user->id_persona = $this->form->id_persona;
+            $user->id_sucursal = $this->form->id_sucursal;
             $user->name = $this->form->name;
             $user->email = $this->form->email;
 
@@ -200,6 +206,7 @@ class LivewireUsers extends Component
         } else {
             $user = User::create([
                 'id_persona' => $this->form->id_persona,
+                'id_sucursal' => $this->form->id_sucursal,
                 'name' => $this->form->name,
                 'email' => $this->form->email,
                 'password' => Hash::make($this->form->password),

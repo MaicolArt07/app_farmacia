@@ -23,22 +23,22 @@ class InventoryAlertsExport implements WithMultipleSheets
     public function sheets(): array
     {
         $l = InventoryAlerts::lists($this->term);
-        $lab = fn ($p) => $p?->laboratory?->nombre ?? 'Sin laboratorio';
+        $lab = fn ($p) => $p?->laboratory?->sufijo ?: 'Sin laboratorio';
         $fecha = fn ($d) => $d ? $d->format('d/m/Y') : '';
 
         // Valores como string: PhpSpreadsheet deja vacía una celda con 0 numérico.
         $low = $l['low']->map(fn ($p) => [
-            $p->code, $p->nombre, $lab($p), (string) $p->stock_actual, (string) $p->stock_minimo,
+            $p->code, $p->nombre_completo, $lab($p), (string) $p->stock_actual, (string) $p->stock_minimo,
             $p->stock_actual <= 0 ? 'Agotado' : 'Stock bajo',
         ])->all();
 
         $expired = $l['expired']->map(fn ($lot) => [
-            $lot->product?->code, $lot->product?->nombre, $lab($lot->product), $lot->codigo_lote,
+            $lot->product?->code, $lot->product?->nombre_completo, $lab($lot->product), $lot->codigo_lote,
             $fecha($lot->fecha_vencimiento), (string) $lot->days, (string) $lot->cantidad_disponible,
         ])->all();
 
         $near = $l['near']->map(fn ($lot) => [
-            $lot->product?->code, $lot->product?->nombre, $lab($lot->product), $lot->codigo_lote,
+            $lot->product?->code, $lot->product?->nombre_completo, $lab($lot->product), $lot->codigo_lote,
             $fecha($lot->fecha_vencimiento), (string) $lot->days, (string) $lot->cantidad_disponible,
         ])->all();
 

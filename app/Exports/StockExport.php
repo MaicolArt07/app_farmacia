@@ -43,9 +43,9 @@ class StockExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
         // como null y deje la celda vacía.
         return [
             $product->code,
-            $product->nombre,
+            $product->nombre_completo,
             $product->category?->nombre,
-            $product->laboratory?->nombre,
+            $product->laboratory?->sufijo,
             (string) $stock,
             (string) $product->stock_minimo,
             (string) $product->precio_venta,

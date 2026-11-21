@@ -36,7 +36,7 @@ class LowStockSheet implements FromCollection, WithHeadings, WithMapping, WithTi
         // caso más importante de esta hoja) como null y deje la celda vacía.
         return [
             $product->code,
-            $product->nombre,
+            $product->nombre_completo,
             (string) $stock,
             (string) $product->stock_minimo,
         ];

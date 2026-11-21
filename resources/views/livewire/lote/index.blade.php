@@ -34,7 +34,7 @@
                 @forelse ($lots as $item)
                     <tr wire:click="view({{ $item->id }})" class="cursor-pointer border-b border-zinc-200 hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-800">
                         <td class="px-3 py-1.5 text-zinc-800 dark:text-zinc-100">
-                            {{ $item->product?->nombre ?? '-' }}
+                            {{ $item->product?->nombre_completo ?? '-' }}
                             <div class="text-xs text-zinc-500 dark:text-zinc-400">
                                 {{ $item->product?->code ?? '-' }}
                             </div>
@@ -126,7 +126,7 @@
                     </button>
 
                     <div class="min-w-0 flex-1">
-                        <p class="truncate text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ $item->product?->nombre ?? '-' }}</p>
+                        <p class="truncate text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ $item->product?->nombre_completo ?? '-' }}</p>
                         <p class="truncate text-xs text-zinc-500 dark:text-zinc-400">Lote: {{ $item->codigo_lote }}</p>
                     </div>
 
@@ -348,7 +348,7 @@
                 <div class="space-y-4 px-4 py-5">
                     <div class="space-y-1">
                         <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Producto</span>
-                        <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->product?->nombre ?? '-' }}</p>
+                        <p class="text-sm text-zinc-800 dark:text-zinc-100">{{ $viewing->product?->nombre_completo ?? '-' }}</p>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="space-y-1">
@@ -429,7 +429,7 @@
                         <h2 class="text-lg font-semibold text-zinc-800 dark:text-zinc-100">
                             <i class="bi bi-clipboard-data mr-1 text-sky-600"></i>Cuadre del lote
                         </h2>
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ $c['lot']->product?->nombre }} · {{ $c['lot']->codigo_lote }}</p>
+                        <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ $c['lot']->product?->nombre_completo }} · {{ $c['lot']->codigo_lote }}</p>
                     </div>
                     <button wire:click="closeCuadre" class="text-gray-500 hover:text-red-500 dark:text-zinc-400"><i class="bi bi-x-lg"></i></button>
                 </div>

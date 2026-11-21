@@ -22,3 +22,6 @@ carpeta para entender decisiones de diseño/arquitectura ya tomadas.
 
 - [responsive-tablas.md](responsive-tablas.md) — patrón de tabla responsive (tabla en
   desktop + tarjetas con botón "+" en móvil), sin usar DataTables.
+- [comparar-pedido-proveedor.md](comparar-pedido-proveedor.md) — pasar a tabla un
+  pedido escrito a mano (foto), calcular la ganancia y compararla con los lotes
+  anteriores para ver qué conviene comprar.
